@@ -6,7 +6,9 @@ require_once 'game\Game.php';
 
 $options = new stdClass();
 
-$options->map = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+$options->map = [
+	[0, 0, 0], [0, 0, 0], [0, 0, 0],
+];
 $options->snakes = [
     (object) array( 'id' => 12, 'name' => 'Vasya' )
 ];
