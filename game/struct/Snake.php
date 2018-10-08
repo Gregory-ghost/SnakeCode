@@ -6,13 +6,13 @@ class Snake {
     public $body;
     public $direction;
 
-    public function __construct($opions = null)
+    public function __construct($options = null)
     {
-        if ($opions) {
-            $this->id = $opions->id;
-            $this->name = $opions->name;
-            $this->body = $opions->body;
-            $this->direction = $opions->direction;
+        if ($options) {
+            $this->id = $options->id;
+            $this->name = $options->name;
+            $this->body = $options->body;
+            $this->direction = $options->direction;
         }
     }
 }
