@@ -3,7 +3,8 @@
 class Logic {
     private $struct;
 
-    public function __construct($struct) {
+    public function __construct($struct)
+    {
         $this->struct = $struct;
     }
 
@@ -12,7 +13,8 @@ class Logic {
 	//
 	
 	// Получить удава
-    private function getSnake($id) {
+    private function getSnake($id)
+    {
         if ($id) {
             $snakes = $this->struct->snakes;
             foreach ($snakes as $snake) {
@@ -21,7 +23,6 @@ class Logic {
                 }
             }
         }
-        return null;
     }
 	// Создать удава
     private function createSnake($snake)
@@ -32,7 +33,7 @@ class Logic {
         }
     }
 	// Уничтожить удава
-    private function DestroySnake($id)
+    private function destroySnake($id)
     {
 		$snakes = $this->struct->snake;
            foreach ($snakes as $key => $snake) {
@@ -43,7 +44,7 @@ class Logic {
             }
     }
 	// Подвинуть удава на 1 клетку
-    public function MoveSnake($id)
+    public function moveSnake($id)
     {
         $snake = $this->getSnake($id);
         if ($snake) {
@@ -68,11 +69,12 @@ class Logic {
         return false;
     }
 	// Изменить направление удава
-    public function changeDirection($options = null) {
+    public function changeDirection($options = null)
+    {
         if ($options) {
             $snake = $this->getSnake($options->id);
-            if ($snake && $options->direction) {
-                $snake->direction = $options->direction;
+            if ($snake && $options-> $direction) {
+                $snake->direction = $options->$direction;
                 return true;
             }
         }
@@ -84,7 +86,7 @@ class Logic {
 	//
 	
 	// Добавить новую еду на карту
-    private function AddFood($food)
+    private function addFood($food)
     {
         if ($food) {
             $this->struct->foods[] = new Food($food);
