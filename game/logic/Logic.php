@@ -13,67 +13,90 @@ class Logic {
 	//
 	
 	// Получить удава
-    private function getSnake($id)
+    public function getSnake( $options = null )
     {
-        if ($id) {
+        if ( $options ) {
             $snakes = $this->struct->snakes;
             foreach ($snakes as $snake) {
-                if ($snake->id === $id) {
+                if ($options->id && $snake->id === $options->id) {
                     return $snake;
                 }
             }
         }
+        return false;
     }
+
 	// Создать удава
-    private function createSnake($snake)
+    public function createSnake($options = null)
     {
-        if ($snake) {
-			$this->struct->snakes[] = new Snake($snake);
+        if ($options ) {
+			$this->struct->snakes[] = new Snake($options->snake);
 			return true;
-        }
-    }
-	// Уничтожить удава
-    private function destroySnake($id)
-    {
-		$snakes = $this->struct->snake;
-           foreach ($snakes as $key => $snake) {
-                if ($snake->id === $id) {
-                    unset($this->struct->snakes[$key]);
-					return true;
-                }
-            }
-    }
-	// Подвинуть удава на 1 клетку
-    public function moveSnake($id)
-    {
-        $snake = $this->getSnake($id);
-        if ($snake) {
-			switch ( $snake->direction ) {
-				case 'up': 
-					$snake->y = $snake->y - 1;
-					break;
-				case 'down':
-					$snake->y = $snake->y + 1;
-					break;
-				case 'left':
-					$snake->x = $snake->x - 1;
-					break;
-				case 'right':
-					$snake->x = $snake->x + 1;
-					break;
-				default:
-					break;
-			}
-            return true;
         }
         return false;
     }
+
+	// Уничтожить удава
+    public function destroySnake($options = null)
+    {
+        if ( $options ) {
+            $snakes = $this->struct->snake;
+               foreach ($snakes as $key => $snake) {
+                    if ( $options->id && $snake->id === $options->id ) {
+                        unset($this->struct->snakes[$key]);
+                        return true;
+                    }
+                }
+        }
+        return false;
+    }
+
+	// Подвинуть удава на 1 клетку
+	// TODO :: check for limit of area
+    public function moveSnake($options = null)
+    {
+        if ( $options ) {
+            $snake = $this->getSnake($options->id);
+            if ($snake) {
+                switch ( $snake->direction ) {
+                    case 'up':
+                        $snake->y = $snake->y - 1;
+                        break;
+                    case 'down':
+                        $snake->y = $snake->y + 1;
+                        break;
+                    case 'left':
+                        $snake->x = $snake->x - 1;
+                        break;
+                    case 'right':
+                        $snake->x = $snake->x + 1;
+                        break;
+                    default:
+                        break;
+                }
+                return $this->checkForArea($snake);
+            }
+        }
+        return false;
+    }
+
+    // Доступно ли передвижение для удава, границы карты
+    public function checkForArea($snake = null) {
+        if ( $snake ) {
+            $map = count($this->struct->map)
+
+            foreach
+        }
+
+        return false;
+    }
+
 	// Изменить направление удава
     public function changeDirection($options = null)
     {
         if ($options) {
             $snake = $this->getSnake($options->id);
-            if ($snake && $options-> $direction) {
+            if ( $snake && $options-> $direction ) {
                 $snake->direction = $options->$direction;
                 return true;
             }
@@ -86,14 +109,14 @@ class Logic {
 	//
 	
 	// Добавить новую еду на карту
-    private function addFood($food)
+    public function addFood($food)
     {
         if ($food) {
             $this->struct->foods[] = new Food($food);
         }
     }
 	// Получить еду
-    private function getFood($id)
+    public function getFood($id)
     {
         if ($id) {
             $foods = $this->struct->foods;
@@ -105,7 +128,7 @@ class Logic {
         }
     }
 	// Съесть еду
-    private function eatFood($id)
+    public function eatFood($id)
     {
 		$foods = $this->struct->foods;
            foreach ($foods as $key => $food) {

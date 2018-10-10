@@ -9,16 +9,16 @@ class Struct {
     public $foods;
 
 
-    public function __construct($opions = null)
+    public function __construct($options = null)
     {
-        if ($opions) {
-            $this->map = $opions->map;
+        if ($options) {
+            $this->map = $options->map;
             $this->snakes = [];
-            foreach ($opions->snakes as $snake) {
+            foreach ($options->snakes as $snake) {
                 $this->snakes[] = new Snake($snake);
             }
             $this->foods = [];
-            foreach ($opions->foods as $foods) {
+            foreach ($options->foods as $foods) {
                 $this->foods[] = new Food($foods);
             }
         }
