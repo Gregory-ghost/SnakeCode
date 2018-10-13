@@ -3,8 +3,7 @@
 class Logic {
     private $struct;
 
-    public function __construct($struct)
-    {
+    public function __construct($struct) {
         $this->struct = $struct;
     }
 
@@ -13,12 +12,11 @@ class Logic {
 	//
 	
 	// Получить удава
-    public function getSnake( $options = null )
-    {
+    public function getSnake( $options = null ) {
         if ( $options ) {
             $snakes = $this->struct->snakes;
             foreach ($snakes as $snake) {
-                if ($options->id && $snake->id === $options->id) {
+                if ($snake->id === $options) {
                     return $snake;
                 }
             }
@@ -27,8 +25,7 @@ class Logic {
     }
 
 	// Создать удава
-    public function createSnake($options = null)
-    {
+    public function createSnake($options = null) {
         if ($options ) {
 			$this->struct->snakes[] = new Snake($options->snake);
 			return true;
@@ -37,12 +34,11 @@ class Logic {
     }
 
 	// Уничтожить удава
-    public function destroySnake($options = null)
-    {
+    public function destroySnake($options = null) {
         if ( $options ) {
             $snakes = $this->struct->snake;
                foreach ($snakes as $key => $snake) {
-                    if ( $options->id && $snake->id === $options->id ) {
+                    if ( $snake->id === $options ) {
                         unset($this->struct->snakes[$key]);
                         return true;
                     }
@@ -52,52 +48,156 @@ class Logic {
     }
 
 	// Подвинуть удава на 1 клетку
-	// TODO :: check for limit of area
-    public function moveSnake($options = null)
-    {
+    public function moveSnake($options = null) {
         if ( $options ) {
-            $snake = $this->getSnake($options->id);
-            if ($snake) {
+            $snake = $this->getSnake($options);
+            if ( $snake ) {
+				// Координаты головы удава
+				$x = $snake->body[0]->x;
+				$y = $snake->body[0]->y;
+				
+				// Направление
                 switch ( $snake->direction ) {
                     case 'up':
-                        $snake->y = $snake->y - 1;
+                        $y--;
                         break;
                     case 'down':
-                        $snake->y = $snake->y + 1;
+                        $y++;
                         break;
                     case 'left':
-                        $snake->x = $snake->x - 1;
+                        $x--;
                         break;
                     case 'right':
-                        $snake->x = $snake->x + 1;
-                        break;
-                    default:
+                        $x++;
                         break;
                 }
-                return $this->checkForArea($snake);
+				
+				$cOptions = (object) array(
+					'id' => $options,
+					'x' => $x,
+					'y' => $y,
+				);
+				$isMove = isCanMove($cOptions);
+				if ( $isMove ) {
+						$isUpdatePosition = setPositionSnake( $cOptions );
+						if ( $isUpdatePosition ) {
+							// Координаты обновлены
+							return true;
+						}
+				}
             }
         }
         return false;
     }
+	
+	// Установить координаты удава
+	private function setPositionSnake( $options = null ) {
+        if ( $options ) {
+			$snakes = $this->struct->snakes;
+			if ( $options->x and $options->y ) {
+				$x = $options->x;
+				$y = $options->y;
+				foreach( $snakes as $key => $snake ) {
+					if ( $snake->id == $options->id ) {
+						// Устанавливаем координаты тела
+						$body = $snake->body;
+						$lastCoord = (object) array(
+							'x' => $x,
+							'y' => $y,
+						);
+						$tBody = [];
+						foreach( $body as $bcoord ) {
+							// Сдвигаем все тело удава
+							$tBody[] = $lastCoord;
+							$lastCoord->x = $bcoord->x;
+							$lastCoord->y = $bcoord->y;
+						}
+						
+						// Обновляем тело удава
+						$this->struct->snakes[$key]->body = $tBody;
+						return true;
+					}
+				}
+			}		
+		}
+		return false;
+	}
+	
+	// Может ли удав двигаться дальше
+	private function isCanMove($options = null) {
+		if ( $options ) {
+			$mapSize = getMapSize(); // Получаем размер карты
+			$x = $options->x;
+			$y = $options->y;
+			$id = $options->id;
+			
+			// Проверяем выход за границы карты
+			$isCrashed = isCrashedInMap($options);
+			// Проверяем врезался ли в другого удава
+			$isCrashed = isCrashedInSnake($options);
+			
+			if ( $isCrashed ) {
+				// Столкнулись, поэтому не можем идти дальше
+				return false;
+				
+			} else {
+				// Ни с чем не столкнулись, можем идти дальше
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// Проверяем врезался ли в другого удава
+	private function isCrashedInSnake( $options = null ) {
+		if ( $options ) {
+			$snakes = $this->struct->snakes;
+			foreach ($snakes as $snake) {
+                if ( $snake->id != $options->id ) {
+					// Это другой удав
+					$body = $snake->body;
+					foreach ($body as $bcoord) {
+						// Тело удава
+						if ( $bcoord->x == $x and $bcoord->y == $y ) {
+							// Врезались в удава
+							return true;
+						}
+					}
+                    
+                }
+            }
+		}
+		return false;
+	}
 
-    // Доступно ли передвижение для удава, границы карты
-    public function checkForArea($snake = null) {
-        if ( $snake ) {
-            $map = count($this->struct->map)
-
-            foreach
+    // Проверяем границы карты
+    private function isCrashedInMap( $options = null ) {
+        if ( $options ) {
+            if ( $x > $mapSize or $x < 0 ) {
+				return true;
+			}
+			if ( $y > $mapSize or $y < 0 ) {
+				return true;
+			}
         }
-
         return false;
     }
-
+	
+	// Получает размер карты
+	private function getMapSize( $options = null ) {
+		$maps = $this->struct->map;
+		$mapSize = count($maps);
+		
+		return $mapSize;
+	}
+	
 	// Изменить направление удава
     public function changeDirection($options = null)
     {
         if ($options) {
-            $snake = $this->getSnake($options->id);
-            if ( $snake && $options-> $direction ) {
-                $snake->direction = $options->$direction;
+            $snake = $this->getSnake($options);
+            if ( $snake && $options->direction ) {
+                $snake->direction = $options->direction;
                 return true;
             }
         }

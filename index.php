@@ -10,7 +10,17 @@ $options->map = [
 	[0, 0, 0], [0, 0, 0], [0, 0, 0],
 ];
 $options->snakes = [
-    (object) array( 'id' => 12, 'name' => 'Vasya', 'body' => array( 'x' => 0, 'y' => 0, 'x1' => 0, 'y1' => 0 ), 'direction' => 'left' )
+	(object) array (
+		'id' => 12,
+		'name' => 'Vasya',
+		'body' => [
+			(object) array(
+				'x' => 0,
+				'y' => 0,
+			),
+		],
+		'direction' => 'left',
+	),
 ];
 $options->foods = [
     (object) array( 'x' => 2, 'y' => 0, 'value' => 2 )
