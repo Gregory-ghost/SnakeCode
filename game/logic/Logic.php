@@ -7,9 +7,11 @@ class Logic {
         $this->struct = $struct;
     }
 
-	//
-	// Удав. Логика
-	//
+	/*
+		* Удав
+		* Описаны основные функции для удава
+		* Получение, создание, удаление, передвижение
+	*/
 	
 	// Получить удава
     public function getSnake( $options = null ) {
@@ -204,38 +206,56 @@ class Logic {
         return false;
     }
 	
-	//
-	// Еда. Логика
-	//
+	/*
+		* Еда
+		* Описаны основные функции с едой
+		* Добавление, получение, съесть
+	*/
 	
 	// Добавить новую еду на карту
-    public function addFood($food)
-    {
-        if ($food) {
-            $this->struct->foods[] = new Food($food);
+    public function addFood($options = null) {
+        if ( $options ) {
+            $this->struct->foods[] = new Food($options);
+			return true;
         }
+		return false;
     }
+	
 	// Получить еду
-    public function getFood($id)
-    {
-        if ($id) {
+    public function getFood( $options = null ) {
+        if ( $options ) {
             $foods = $this->struct->foods;
-            foreach ($foods as $food) {
-                if ($food->id === $id) {
+            foreach ( $foods as $food ) {
+                if ( $food->id === $options ) {
                     return $food;
                 }
             }
         }
+		return false;
     }
+	
 	// Съесть еду
-    public function eatFood($id)
-    {
-		$foods = $this->struct->foods;
-           foreach ($foods as $key => $food) {
-                if ($food->id === $id) {
+    public function eatFood( $options = null ) {
+        if ( $options ) {
+			$foods = $this->struct->foods;
+			foreach ($foods as $key => $food) {
+				if ( $food->id === $options ) {
                     unset($this->struct->foods[$key]);
 					return true;
                 }
             }
+        }
+		return false;
     }
+	
+	/*
+		* Сцена
+	*/
+	// Обновление сцены
+	public function updateScene( $options = null ) {
+		if ( $options ) {
+			return true;
+		}
+		return false;
+	}
 }
