@@ -56,8 +56,11 @@ class Logic {
     public function moveSnake($options = null)
     {
         if ( $options ) {
-            $snake = $this->getSnake($options->id);
+            $snake = $this->getSnake($options);
             if ($snake) {
+                $x = $snake->x;
+                $y = $snake->y;
+                // Проверяем направление
                 switch ( $snake->direction ) {
                     case 'up':
                         $snake->y = $snake->y - 1;
@@ -83,9 +86,16 @@ class Logic {
     // Доступно ли передвижение для удава, границы карты
     public function checkForArea($snake = null) {
         if ( $snake ) {
-            $map = count($this->struct->map)
-
-            foreach
+            $map = count($this->struct->map);
+            $l = 0;
+            foreach ( $map as $fmap ) {
+                $l++;
+            }
+            $body = $snake->body;
+            $x = $body->x;
+            $y = $body->y;
+            $x1 = $body->x1;
+            $y1 = $body->y1;
         }
 
         return false;
@@ -95,9 +105,9 @@ class Logic {
     public function changeDirection($options = null)
     {
         if ($options) {
-            $snake = $this->getSnake($options->id);
-            if ( $snake && $options-> $direction ) {
-                $snake->direction = $options->$direction;
+            $snake = $this->getSnake($options);
+            if ( $snake && $options->direction ) {
+                $snake->direction = $options->direction;
                 return true;
             }
         }
