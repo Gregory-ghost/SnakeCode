@@ -11,10 +11,12 @@ class Input {
         $this->logic = $logic;
     }
 
+	// Получить команду
     public function getCommand() {
         return (object) self::COMMAND;
     }
 
+	// Выполнить команду
     public function executeCommand($name, $options = null) {
         if ($name) {
             return $this->logic->{$name}($options);

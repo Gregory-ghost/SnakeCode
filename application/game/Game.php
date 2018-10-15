@@ -17,10 +17,15 @@ class Game {
     }
 
     public function getCommand() {
-        return $this->input->getCommand();
+        return  (object) $this->input->getCommand();
     }
 
     public function executeCommand($name, $options = null) {
         return $this->input->executeCommand($name, $options);
+    }
+	
+	// Возвращает нашу структуру целиком
+    public function getStruct() {
+        return $this->struct;
     }
 }
