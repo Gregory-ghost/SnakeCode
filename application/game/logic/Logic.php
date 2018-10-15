@@ -79,14 +79,25 @@ class Logic {
 					'x' => $x,
 					'y' => $y,
 				);
-				$isMove = isCanMove($cOptions);
+				$isMove = $this->isCanMove($cOptions);
 				if ( $isMove ) {
-						$isUpdatePosition = setPositionSnake( $cOptions );
+						$isUpdatePosition = $this->setPositionSnake( $cOptions );
 						if ( $isUpdatePosition ) {
 							// Координаты обновлены
-							return true;
+							//return true;
 						}
 				}
+				// Проверяем врезался ли в другого удава
+                $isCrashed = $this->isCrashedInSnake($options);
+                if ( $isCrashed ) {
+                    // Столкнулись, поэтому уничтожаем питона
+                    $this->destroySnake($options);
+                } else {
+                	// Ни с чем не столкнулись, проверяем на состояние
+
+                	return true;
+                }
+
             }
         }
         return false;
@@ -128,24 +139,18 @@ class Logic {
 	// Может ли удав двигаться дальше
 	private function isCanMove($options = null) {
 		if ( $options ) {
-			$mapSize = getMapSize(); // Получаем размер карты
+			$mapSize = $this->getMapSize(); // Получаем размер карты
 			$x = $options->x;
 			$y = $options->y;
 			$id = $options->id;
-			
+
 			// Проверяем выход за границы карты
-			$isCrashed = isCrashedInMap($options);
-			// Проверяем врезался ли в другого удава
-			$isCrashed = isCrashedInSnake($options);
-			
-			if ( $isCrashed ) {
-				// Столкнулись, поэтому не можем идти дальше
-				return false;
-				
-			} else {
-				// Ни с чем не столкнулись, можем идти дальше
-				return true;
-			}
+			if ( $x > $mapSize or $x < 0 ) {
+            	return true;
+            }
+            if ( $y > $mapSize or $y < 0 ) {
+                return true;
+            }
 		}
 		return false;
 	}
@@ -171,19 +176,6 @@ class Logic {
 		}
 		return false;
 	}
-
-    // Проверяем границы карты
-    private function isCrashedInMap( $options = null ) {
-        if ( $options ) {
-            if ( $x > $mapSize or $x < 0 ) {
-				return true;
-			}
-			if ( $y > $mapSize or $y < 0 ) {
-				return true;
-			}
-        }
-        return false;
-    }
 	
 	// Получает размер карты
 	private function getMapSize( $options = null ) {
