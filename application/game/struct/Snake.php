@@ -13,6 +13,7 @@ class Snake {
             $this->name = $options->name;
             $this->body = $options->body;
             $this->direction = $options->direction;
+            $this->eating = $options->eating;
         }
     }
 }

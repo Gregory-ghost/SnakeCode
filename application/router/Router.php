@@ -1,6 +1,6 @@
 <?php
 
-require_once '../application/game/Game.php';
+require_once dirname(__DIR__).'/game/Game.php';
 
 class Router {
 	
@@ -23,6 +23,7 @@ class Router {
 					),
 				],
 				'direction' => 'left',
+				'eating' => 0,
 			),
 		];
 		$options->foods = [
@@ -36,22 +37,23 @@ class Router {
 	}
 	
 	public function answer($options) {
-		$method = $options->method;
-		if ( $method ) {
-			// Получаем список команд
-			$COMMAND = $this->game->getCommand();
-			foreach ( $COMMAND as $command ) {
-				if ( $command === $method ) {
-					unset($options->method);
-					if ($this->game->executeCommand($method, $options) {
-						return $this->game->getStruct();
-					}
-					return $this->game->executeCommand($method, $options);
-				}
-			}
-			
-			return $COMMAND;
-		}
+	    if ( $options ) {
+	        $method = $options->method;
+            if ( $method ) {
+                $COMMAND = $this->game->getCommand();
+                foreach ( $COMMAND as $command ) {
+                    if ( $command === $method ) {
+                        unset($options->method);
+                        if ($this->game->executeCommand($method, $options)) {
+                            return $this->game->getStruct();
+                        }
+                        return $this->game->executeCommand($method, $options);
+                    }
+                }
+
+                return $COMMAND;
+            }
+        }
 		return false;
 	}	
 
