@@ -292,4 +292,9 @@ class Logic {
         }
         return false;
     }
+
+    // Получение информации о сцене
+    public function getScene ( $options = null ) {
+        return $this->struct;
+    }
 }

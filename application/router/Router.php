@@ -44,10 +44,13 @@ class Router {
                 foreach ( $COMMAND as $command ) {
                     if ( $command === $method ) {
                         unset($options->method);
-                        if ($this->game->executeCommand($method, $options)) {
-                            return $this->game->getStruct();
+                        $result = $this->game->executeCommand($method, $options);
+                        if ($result) {
+                            return $result;
+//                            return $this->game->getStruct();
                         }
-                        return $this->game->executeCommand($method, $options);
+                        return false;
+                        // return $this->game->executeCommand($method, $options);
                     }
                 }
 
