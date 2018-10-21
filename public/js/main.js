@@ -25,13 +25,19 @@ $Game.message = {
 $Game.methods = {
     'CHANGE_DIRECTION':  'changeDirection',
     'GET_SCENE':         'getScene',
+    'EAT_FOOD':          'eatFood',
+    'CREATE_FOOD':       'createFood',
+    'GET_FOOD':          'getFood',
+    'GET_SNAKE':         'getSnake',
+    'DESTROY_SNAKE':     'destroySnake',
+    'MOVE_SNAKE':        'moveSnake',
 };
 
 // Структура
 $Game.struct = {
-    map: [],
-    snakes: [],
-    foods: [],
+    map: [], // Карта
+    snakes: [], // Питоны
+    foods: [], // Еда
     setMap: function(map = []) {
         // Задаем информацию о карте
         if ( map ) {
@@ -63,13 +69,22 @@ $Game.struct = {
 $Game.init = {
     start: function() {
         // Начать игру
-
         $($Game.c.game).html('');
 
         // Получаем информацию о сцене
-        //$Game.scene.info();
+        // $Game.scene.info();
 
         // Изменяем направление змеи
+        let options = {id: 12, direction: 'right'};
+        $(document).ready(async function () {
+            let result = await $Game.snake.changeDirection(options);
+            console.log(result);
+            if ( result ) {
+                $($Game.c.game).html('Направление изменено');
+            } else {
+                $($Game.c.game).html('Направление не изменено');
+            }
+        });
     },
     stop: function() {
         // Закончить игру
@@ -79,13 +94,11 @@ $Game.init = {
         // Рекордная таблица
 
     },
-};
-
-// Сцена
-$Game.scene = {
-    info: function() {
+    scene: function() {
+        // Информация о сцене
         $(document).ready(async function () {
             let result = await $Game.scene.get();
+            // Запись в структуру
             if ( result.map ) {
                 $Game.struct.setMap(result.map);
             }
@@ -97,10 +110,13 @@ $Game.scene = {
             }
             console.log($Game.struct);
 
-
             console.log(result);
         });
     },
+};
+
+// Сцена
+$Game.scene = {
     get: function() {
         // Получение информации
         return $Game.cmd.execute('GET_SCENE', {});
@@ -108,6 +124,29 @@ $Game.scene = {
     update: function() {
         // Обновление сцены
         return $Game.cmd.execute('UDPATE_SCENE', {});
+    },
+};
+
+// Пользовательские функции
+$Game.user = {
+    login: function() {
+        // Вход
+    },
+    logout: function() {
+        // Выход
+
+    },
+    register: function() {
+        // Регистрация
+
+    },
+    get: function() {
+        // Получение данных о пользователе
+
+    },
+    save: function() {
+        // Сохранение информации
+
     },
 };
 
@@ -121,30 +160,70 @@ $Game.snake = {
         // Подвинуть змею
         return $Game.cmd.execute('MOVE_SNAKE', {id: id });
     },
-    create: function() {
+    create: function( options = {} ) {
         // Создать змею
+        return $Game.cmd.execute('CREATE_SNAKE', { options });
 
+    },
+    destroy: function( id = 0 ) {
+        // Удалить змею
+        return $Game.cmd.execute('CREATE_SNAKE', { id: id });
     },
 };
 
 // Еда
 $Game.food = {
+    create: function( options = {} ) {
+        return $Game.cmd.execute('CREATE_FOOD', options);
+    },
+    eat: function( id = 0 ) {
+        return $Game.cmd.execute('EAT_FOOD', {id: id});
+
+    },
+    get: function( options = {} ) {
+        return $Game.cmd.execute('CHANGE_DIRECTION', options);
+    },
+    destroy: function() {
+
+    },
+};
+
+
+// Карта
+// Функции для работы с клиентом
+$Game.map = {
     create: function() {
 
     },
-    eat: function() {
+    getSize: function() {
 
     },
+    setSize: function() {
+
+    },
+    delete: function() {
+
+    },
+};
+
+// Рекорды. Турнирная таблица
+$Game.records = {
     get: function() {
+
+    },
+    add: function() {
+
+    },
+    delete: function() {
 
     },
 };
 
 $Game.cmd = {
-    execute: function(method = '', options) {
+    execute: async function(method = '', options) {
         // Выполнение команды на сервере
-        method = {method: $Game.methods.method};
+        method = {method: $Game.methods[method]};
         options = {...method, ...options};
-        return $.get('api', options);
+        return await $.get('api', options);
     },
-}
+};
