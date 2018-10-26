@@ -27,9 +27,10 @@ $(document).ready(async () => {
 
 	// Обновление сцены
 	updateScene((result = false) => {
-		if(result) {
-			ui.draw(struct);
-		}
+        if (result) {
+            ui.draw(struct);
+        }
+    });
 
 	async function updateScene(callback) {
         const answer = await server.getScene();

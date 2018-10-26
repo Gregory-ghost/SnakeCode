@@ -2,15 +2,18 @@
 
 function UI() {
     let $canvas = document.getElementById('game'),
+        $game = $('#game'),
         ctx = $canvas.getContext('2d'),
         w = 350,
         h = 350,
-        snakeSize = 10;
+        snakeSize = 10,
+        px = 'px';
 
 
     this.draw = (data = {}) => {
         w = data.map.sizeX;
         h = data.map.sizeY;
+        $game.attr({width: w + px, height: h + px});
 
         this.drawMap();
 
