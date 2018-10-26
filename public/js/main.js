@@ -2,6 +2,9 @@
 // Питон / Змея
 // ПИ 21
 
+
+
+/*
 var $Game = {};
 
 
@@ -219,6 +222,7 @@ $Game.records = {
     },
 };
 
+// Команды
 $Game.cmd = {
     execute: async function(method = '', options) {
         // Выполнение команды на сервере
@@ -227,3 +231,20 @@ $Game.cmd = {
         return await $.get('api', options);
     },
 };
+
+*/
+
+
+$(document).ready(async function(){
+	
+	const server = new Server();
+	
+	const answer = await server.changeDirection(12, 'left');
+	
+	if(answer.result) {
+		
+		console.log(answer.data);
+	}
+	
+	
+});

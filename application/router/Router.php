@@ -35,9 +35,25 @@ class Router {
 		//$COMMAND = $game->getCommand();
 		//print_r($this->game->executeCommand($COMMAND->CHANGE_DIRECTION, (object) [ 'id' => 12, 'direction' => 'left']));
 	}
+
+	// Хороший ответ, возвращаем данные
+	private function good($text) {
+	    return [
+	        'result' => false,
+            'data' => $text,
+        ];
+    }
+
+    // Плохой ответ, возвращаем ошибку
+    private function bad($text) {
+	    return [
+	        'result' => false,
+            'error' => $text,
+	        ];
+    }
 	
 	public function answer($options) {
-	    if ( $options ) {
+	    if ( $options and isset($options->method) ) {
 	        $method = $options->method;
             if ( $method ) {
                 $COMMAND = $this->game->getCommand();
@@ -45,19 +61,15 @@ class Router {
                     if ( $command === $method ) {
                         unset($options->method);
                         $result = $this->game->executeCommand($method, $options);
-                        if ($result) {
-                            return $result;
-//                            return $this->game->getStruct();
-                        }
-                        return false;
-                        // return $this->game->executeCommand($method, $options);
+                        return ($result) ?
+                            $this->good($this->game->getStruct()) :
+                            $this->bad('method wrong execute');
                     }
                 }
-
-                return $COMMAND;
+                return $this->bad('The method ' . $method . ' has no exist');
             }
         }
-		return false;
+		return $this->bad('You must set method param');
 	}	
 
 }

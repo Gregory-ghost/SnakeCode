@@ -230,9 +230,9 @@ class Logic {
     // Изменить направление удава
     public function changeDirection($options = null)
     {
-        if ($options) {
+        if ($options and isset($options->id)) {
             $snake = $this->getSnake($options->id);
-            if ( $snake && $options->direction ) {
+            if ( $snake && isset($options->direction) ) {
                 $snake->direction = $options->direction;
                 return true;
             }
