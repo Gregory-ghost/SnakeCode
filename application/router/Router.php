@@ -9,9 +9,10 @@ class Router {
 	public function __construct() {
 		$options = new stdClass();
 
-		$options->map = [
-			[0, 0, 0], [0, 0, 0], [0, 0, 0],
-		];
+		$options->map = (object) array (
+		    'sizeX' => 300,
+            'sizeY' => 300,
+        );
 		$options->snakes = [
 			(object) array (
 				'id' => 12,
@@ -39,7 +40,7 @@ class Router {
 	// Хороший ответ, возвращаем данные
 	private function good($text) {
 	    return [
-	        'result' => false,
+	        'result' => true,
             'data' => $text,
         ];
     }

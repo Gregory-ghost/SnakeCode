@@ -13,7 +13,6 @@ $Game.c = {
     game:           '#game',
     result:         '#result',
 };
-
 // Языковая поддержка
 $Game.message = {
     startGame:      'Начать игру',
@@ -235,16 +234,35 @@ $Game.cmd = {
 */
 
 
+
 $(document).ready(async function(){
-	
+
 	const server = new Server();
-	
-	const answer = await server.changeDirection(12, 'left');
-	
-	if(answer.result) {
-		
-		console.log(answer.data);
+	const dom = new DOM();
+	const ui = new UI();
+
+
+	dom.handleArrowKeys(async function(direction = 'left') {
+		if(direction) {
+            const answer = await server.changeDirection(12, direction);
+            if(answer.result) {
+                server.set(answer.data);
+            } else {
+            	error(answer.error);
+			}
+    	}
+	});
+
+	function error(error = "") {
+		console.log("Ошибка :: %s", error)
 	}
-	
-	
+
+
+	/*const answer = await server.changeDirection(12, 'left');
+
+	if(answer.result) {
+		console.log(answer.data);
+	}*/
+
+
 });
