@@ -10,8 +10,8 @@ class Router {
 		$options = new stdClass();
 
 		$options->map = (object) array (
-		    'sizeX' => 300,
-            'sizeY' => 300,
+		    'sizeX' => 900,
+            'sizeY' => 420,
         );
 		$options->snakes = [
 			(object) array (
@@ -19,11 +19,19 @@ class Router {
 				'name' => 'Vasya',
 				'body' => [
 					(object) array(
-						'x' => 0,
-						'y' => 0,
-					),
+                        'x' => 128,
+                        'y' => 0,
+                    ),
+                    (object) array(
+                        'x' => 64,
+                        'y' => 0,
+                    ),
+                    (object) array(
+                        'x' => 0,
+                        'y' => 0,
+                    ),
 				],
-				'direction' => 'left',
+				'direction' => 'right',
 				'eating' => 0,
 			),
 		];
