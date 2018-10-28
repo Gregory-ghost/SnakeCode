@@ -10,8 +10,9 @@ class Router {
 		$options = new stdClass();
 
 		$options->map = (object) array (
-		    'sizeX' => 900,
-            'sizeY' => 420,
+		    'sizeX' => 14,
+            'sizeY' => 7,
+            'sizeSnake' => 64,
         );
 		$options->snakes = [
 			(object) array (

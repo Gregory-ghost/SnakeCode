@@ -11,7 +11,7 @@ $(document).ready(async () => {
 
 	// Создание пользователя
 	struct.createUser(new User("Вася"));
-
+    ui.init();
 
 	dom.handleArrowKeys(async (direction = 'left') => {
         // Отлавливание нажатий
@@ -19,11 +19,20 @@ $(document).ready(async () => {
             const answer = await server.changeDirection(struct.user.id, direction);
             getAnswer(answer, (result) => {
                 if(result) {
+
                     //ui.draw(struct);
                 }
 			});
     	}
 	});
+
+    // Движение змеи
+    moveSnake(struct.user.id, (result = false) => {
+        if (result) {
+            debugger;
+            ui.draw(struct);
+        }
+    });
 
 	// Обновление сцены
 	updateScene((result = false) => {
@@ -32,8 +41,14 @@ $(document).ready(async () => {
         }
     });
 
+
 	async function updateScene(callback) {
         const answer = await server.getScene();
+        getAnswer(answer, callback);
+	}
+
+	async function moveSnake(id, callback) {
+        const answer = await server.moveSnake(id);
         getAnswer(answer, callback);
 	}
 
@@ -41,6 +56,7 @@ $(document).ready(async () => {
         if(answer.result) {
             struct.set(answer.data);
             callback(answer.result);
+            debugger;
         } else {
             error(answer.error);
             callback(answer.result);
@@ -50,13 +66,6 @@ $(document).ready(async () => {
 	function error(error = "") {
 		console.log("Ошибка :: %s", error)
 	}
-
-
-	/*const answer = await server.changeDirection(12, 'left');
-
-	if(answer.result) {
-		console.log(answer.data);
-	}*/
 
 
 });

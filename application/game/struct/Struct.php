@@ -11,7 +11,7 @@ class Struct {
 
     public function __construct($options = null)
     {
-        if ($options) {
+        if ($options && isset($options->map) && isset($options->snakes) && isset($options->foods)) {
             $this->map = $options->map;
             $this->snakes = [];
             foreach ($options->snakes as $snake) {

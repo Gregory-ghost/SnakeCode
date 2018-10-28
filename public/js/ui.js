@@ -5,11 +5,9 @@ function UI() {
         ctx = canvas.getContext('2d');
 
     let SIZE = {
-        w: 900,
-        h: 420,
-        padding: 10,
-        spriteW: 64,
-        spriteH: 64,
+        sizeX: 14,
+        sizeY: 7,
+        sizeSnake: 64,
         px: 'px',
     };
 
@@ -20,52 +18,26 @@ function UI() {
     };
     let sprites = {};
 
-
-    this.draw = (data = {}) => {
-        w = data.map.sizeX;
-        h = data.map.sizeY;
-        c.game.attr({width: SIZE.w + SIZE.px, height: SIZE.h + SIZE.px});
-
+    this.init = () => {
         this.setSpritesPath();
         sprites = this.loadImages();
+    };
+
+    this.draw = (data = {}) => {
+        SIZE.sizeX = data.map.sizeX;
+        SIZE.sizeY = data.map.sizeY;
+        SIZE.sizeSnake = data.map.sizeSnake;
+        c.game.attr({width: (SIZE.sizeX * SIZE.sizeSnake) + SIZE.px, height: (SIZE.sizeY * SIZE.sizeSnake) + SIZE.px});
+
+        this.clear();
         this.drawMap();
 
         this.drawSnakes(data.snakes);
     };
 
-    this.loadImages = () => {
-        // Подгрузка изображений
-        let newSprites = {
-            head: {
-                up: [192, 0],
-                down: [256, 64],
-                left: [192, 64],
-                right: [256, 0],
-            },
-            body: {
-                lineHoriz: [64, 0],
-                lineVert: [128, 64],
-                leftDown: [0, 64],
-                leftUp: [0, 0],
-                rightUp: [128, 0],
-                rightDown: [128, 128],
-            },
-            footer: {
-                up: [192, 128],
-                down: [256, 192],
-                right: [192, 192],
-                left: [256, 128],
-            },
-            eat: [0, 192],
-        };
-        return newSprites;
-    };
-
-    this.newImage = (link = '') => {
-        // Создание нового изображения
-        let image = new Image();
-        image.src = link;
-        return image;
+    this.clear = () => {
+        // Очистка сцены
+        ctx.clearRect(0, 0, (SIZE.sizeX * SIZE.sizeSnake), (SIZE.sizeY * SIZE.sizeSnake));
     };
 
     this.drawMap = () => {
@@ -73,7 +45,7 @@ function UI() {
 
         let sprite = new Image();
         sprite.src = c.pathImages + 'bg2.png';
-        sprite.addEventListener("load", function(){ ctx.drawImage(sprite, 0, 0, SIZE.w, SIZE.h)}, false);
+        sprite.addEventListener("load", function(){ ctx.drawImage(sprite, 0, 0, (SIZE.sizeX * SIZE.sizeSnake), (SIZE.sizeY * SIZE.sizeSnake))}, false);
     };
 
     this.drawSnakes = (snakes = {}) => {
@@ -92,7 +64,6 @@ function UI() {
         for(let i = 0; i < countItems; i++) {
             let snakePositionSprite = {},
                 item = body[i];
-            debugger;
             if(lastPosition.x) {
                 if(i > countItems-2) {
                     // Хвост
@@ -151,12 +122,47 @@ function UI() {
             let sprite = new Image();
             sprite.src = c.pathSprites + 'sprites.png';
             sprite.addEventListener("load", function(){
-                ctx.drawImage(sprite, options.xsprite, options.ysprite, SIZE.spriteW ,SIZE.spriteH, options.x+SIZE.padding, options.y+SIZE.padding, SIZE.spriteW, SIZE.spriteH);
+                ctx.drawImage(sprite, options.xsprite, options.ysprite, SIZE.sizeSnake ,SIZE.sizeSnake, options.x, options.y, SIZE.sizeSnake, SIZE.sizeSnake);
             }, false);
 
         }
     };
 
+
+    this.loadImages = () => {
+        // Подгрузка изображений
+        let newSprites = {
+            head: {
+                up: [192, 0],
+                down: [256, 64],
+                left: [192, 64],
+                right: [256, 0],
+            },
+            body: {
+                lineHoriz: [64, 0],
+                lineVert: [128, 64],
+                leftDown: [0, 64],
+                leftUp: [0, 0],
+                rightUp: [128, 0],
+                rightDown: [128, 128],
+            },
+            footer: {
+                up: [192, 128],
+                down: [256, 192],
+                right: [192, 192],
+                left: [256, 128],
+            },
+            eat: [0, 192],
+        };
+        return newSprites;
+    };
+
+    this.newImage = (link = '') => {
+        // Создание нового изображения
+        let image = new Image();
+        image.src = link;
+        return image;
+    };
 
     // Путь до спрайтов
     this.setSpritesPath = () => {
