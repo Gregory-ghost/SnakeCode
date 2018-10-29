@@ -1,58 +1,90 @@
 <?php
 
-require_once '../application/game/Game.php';
+require_once dirname(__DIR__).'/game/Game.php';
+require_once dirname(__DIR__).'/modules/DB.php';
 
 class Router {
 	
 	private $game;
-	
+	private $db;
+
 	public function __construct() {
 		$options = new stdClass();
 
-		$options->map = [
-			[0, 0, 0], [0, 0, 0], [0, 0, 0],
-		];
+		$options->map = (object) array (
+		    'sizeX' => 14,
+            'sizeY' => 7,
+            'sizeSnake' => 64,
+        );
 		$options->snakes = [
 			(object) array (
 				'id' => 12,
 				'name' => 'Vasya',
 				'body' => [
 					(object) array(
-						'x' => 0,
-						'y' => 0,
-					),
+                        'x' => 128,
+                        'y' => 0,
+                    ),
+                    (object) array(
+                        'x' => 64,
+                        'y' => 0,
+                    ),
+                    (object) array(
+                        'x' => 0,
+                        'y' => 0,
+                    ),
 				],
-				'direction' => 'left',
+				'direction' => 'right',
+				'eating' => 0,
 			),
 		];
 		$options->foods = [
 			(object) array( 'x' => 2, 'y' => 0, 'value' => 2 )
 		];
 
+		$this->db = new DB();
 		$this->game = new Game($options);
+
+		print_r($this->db->getUser('vasya'));
 
 		//$COMMAND = $game->getCommand();
 		//print_r($this->game->executeCommand($COMMAND->CHANGE_DIRECTION, (object) [ 'id' => 12, 'direction' => 'left']));
 	}
+
+	// Хороший ответ, возвращаем данные
+	private function good($text) {
+	    return [
+	        'result' => true,
+            'data' => $text,
+        ];
+    }
+
+    // Плохой ответ, возвращаем ошибку
+    private function bad($text) {
+	    return [
+	        'result' => false,
+            'error' => $text,
+	        ];
+    }
 	
 	public function answer($options) {
-		$method = $options->method;
-		if ( $method ) {
-			// �������� ������ ������
-			$COMMAND = $this->game->getCommand();
-			foreach ( $COMMAND as $command ) {
-				if ( $command === $method ) {
-					unset($options->method);
-					if ($this->game->executeCommand($method, $options) {
-						return $this->game->getStruct();
-					}
-					return $this->game->executeCommand($method, $options);
-				}
-			}
-			
-			return $COMMAND;
-		}
-		return false;
+	    if ( $options and isset($options->method) ) {
+	        $method = $options->method;
+            if ( $method ) {
+                $COMMAND = $this->game->getCommand();
+                foreach ( $COMMAND as $command ) {
+                    if ( $command === $method ) {
+                        unset($options->method);
+                        $result = $this->game->executeCommand($method, $options);
+                        return ($result) ?
+                            $this->good($this->game->getStruct()) :
+                            $this->bad('method wrong execute');
+                    }
+                }
+                return $this->bad('The method ' . $method . ' has no exist');
+            }
+        }
+		return $this->bad('You must set method param');
 	}	
 
 }
