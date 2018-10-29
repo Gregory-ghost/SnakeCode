@@ -3,52 +3,51 @@
 // ПИ 21
 
 $(document).ready(async () => {
+    const UPDATE_SCENE_INTERVAL = 100; // Интервал обращений к серверу в сек
 
 	const server = new Server();
-	const dom = new DOM();
 	const ui = new UI();
+	const graph = new Graph();
 	const struct = new Struct();
 
-	// Создание пользователя
-	struct.createUser(new User("Вася"));
-    ui.init();
 
-	dom.handleArrowKeys(async (direction = 'left') => {
-        // Отлавливание нажатий
-        if(direction) {
-            const answer = await server.changeDirection(struct.user.id, direction);
-            getAnswer(answer, (result) => {
-                if(result) {
+    function F1(callbacks) {
+        onInit = callbacks.onInit;
+        onMove = callbacks.onMove;
+        onGetScene = callbacks.onGetScene;
 
-                    //ui.draw(struct);
-                }
-			});
-    	}
-	});
 
-    // Движение змеи
-    moveSnake(struct.user.id, (result = false) => {
-        if (result) {
-            debugger;
-            ui.draw(struct);
-        }
+        onInit();
+        ui.handleArrowKeys(onMove);
+        var updateScene = setInterval(getScene(onGetScene), UPDATE_SCENE_INTERVAL * 1000);
+        getScene(onGetScene);
+    }
+
+    const f1 = new F1({
+
+        onInit: () => {
+            // Создание пользователя
+            struct.createUser(new User("Вася"));
+            graph.init();
+        },
+        onMove: async (direction) => {
+            // Нажатие на клавишу
+            if(direction) {
+                await server.changeDirection(struct.user.id, direction);
+            }
+        },
+        onGetScene: (result = false) => {
+            // Получение сцены
+            if (result) {
+                graph.draw(struct);
+            }
+        },
     });
 
-	// Обновление сцены
-	updateScene((result = false) => {
-        if (result) {
-            ui.draw(struct);
-        }
-    });
 
 
-	async function updateScene(callback) {
+	async function getScene(callback) {
         const answer = await server.getScene();
-        getAnswer(answer, callback);
-	}
-
-	async function moveSnake(id, callback) {
-        const answer = await server.moveSnake(id);
         getAnswer(answer, callback);
 	}
 
@@ -56,7 +55,6 @@ $(document).ready(async () => {
         if(answer.result) {
             struct.set(answer.data);
             callback(answer.result);
-            debugger;
         } else {
             error(answer.error);
             callback(answer.result);

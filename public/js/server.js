@@ -4,22 +4,8 @@ function Server() {
 		return $.get('api', { method: 'changeDirection', id, direction });
 	};
 
-    this.createSnake = function (options = {}) {
-    	let method = {method: 'createSnake'};
-    	options = options.concat(method);
-        return $.get('api', options);
-    };
-
-    this.moveSnake = function (id = 0) {
-        return $.get('api', { method: 'moveSnake', id });
-    };
-
 	this.getScene = function() {
 		return $.get('api', { method: 'getScene' });
-	};
-
-	this.updateScene = function() {
-		return $.get('api', { method: 'updateScene' });
 	};
 
 }
