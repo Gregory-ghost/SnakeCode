@@ -45,7 +45,19 @@ class Router {
 		$this->db = new DB();
 		$this->game = new Game($options);
 
-		print_r($this->db->getUser('vasya'));
+//		print_r($this->db->getUser('vasya'));
+        /*$optionSnake = array(
+            'user_id' => 1,
+            'direction' => 'right',
+            'body' => '[2,0]',
+        );
+		print_r($this->db->createSnake($optionSnake));*/
+        /*$optionUser = array(
+            'name' => 'Петя',
+            'login' => 'petya',
+            'password' => '111',
+        );
+        print_r($this->db->createUser($optionUser));*/
 
 		//$COMMAND = $game->getCommand();
 		//print_r($this->game->executeCommand($COMMAND->CHANGE_DIRECTION, (object) [ 'id' => 12, 'direction' => 'left']));

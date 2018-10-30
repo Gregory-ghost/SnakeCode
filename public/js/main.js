@@ -10,6 +10,34 @@ $(document).ready(async () => {
 	const graph = new Graph();
 	const struct = new Struct();
 
+	let user = struct.getUser();
+	if(!user.login) {
+	    graph.Router('LoginPage');
+
+    } else {
+	    graph.Router('GamePage');
+        const f1 = new F1({
+            onInit: () => {
+                // Создание пользователя
+                // struct.setUser(new User("Вася"));
+                graph.init();
+            },
+            onMove: async (direction) => {
+                // Нажатие на клавишу
+                if(direction) {
+                    await server.changeDirection(struct.user.id, direction);
+                }
+            },
+            onGetScene: (result = false) => {
+                // Получение сцены
+                if (result) {
+                    graph.draw(struct);
+                }
+            },
+        });
+
+    }
+
 
     function F1(callbacks) {
         onInit = callbacks.onInit;
@@ -22,29 +50,6 @@ $(document).ready(async () => {
         var updateScene = setInterval(getScene(onGetScene), UPDATE_SCENE_INTERVAL * 1000);
         getScene(onGetScene);
     }
-
-    const f1 = new F1({
-
-        onInit: () => {
-            // Создание пользователя
-            struct.createUser(new User("Вася"));
-            graph.init();
-        },
-        onMove: async (direction) => {
-            // Нажатие на клавишу
-            if(direction) {
-                await server.changeDirection(struct.user.id, direction);
-            }
-        },
-        onGetScene: (result = false) => {
-            // Получение сцены
-            if (result) {
-                graph.draw(struct);
-            }
-        },
-    });
-
-
 
 	async function getScene(callback) {
         const answer = await server.getScene();

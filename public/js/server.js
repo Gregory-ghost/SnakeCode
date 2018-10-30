@@ -16,7 +16,7 @@ function User(options = {}) {
 	this.id = createId();
 
 	function createId() {
-		return 12;
+		return 1;
 	}
 }
 
@@ -33,8 +33,9 @@ function Struct() {
         this.map = data.map;
 	};
 
-	this.createUser = function(user = {}) {
+	this.setUser = function(user = {}) {
 		this.user.name = user.name;
+		this.user.login = user.login;
 		this.user.id = user.id;
 	};
 
