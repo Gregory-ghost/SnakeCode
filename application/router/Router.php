@@ -11,39 +11,15 @@ class Router {
 	public function __construct() {
 		$options = new stdClass();
 
-		$options->map = (object) array (
-		    'sizeX' => 14,
-            'sizeY' => 7,
-            'sizeSnake' => 64,
-        );
-		$options->snakes = [
-			(object) array (
-				'id' => 12,
-				'name' => 'Vasya',
-				'body' => [
-					(object) array(
-                        'x' => 128,
-                        'y' => 0,
-                    ),
-                    (object) array(
-                        'x' => 64,
-                        'y' => 0,
-                    ),
-                    (object) array(
-                        'x' => 0,
-                        'y' => 0,
-                    ),
-				],
-				'direction' => 'right',
-				'eating' => 0,
-			),
-		];
-		$options->foods = [
-			(object) array( 'x' => 2, 'y' => 0, 'value' => 2 )
-		];
 
 		$this->db = new DB();
 		$this->game = new Game($options);
+
+        $optionUser = array(
+            'width' => 14,
+            'height' => 7,
+        );
+        print_r($this->db->createMap($optionUser));
 
 //		print_r($this->db->getUser('vasya'));
         /*$optionSnake = array(
