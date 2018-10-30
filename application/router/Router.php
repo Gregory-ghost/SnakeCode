@@ -15,11 +15,14 @@ class Router {
 		$this->db = new DB();
 		$this->game = new Game($options);
 
+        // TODO :: заполнить структуру из запросов к БД
+        // TODO :: сделать проверку может ли отдать структуру
+
         $optionUser = array(
             'width' => 14,
             'height' => 7,
         );
-        print_r($this->db->createMap($optionUser));
+//        print_r($this->db->createMap($optionUser));
 
 //		print_r($this->db->getUser('vasya'));
         /*$optionSnake = array(

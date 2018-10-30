@@ -14,6 +14,9 @@ class DB {
         $this->conn = new PDO('mysql:dbname='.$dbName.';host='.$host, $user, $pass);
     }
 
+    // TODO :: подписать функции, чтобы было понятнее
+    // TODO :: вынести пользователя в отдельный модуль
+
     /*User*/
     public function getUsers() {
         $query = 'SELECT * FROM user ORDER BY id DESC';
@@ -45,17 +48,29 @@ class DB {
         return $stm->fetchObject('stdClass');
     }
 
+    public function updateUserToken($id, $token) {
+        $token = bin2hex(random_bytes(32));
+
+        $sql = "UPDATE user SET token = :token WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':token', $token, PDO::PARAM_STR);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->fetchObject('stdClass');
+    }
+
     public function createUser($options) {
         $name = $options['name'];
         $login = $options['login'];
         $password = $options['password'];
+        $token = bin2hex(random_bytes(32));
 
-        $sql = "INSERT INTO user (name, login, password) VALUES (:name, :login, :password)";
+        $sql = "INSERT INTO user (name, login, password, token) VALUES (:name, :login, :password, :token)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':name', $name, PDO::PARAM_STR);
         $stmt->bindValue(':login', $login, PDO::PARAM_STR);
         $stmt->bindValue(':password', $password, PDO::PARAM_STR);
-        return $stmt->execute();
+        $stmt->bindValue(':token', $token, PDO::PARAM_STR);
+        return $stmt->fetchObject('stdClass');
     }
 
 

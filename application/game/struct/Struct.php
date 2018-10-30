@@ -8,6 +8,8 @@ class Struct {
     public $snakes;
     public $foods;
 
+    // TODO :: добавить таблицы system, user, snake_body, map
+
 
     public function __construct($options = null)
     {
