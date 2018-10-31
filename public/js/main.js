@@ -11,45 +11,65 @@ $(document).ready(async () => {
 	const struct = new Struct();
 
 	let user = struct.getUser();
-	if(!user.login) {
-	    graph.Router('LoginPage');
-
-    } else {
-	    graph.Router('GamePage');
-        const f1 = new F1({
-            onInit: () => {
-                // Создание пользователя
-                // struct.setUser(new User("Вася"));
-                graph.init();
-            },
-            onMove: async (direction) => {
-                // Нажатие на клавишу
-                if(direction) {
-                    await server.changeDirection(struct.user.id, direction);
-                }
-            },
-            onGetScene: (result = false) => {
-                // Получение сцены
-                if (result) {
-                    graph.draw(struct);
-                }
-            },
-        });
-
-    }
 
 
     function F1(callbacks) {
-        onInit = callbacks.onInit;
+        onLoginPage = callbacks.onLoginPage;
+        onLogin = callbacks.onLogin;
+        onSuccessLogin = callbacks.onSuccessLogin;
+        onErrorLogin = callbacks.onErrorLogin;
+
+        onGamePage = callbacks.onGamePage;
         onMove = callbacks.onMove;
         onGetScene = callbacks.onGetScene;
 
 
-        onInit();
-        ui.handleArrowKeys(onMove);
-        var updateScene = setInterval(getScene(onGetScene), UPDATE_SCENE_INTERVAL * 1000);
-        getScene(onGetScene);
+        if(!user.login) {
+            ui.Router('LoginPage', onLoginPage);
+        } else {
+            ui.Router('GamePage', onGamePage);
+        }
+
     }
+
+    const f1 = new F1({
+        onLoginPage: () => {
+            ui.handleLogin(onLogin);
+            //graph.init();
+        },
+        onLogin: async (options = {}) => {
+            const answer = await server.login(options);
+            getAnswer(answer, (result) => {
+                if(result) {
+
+                }
+            });
+        },
+        onRegisterPage: () => {
+            //graph.init();
+        },
+        onGamePage: () => {
+            graph.init();
+            ui.handleArrowKeys(onMove);
+            var updateScene = setInterval(getScene(onGetScene), UPDATE_SCENE_INTERVAL * 1000);
+            getScene(onGetScene);
+        },
+        onChangePage: () => {
+            //graph.init();
+        },
+        onMove: async (direction) => {
+            // Нажатие на клавишу
+            if(direction) {
+                await server.changeDirection(struct.user.id, direction);
+            }
+        },
+        onGetScene: (result = false) => {
+            // Получение сцены
+            if (result) {
+                graph.draw(struct);
+            }
+        },
+    });
 
 	async function getScene(callback) {
         const answer = await server.getScene();

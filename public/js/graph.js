@@ -21,8 +21,6 @@ function Graph() {
     let c = {
         game: $('#game'),
         gameWrapper: $('#game_wrapper'),
-        loginPage: $('.loginPage'),
-        gamePage: $('.gamePage'),
         pathSprites: '/public/img/sprite/',
         pathImages: '/public/img/',
     };
@@ -31,22 +29,6 @@ function Graph() {
     this.init = () => {
         this.setSpritesPath();
         sprites = this.loadImages();
-    };
-
-    this.Router = (page = '') => {
-        switch(page) {
-            case 'LoginPage':
-                c.gameWrapper.find('.page').addClass('hidden');
-                c.loginPage.removeClass('hidden');
-                break;
-            case 'RegisterPage':
-
-                break;
-            case 'GamePage':
-                console.log('GamePage');
-
-                break;
-        }
     };
 
     this.draw = (data = {}) => {
