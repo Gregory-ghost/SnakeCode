@@ -8,6 +8,7 @@ function UI() {
         registerPage: $('.registerPage'),
         gamePage: $('.gamePage'),
         loginForm: $('#loginForm'),
+        registerForm: $('#registerForm'),
     };
 
 
@@ -54,30 +55,49 @@ function UI() {
     };
 
     this.handleLogin = (callback) => {
-        c.loginForm.on("submit", function (event) {
+        c.loginForm.on("submit", (event) => {
             event.preventDefault();
             callback({
-                login: $("#inputLogin").val(),
-                password: $("#inputPassword").val(),
-            });
-
-            $.ajax({
-                type: "POST",
-                url: "/api/index.php",
-                data: {
-                    login: $("#inputLogin").val(),
-                    password: $("#inputPassword").val(),
-                    method: 'auth',
-                },
-                dataType: "json",
-                success: (data) => {
-                    callback(data)
-                },
-                error: () => {
-                    callback("error")
-                }
+                login: c.loginForm.find("input[name='login']").val(),
+                password: c.loginForm.find("input[name='password']").val(),
             });
         });
-    }
+    };
+
+    this.handleClickRegisterBtn = (callback) => {
+        c.loginPage.find('.registerLink').bind("click", (event) => {
+            event.preventDefault();
+            callback();
+            return false;
+
+        })
+    };
+
+    this.handleRegister = (callback) => {
+        c.registerForm.on("submit", (event) => {
+            event.preventDefault();
+            callback({
+                name: c.registerForm.find("input[name='name']").val(),
+                login: c.registerForm.find("input[name='login']").val(),
+                password: c.registerForm.find("input[name='password']").val(),
+            });
+        });
+    };
+
+    this.handleClickLoginBtn = (callback) => {
+        c.registerPage.find('.loginLink').bind("click", (event) => {
+            event.preventDefault();
+            callback();
+            return false;
+
+        })
+    };
+
+    this.showMessage = (msg) => {
+        if(msg) {
+            console.log(msg);
+            alert(msg)
+        }
+    };
 
 }

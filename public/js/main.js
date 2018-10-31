@@ -18,6 +18,13 @@ $(document).ready(async () => {
         onLogin = callbacks.onLogin;
         onSuccessLogin = callbacks.onSuccessLogin;
         onErrorLogin = callbacks.onErrorLogin;
+        handleClickRegisterBtn = callbacks.handleClickRegisterBtn;
+
+        onRegisterPage = callbacks.onRegisterPage;
+        onRegister = callbacks.onRegister;
+        onSuccessRegister = callbacks.onSuccessRegister;
+        onErrorRegister = callbacks.onErrorRegister;
+        handleClickLoginBtn = callbacks.handleClickLoginBtn;
 
         onGamePage = callbacks.onGamePage;
         onMove = callbacks.onMove;
@@ -35,19 +42,49 @@ $(document).ready(async () => {
     const f1 = new F1({
         onLoginPage: () => {
             ui.handleLogin(onLogin);
-            //graph.init();
+            ui.handleClickRegisterBtn(handleClickRegisterBtn);
         },
         onLogin: async (options = {}) => {
             const answer = await server.login(options);
-            getAnswer(answer, (result) => {
-                if(result) {
+            if(answer.result) {
+                onSuccessLogin(answer.data);
+            } else {
+                onErrorLogin(answer.error);
+            }
+        },
+        onSuccessLogin: (data = {}) => {
+            ui.showMessage(data);
+        },
+        onErrorLogin: (err) => {
+            ui.showMessage(err);
+        },
+        handleClickRegisterBtn: (err) => {
+            ui.Router('RegisterPage', onRegisterPage);
+        },
 
-                }
-            });
-        },
         onRegisterPage: () => {
-            //graph.init();
+            ui.handleRegister(onRegister);
+            ui.handleClickLoginBtn(handleClickLoginBtn);
         },
+        onRegister: async (options = {}) => {
+            const answer = await server.register(options);
+            if(answer.result) {
+                onSuccessRegister(answer.data);
+            } else {
+                onErrorRegister(answer.error);
+            }
+        },
+        onSuccessRegister: (data = {}) => {
+            ui.showMessage(data);
+        },
+        onErrorRegister: (err) => {
+            ui.showMessage(err);
+        },
+        handleClickLoginBtn: (err) => {
+            ui.Router('LoginPage', onLoginPage);
+        },
+
+
         onGamePage: () => {
             graph.init();
             ui.handleArrowKeys(onMove);

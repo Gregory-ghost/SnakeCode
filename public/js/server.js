@@ -3,6 +3,12 @@ function Server() {
 	this.changeDirection = function (id = 0, direction = 'left') {
 		return $.get('api', { method: 'changeDirection', id, direction });
 	};
+	this.login = function (options) {
+		return $.get('api', { method: 'login', options });
+	};
+	this.register = function (options) {
+		return $.get('api', { method: 'register', options });
+	};
 
 	this.getScene = function() {
 		return $.get('api', { method: 'getScene' });
