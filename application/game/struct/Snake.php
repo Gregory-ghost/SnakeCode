@@ -3,22 +3,28 @@
 class Snake {
     public $id;
     public $name;
-    public $body;
     public $direction;
+    public $eating;
 
     public function __construct($options = null)
     {
+        if ($options) {
+            if(isset($options->name)) {
+                $this->name = $options->name;
 
-        // TODO :: переделать запросы, вынести body
+            }
+            if(isset($options->direction)) {
+                $this->direction = $options->direction;
 
+            }
+            if(isset($options->id)) {
+                $this->id = $options->id;
 
-        if ($options and isset($options->id) and isset($options->name)
-        and isset($options->body) and isset($options->direction) and isset($options->eating)) {
-            $this->id = $options->id;
-            $this->name = $options->name;
-            $this->body = $options->body;
-            $this->direction = $options->direction;
-            $this->eating = $options->eating;
+            }
+            if(isset($options->eating)) {
+                $this->eating = $options->eating;
+
+            }
         }
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-class Food {
+class SnakeBody {
+    public $id;
+    public $snake_id;
     public $x;
     public $y;
-    public $type;
-    public $value;
 
     public function __construct($options = null)
     {
@@ -17,12 +17,12 @@ class Food {
                 $this->y = $options->y;
 
             }
-            if(isset($options->type)) {
-                $this->type = $options->type;
+            if(isset($options->id)) {
+                $this->id = $options->id;
 
             }
-            if(isset($options->value)) {
-                $this->value = $options->value;
+            if(isset($options->snake_id)) {
+                $this->snake_id = $options->snake_id;
 
             }
         }

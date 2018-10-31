@@ -19,23 +19,22 @@ function Server() {
 
 function User(options = {}) {
 	this.name = options.name;
-	this.id = createId();
+	this.login = options.login;
+	this.password = options.password;
 
-	function createId() {
-		return 1;
-	}
 }
 
 function Struct() {
 	this.foods = [];
 	this.snakes = [];
-	this.map = {};
+	this.map = [];
+	this.snakesBody = [];
 	this.user = {};
 
 	this.set = function(data = {}) {
-        let $this = this;
 		this.foods = data.foods;
         this.snakes = data.snakes;
+        this.snakesBody = data.snakesBody;
         this.map = data.map;
 	};
 

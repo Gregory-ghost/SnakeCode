@@ -9,14 +9,30 @@ class Router {
 	private $db;
 
 	public function __construct() {
-		$options = new stdClass();
+        $this->db = new DB();
 
 
-		$this->db = new DB();
+        $options = new stdClass();
+
+        // Получение из Базы данных
+        $options->maps = $this->db->getMaps();
+        $options->foods = $this->db->getFoods();
+        $options->snakes = $this->db->getSnakes();
+        $options->users = $this->db->getUsers();
+        $options->snakesBody = $this->db->getSnakesBody();
+        $options->system = $this->db->getSystem();
+
 		$this->game = new Game($options);
 
-        // TODO :: заполнить структуру из запросов к БД
-        // TODO :: сделать проверку может ли отдать структуру
+        // TODO :: сделать проверку может ли отдать структуру по таймауту
+        // TODO :: как из логики обратиться к запросам из бд
+
+
+
+
+
+
+        print_r($this->game);
 
         $optionUser = array(
             'width' => 14,

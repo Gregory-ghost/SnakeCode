@@ -54,6 +54,7 @@ $(document).ready(async () => {
         },
         onSuccessLogin: (data = {}) => {
             ui.showMessage(data);
+            struct.setUser(data);
         },
         onErrorLogin: (err) => {
             ui.showMessage(err);
@@ -90,9 +91,6 @@ $(document).ready(async () => {
             ui.handleArrowKeys(onMove);
             var updateScene = setInterval(getScene(onGetScene), UPDATE_SCENE_INTERVAL * 1000);
             getScene(onGetScene);
-        },
-        onChangePage: () => {
-            //graph.init();
         },
         onMove: async (direction) => {
             // Нажатие на клавишу

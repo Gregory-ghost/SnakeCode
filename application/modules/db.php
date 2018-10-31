@@ -8,13 +8,12 @@ class DB {
     public function __construct() {
         $host = 'localhost';
         $dbName = 'snake_of_pi';
-        $user = 'root';
-        $pass = '';
+        $user = 'mysql';
+        $pass = 'mysql';
 
         $this->conn = new PDO('mysql:dbname='.$dbName.';host='.$host, $user, $pass);
     }
 
-    // TODO :: подписать функции, чтобы было понятнее
     // TODO :: вынести пользователя в отдельный модуль
 
     /*User*/
@@ -125,6 +124,10 @@ class DB {
     }
 
     /*Snake_body*/
+    public function getSnakesBody() {
+        $query = 'SELECT * FROM snake_body';
+        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
+    }
     // Получить тело питона
     public function getSnakeBody($id) {
         $sql = 'SELECT * FROM snake_body WHERE snake_id = :id';
@@ -181,6 +184,10 @@ class DB {
 
 
     /*System*/
+    public function getSystem() {
+        $query = 'SELECT * FROM system';
+        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
+    }
     // Получить систему по имени
     public function getSystemByName($name) {
         $sql = 'SELECT * FROM system WHERE name = :name';

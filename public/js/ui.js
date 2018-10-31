@@ -96,7 +96,7 @@ function UI() {
     this.showMessage = (msg) => {
         if(msg) {
             console.log(msg);
-            alert(msg)
+            //alert(msg)
         }
     };
 
