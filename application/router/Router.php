@@ -32,7 +32,7 @@ class Router {
 
 
 
-        print_r($this->game);
+//        print_r($this->game);
 
         $optionUser = array(
             'width' => 14,
@@ -44,7 +44,6 @@ class Router {
         /*$optionSnake = array(
             'user_id' => 1,
             'direction' => 'right',
-            'body' => '[2,0]',
         );
 		print_r($this->db->createSnake($optionSnake));*/
         /*$optionUser = array(
@@ -52,7 +51,7 @@ class Router {
             'login' => 'petya',
             'password' => '111',
         );
-        print_r($this->db->createUser($optionUser));*/
+        print_r($this->db->saveUser($optionUser));*/
 
 		//$COMMAND = $game->getCommand();
 		//print_r($this->game->executeCommand($COMMAND->CHANGE_DIRECTION, (object) [ 'id' => 12, 'direction' => 'left']));

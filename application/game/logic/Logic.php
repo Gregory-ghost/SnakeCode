@@ -1,10 +1,49 @@
 <?php
 
+require_once dirname(__DIR__).'/../modules/DB.php';
+
 class Logic {
     private $struct;
+    private $db;
 
     public function __construct($struct) {
         $this->struct = $struct;
+        $this->db = new DB();
+    }
+
+
+    // Авторизация
+    public function login($options = null) {
+        if ( $options ) {
+            if (isset($options->login)) {
+                $login = $options->login;
+                $res = $this->db->getUserByLogin($login);
+                if($res) {
+                    if(isset($options->password)) {
+                        $password = $options->password;
+                        $res = $this->db->getUser($login, $password);
+                        return $res;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    // Регистрация
+    public function register($options = null) {
+        if ( $options ) {
+            if (isset($options->login)) {
+                $login = $options->login;
+                $res = $this->db->getUserByLogin($login);
+                if(!$res) {
+                    if(isset($options->password) && isset($options->name)) {
+                        $res = $this->db->saveUser($options);
+                        return $res;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /*
