@@ -14,6 +14,7 @@ $(document).ready(async () => {
 
 
     function F1(callbacks) {
+        isLoggedIn = callbacks.isLoggedIn;
         onLoginPage = callbacks.onLoginPage;
         onLogin = callbacks.onLogin;
         onSuccessLogin = callbacks.onSuccessLogin;
@@ -31,30 +32,38 @@ $(document).ready(async () => {
         onGetScene = callbacks.onGetScene;
 
 
-        if(!user.login) {
-            ui.Router('LoginPage', onLoginPage);
-        } else {
-            ui.Router('GamePage', onGamePage);
-        }
+        isLoggedIn();
 
     }
 
     const f1 = new F1({
+        isLoggedIn: async () => {
+            const answer = await server.getCurrentUser();
+            let isLoggedIn = answer.result;
+            if(isLoggedIn) {
+                struct.setUser(answer.data["myUser"]);
+                ui.Router('GamePage', onGamePage);
+            } else {
+                ui.Router('LoginPage', onLoginPage);
+            }
+        },
         onLoginPage: () => {
             ui.handleLogin(onLogin);
             ui.handleClickRegisterBtn(handleClickRegisterBtn);
         },
         onLogin: async (options = {}) => {
             const answer = await server.login(options);
+            console.log(options);
             if(answer.result) {
+                struct.setUser(options);
                 onSuccessLogin(answer.data);
             } else {
                 onErrorLogin(answer.error);
             }
         },
         onSuccessLogin: (data = {}) => {
+            ui.Router('GamePage', onGamePage);
             ui.showMessage(data);
-            struct.setUser(data);
         },
         onErrorLogin: (err) => {
             ui.showMessage(err);
@@ -70,12 +79,14 @@ $(document).ready(async () => {
         onRegister: async (options = {}) => {
             const answer = await server.register(options);
             if(answer.result) {
+                struct.setUser(options);
                 onSuccessRegister(answer.data);
             } else {
                 onErrorRegister(answer.error);
             }
         },
         onSuccessRegister: (data = {}) => {
+            ui.Router('GamePage', onGamePage);
             ui.showMessage(data);
         },
         onErrorRegister: (err) => {

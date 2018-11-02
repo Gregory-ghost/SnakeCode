@@ -6,6 +6,7 @@ require_once 'Food.php';
 require_once 'User.php';
 require_once 'SnakeBody.php';
 require_once 'System.php';
+require_once 'MyUser.php';
 
 class Struct {
     public $map;
@@ -14,6 +15,7 @@ class Struct {
     public $users;
     public $snakesBody;
     public $system;
+    public $myUser;
 
     // TODO :: добавить таблицы system, user, snake_body, map
 
@@ -56,6 +58,9 @@ class Struct {
                 foreach ($options->system as $system) {
                     $this->system[] = new System($system);
                 }
+            }
+            if (isset($options->myUser)) {
+                $this->myUser = new MyUser($options->myUser);
             }
         }
      }

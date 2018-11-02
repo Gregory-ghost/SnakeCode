@@ -49,8 +49,33 @@ class Logic {
         if(!$res) return false;
 
         $this->startSession();
-        $_SESSION['token'] = $res->token;
-        return true;
+        $_SESSION['token_id'] = $res->token;
+        // Сохранение пользователя для дальнейшней работы
+        $res4 = $this->saveUserInStruct($res->token);
+        return $res4;
+    }
+
+    private function saveUserInStruct($token) {
+        if ( $token ) {
+            $res = $this->db->getUserByToken($token);
+            if(!$res) return false;
+            $options = (object) array(
+                'id'    => $res->id,
+                'login' => $res->login,
+                'name'  => $res->name,
+            );
+            $this->struct->myUser = $options;
+            return true;
+        }
+        return false;
+    }
+
+    public function getCurrentUser() {
+        if ( session_id() ) {
+            $token = $_SESSION['token_id'];
+            return $this->saveUserInStruct($token);
+        }
+        return false;
     }
 
     // Авторизация
@@ -71,10 +96,12 @@ class Logic {
                     if($res2) {
                         $time = time();
                         if($time > $res2->expiredAt) {
-                            return $this->updateUserToken($res2->id);
+                            return $this->updateUserToken($res->id);
+                        } else {
+                            return true;
                         }
                     } else {
-                        return $this->updateUserToken($res2->id);
+                        return $this->updateUserToken($res->id);
                     }
 
 

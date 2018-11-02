@@ -61,7 +61,8 @@ class DB {
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':token', $token, PDO::PARAM_STR);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        return $stmt->fetchObject('stdClass');
+        $res = $stmt->execute();
+        return $res;
     }
     //Создать пользователя
     public function saveUser($options) {
@@ -74,8 +75,7 @@ class DB {
         $stmt->bindValue(':name', $name, PDO::PARAM_STR);
         $stmt->bindValue(':login', $login, PDO::PARAM_STR);
         $stmt->bindValue(':password', $password, PDO::PARAM_STR);
-        $res =  $stmt->fetchObject('stdClass');
-
+        $res = $stmt->execute();
         return $res;
     }
     public function createUserToken($id, $token) {
@@ -87,9 +87,13 @@ class DB {
         );
         $res = $this->createToken($options);
         if(!$res) return false;
+        $res2 = $this->getTokenByToken($token);
+        if(!$res2) return false;
 
-        $res2 = $this->updateUserToken($id, $res->id);
-        return $res2;
+        $res3 = $this->updateUserToken($id, $res2->id);
+        if(!$res3) return false;
+
+        return $res3;
     }
 
 
@@ -101,21 +105,20 @@ class DB {
         $user_id = $options['user_id'];
         $token = $options['token'];
         $expiredAt = $options['expiredAt'];
-        $createdAt = time();
 
-        $sql = "INSERT INTO user_access_token (user_id, token, expiredAt, createdAt) VALUES (:user_id, :token, :expiredAt, :createdAt)";
+        $sql = "INSERT INTO user_access_token (user_id, token, expiredAt) VALUES (:user_id, :token, :expiredAt)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR);
         $stmt->bindValue(':token', $token, PDO::PARAM_STR);
         $stmt->bindValue(':expiredAt', $expiredAt, PDO::PARAM_STR);
-        $stmt->bindValue(':createdAt', $createdAt, PDO::PARAM_STR);
-        return $stmt->fetchObject('stdClass');
+        $res = $stmt->execute();
+        return $res;
     }
     //Получить токен пользователя по token
     public function getTokenByToken($token) {
         $sql = 'SELECT * FROM user_access_token WHERE token = :token ORDER BY id DESC LIMIT 1';
         $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':token', $token, PDO::PARAM_INT);
+        $stm->bindValue(':token', $token, PDO::PARAM_STR);
         $stm->execute();
         return $stm->fetchObject('stdClass');
     }
@@ -169,21 +172,24 @@ class DB {
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->bindParam(':direction', $direction, PDO::PARAM_STR);
-        return $stmt->execute();
+        $res = $stmt->execute();
+        return $res;
     }
     // Удалить питона
     public function deleteSnake($id) {
         $sql = "DELETE FROM snake WHERE id =  :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $res = $stmt->execute();
+        return $res;
     }
     // Удалить питона пользователя
     public function deleteUserSnakes($user_id) {
         $sql = "DELETE FROM snake WHERE user_id =  :user_id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $res = $stmt->execute();
+        return $res;
     }
 
     /*Snake_body*/
@@ -210,21 +216,24 @@ class DB {
         $stmt->bindParam(':snake_id', $snake_id, PDO::PARAM_INT);
         $stmt->bindParam(':x', $x, PDO::PARAM_INT);
         $stmt->bindParam(':y', $y, PDO::PARAM_INT);
-        return $stmt->execute();
+        $res = $stmt->execute();
+        return $res;
     }
     // Удалить тело питона
     public function deleteSnakeBody($id) {
         $sql = "DELETE FROM snake_body WHERE id =  :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $res = $stmt->execute();
+        return $res;
     }
     // Удалить часть тела питона
     public function deleteSnakeBodyFromSnake($id) {
         $sql = "DELETE FROM snake_body WHERE snake_id =  :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $res = $stmt->execute();
+        return $res;
     }
 
 
@@ -241,7 +250,8 @@ class DB {
         $sql = "DELETE FROM food WHERE id =  :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $res = $stmt->execute();
+        return $res;
     }
 
 
@@ -264,7 +274,8 @@ class DB {
         $stmt = $this->conn->prepare("INSERT INTO system (name, value) VALUES (:name, :value)");
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
         $stmt->bindParam(':value', $value, PDO::PARAM_STR);
-        return $stmt->execute();
+        $res = $stmt->execute();
+        return $res;
     }
 
     /*Map*/
@@ -290,7 +301,8 @@ class DB {
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':width', $width, PDO::PARAM_INT);
         $stmt->bindValue(':height', $height, PDO::PARAM_INT);
-        return $stmt->execute();
+        $res = $stmt->execute();
+        return $res;
     }
 
 

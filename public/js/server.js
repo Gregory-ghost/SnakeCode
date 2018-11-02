@@ -3,24 +3,25 @@ function Server() {
 	this.changeDirection = function (id = 0, direction = 'left') {
 		return $.get('api', { method: 'changeDirection', id, direction });
 	};
-	this.login = function (options) {
-		return $.get('api', { method: 'login', options });
+	this.login = function (options = {}) {
+		return $.get('api', { method: 'login', ...options });
 	};
 	this.register = function (options) {
-		return $.get('api', { method: 'register', options });
+		return $.get('api', { method: 'register', ...options });
+	};
+	this.getCurrentUser = function() {
+		return $.get('api', { method: 'getCurrentUser' });
 	};
 
-	this.getScene = function() {
-		return $.get('api', { method: 'getScene' });
-	};
+    this.getScene = function() {
+        return $.get('api', { method: 'getScene' });
+    };
 
 }
 
 
 function User(options = {}) {
-	this.name = options.name;
 	this.login = options.login;
-	this.password = options.password;
 
 }
 
@@ -39,9 +40,7 @@ function Struct() {
 	};
 
 	this.setUser = function(user = {}) {
-		this.user.name = user.name;
 		this.user.login = user.login;
-		this.user.id = user.id;
 	};
 
 	this.getUser = function() {
