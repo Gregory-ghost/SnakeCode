@@ -12,20 +12,6 @@ class Logic {
         $this->db = new DB();
     }
 
-
-    private function startSession() {
-        if ( session_id() ) return true;
-        else return session_start();
-    }
-    private function destroySession() {
-        if ( session_id() ) {
-            // Если есть активная сессия, удаляем куки сессии,
-            setcookie(session_name(), session_id(), time()-60*60*24);
-            // и уничтожаем сессию
-            session_unset();
-            session_destroy();
-        }
-    }
     private function random_string($length = 64) {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
