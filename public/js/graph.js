@@ -12,8 +12,8 @@ function Graph() {
         ctx = canvas.getContext('2d');
 
     let SIZE = {
-        sizeX: 14,
-        sizeY: 7,
+        width: 14,
+        height: 7,
         sizeSnake: 64,
         px: 'px',
     };
@@ -32,10 +32,10 @@ function Graph() {
     };
 
     this.draw = (data = {}) => {
-        SIZE.sizeX = data.map.sizeX;
-        SIZE.sizeY = data.map.sizeY;
-        SIZE.sizeSnake = data.map.sizeSnake;
-        c.game.attr({width: (SIZE.sizeX * SIZE.sizeSnake) + SIZE.px, height: (SIZE.sizeY * SIZE.sizeSnake) + SIZE.px});
+        SIZE.width = data.maps[0].width;
+        SIZE.height = data.maps[0].height;
+        SIZE.sizeSnake = data.maps[0].sizeSnake;
+        c.game.attr({width: (SIZE.width * SIZE.sizeSnake) + SIZE.px, height: (SIZE.height * SIZE.sizeSnake) + SIZE.px});
 
         this.clear();
         this.drawMap();
@@ -45,7 +45,7 @@ function Graph() {
 
     this.clear = () => {
         // Очистка сцены
-        ctx.clearRect(0, 0, (SIZE.sizeX * SIZE.sizeSnake), (SIZE.sizeY * SIZE.sizeSnake));
+        ctx.clearRect(0, 0, (SIZE.width * SIZE.sizeSnake), (SIZE.height * SIZE.sizeSnake));
     };
 
     this.drawMap = () => {
@@ -53,7 +53,7 @@ function Graph() {
 
         let sprite = new Image();
         sprite.src = c.pathImages + 'bg2.png';
-        sprite.addEventListener("load", function(){ ctx.drawImage(sprite, 0, 0, (SIZE.sizeX * SIZE.sizeSnake), (SIZE.sizeY * SIZE.sizeSnake))}, false);
+        sprite.addEventListener("load", function(){ ctx.drawImage(sprite, 0, 0, (SIZE.width * SIZE.sizeSnake), (SIZE.height * SIZE.sizeSnake))}, false);
     };
 
     this.drawSnakes = (snakes = {}) => {

@@ -7,6 +7,7 @@ class Logic {
     private $db;
 
     public function __construct($struct) {
+        $this->startSession();
         $this->struct = $struct;
         $this->db = new DB();
     }
@@ -98,7 +99,11 @@ class Logic {
                         if($time > $res2->expiredAt) {
                             return $this->updateUserToken($res->id);
                         } else {
-                            return true;
+                            $res3 = $this->startSession();
+                            if(!$res3) {}
+                            $_SESSION['token_id'] = $res->token;
+                            // Сохранение пользователя для дальнейшней работы
+                            return $this->saveUserInStruct($res->token);
                         }
                     } else {
                         return $this->updateUserToken($res->id);

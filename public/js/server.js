@@ -28,7 +28,7 @@ function User(options = {}) {
 function Struct() {
 	this.foods = [];
 	this.snakes = [];
-	this.map = [];
+	this.maps = [];
 	this.snakesBody = [];
 	this.user = {};
 
@@ -36,11 +36,11 @@ function Struct() {
 		this.foods = data.foods;
         this.snakes = data.snakes;
         this.snakesBody = data.snakesBody;
-        this.map = data.map;
+        this.maps = data.maps;
 	};
 
 	this.setUser = function(user = {}) {
-		this.user.login = user.login;
+		this.user = user;
 	};
 
 	this.getUser = function() {

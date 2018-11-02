@@ -124,6 +124,7 @@ $(document).ready(async () => {
 
 	function getAnswer(answer = {}, callback) {
         if(answer.result) {
+            console.log(answer.data);
             struct.set(answer.data);
             callback(answer.result);
         } else {
