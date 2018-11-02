@@ -24,7 +24,7 @@ class DB {
     }
     //Получить пользователя по логину
     public function getUserByLogin($login) {
-        $sql = 'SELECT login FROM user WHERE login = :login ORDER BY id DESC LIMIT 1';
+        $sql = 'SELECT name, login, token FROM user WHERE login = :login ORDER BY id DESC LIMIT 1';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':login', $login, PDO::PARAM_STR);
         $stm->execute();
@@ -57,8 +57,6 @@ class DB {
     }
     // Изменить токен пользователя
     public function updateUserToken($id, $token) {
-        $token = bin2hex(random_bytes(32));
-
         $sql = "UPDATE user SET token = :token WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':token', $token, PDO::PARAM_STR);
@@ -70,20 +68,36 @@ class DB {
         $name = $options['name'];
         $login = $options['login'];
         $password = $options['password'];
-        $token = bin2hex(random_bytes(32));
 
-        $sql = "INSERT INTO user (name, login, password, token) VALUES (:name, :login, :password, :token)";
+        $sql = "INSERT INTO user (name, login, password) VALUES (:name, :login, :password)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':name', $name, PDO::PARAM_STR);
         $stmt->bindValue(':login', $login, PDO::PARAM_STR);
         $stmt->bindValue(':password', $password, PDO::PARAM_STR);
-        $stmt->bindValue(':token', $token, PDO::PARAM_STR);
-        return $stmt->fetchObject('stdClass');
+        $res =  $stmt->fetchObject('stdClass');
+
+        return $res;
     }
+    public function createUserToken($id, $token) {
+        $expiredAt = time() + (7 * 24 * 60 * 60); // Week
+        $options = array(
+            'user_id' => $id,
+            'token' => $token,
+            'expiredAt' => $expiredAt,
+        );
+        $res = $this->createToken($options);
+        if(!$res) return false;
+
+        $res2 = $this->updateUserToken($id, $res->id);
+        return $res2;
+    }
+
 
     /*User_access_token*/
     //Создать токен пользователя
     public function createToken($options) {
+        if(!$options) return false;
+
         $user_id = $options['user_id'];
         $token = $options['token'];
         $expiredAt = $options['expiredAt'];
@@ -100,6 +114,14 @@ class DB {
     //Получить токен пользователя по token
     public function getTokenByToken($token) {
         $sql = 'SELECT * FROM user_access_token WHERE token = :token ORDER BY id DESC LIMIT 1';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':token', $token, PDO::PARAM_INT);
+        $stm->execute();
+        return $stm->fetchObject('stdClass');
+    }
+    //Получить токен пользователя по tokenId
+    public function getTokenByTokenId($token) {
+        $sql = 'SELECT * FROM user_access_token WHERE id = :token ORDER BY id DESC LIMIT 1';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':token', $token, PDO::PARAM_INT);
         $stm->execute();

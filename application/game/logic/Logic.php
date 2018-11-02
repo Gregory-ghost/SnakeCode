@@ -12,6 +12,47 @@ class Logic {
     }
 
 
+    private function startSession() {
+        if ( session_id() ) return true;
+        else return session_start();
+    }
+    private function destroySession() {
+        if ( session_id() ) {
+            // Если есть активная сессия, удаляем куки сессии,
+            setcookie(session_name(), session_id(), time()-60*60*24);
+            // и уничтожаем сессию
+            session_unset();
+            session_destroy();
+        }
+    }
+    private function random_string($length = 64) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
+    private function genericToken() {
+        return $this->random_string(64);
+    }
+
+    private function updateUserToken($id) {
+        if(!$id) return false;
+        $token = $this->genericToken();
+        $res3 = $this->db->createUserToken($id, $token);
+        if(!$res3) return false;
+        // Получение токена
+        $res = $this->db->getUserById($id);
+        if(!$res) return false;
+
+        $this->startSession();
+        $_SESSION['token'] = $res->token;
+        return true;
+    }
+
     // Авторизация
     public function login($options = null) {
         if ( $options ) {
@@ -19,11 +60,24 @@ class Logic {
                 $login = $options->login;
                 $res = $this->db->getUserByLogin($login);
                 if($res) {
-                    if(isset($options->password)) {
-                        $password = $options->password;
-                        $res = $this->db->getUser($login, $password);
-                        return $res;
+                    if(!isset($options->password)) return false;
+                    $password = $options->password;
+                    // Получение пользователя
+                    $res = $this->db->getUser($login, $password);
+                    if(!$res) return false;
+
+                    // Получение токена по TokenId
+                    $res2 = $this->db->getTokenByTokenId($res->token);
+                    if($res2) {
+                        $time = time();
+                        if($time > $res2->expiredAt) {
+                            return $this->updateUserToken($res2->id);
+                        }
+                    } else {
+                        return $this->updateUserToken($res2->id);
                     }
+
+
                 }
             }
         }
@@ -38,7 +92,13 @@ class Logic {
                 if(!$res) {
                     if(isset($options->password) && isset($options->name)) {
                         $res = $this->db->saveUser($options);
-                        return $res;
+                        if(!$res) return false;
+
+                        // Получение пользователя
+                        $res2 = $this->db->getUserByLogin($login);
+                        if(!$res2) return false;
+
+                        return $this->updateUserToken($res2->id);
                     }
                 }
             }
