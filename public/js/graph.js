@@ -31,10 +31,14 @@ function Graph() {
         sprites = this.loadImages();
     };
 
+    this.output = (c, txt) => {
+        $('.' + c).html(txt);
+    };
+
     this.draw = (data = {}) => {
-        SIZE.width = data.maps[0].width;
-        SIZE.height = data.maps[0].height;
-        SIZE.sizeSnake = data.maps[0].sizeSnake;
+        // SIZE.width = data.maps[0].width;
+        // SIZE.height = data.maps[0].height;
+        // SIZE.sizeSnake = data.maps[0].sizeSnake;
         c.game.attr({width: (SIZE.width * SIZE.sizeSnake) + SIZE.px, height: (SIZE.height * SIZE.sizeSnake) + SIZE.px});
 
         this.clear();
@@ -69,6 +73,7 @@ function Graph() {
             direction = snake.direction,
             lastPosition = {},
             countItems = body.length;
+
         for(let i = 0; i < countItems; i++) {
             let snakePositionSprite = {},
                 item = body[i];
@@ -134,6 +139,32 @@ function Graph() {
             }, false);
 
         }
+    };
+
+    this.drawFoods = (foods = {}) => {
+        // Отрисовываем всех змей
+        for(let i = 0; i < foods.length; i++) {
+            this.drawSnake(foods[i]);
+        }
+    };
+
+    this.drawFood = (food = {}) => {
+        let x = food.x,
+            y = food.y,
+            value = food.value,
+            type = food.type,
+            map_id = food.map_id;
+
+        // Cubic curves example
+        ctx.beginPath();
+        ctx.moveTo(75,40);
+        ctx.bezierCurveTo(75,37,70,25,50,25);
+        ctx.bezierCurveTo(20,25,20,62.5,20,62.5);
+        ctx.bezierCurveTo(20,80,40,102,75,120);
+        ctx.bezierCurveTo(110,102,130,80,130,62.5);
+        ctx.bezierCurveTo(130,62.5,130,25,100,25);
+        ctx.bezierCurveTo(85,25,75,37,75,40);
+        ctx.fill();
     };
 
 

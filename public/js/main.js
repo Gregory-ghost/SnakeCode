@@ -53,7 +53,6 @@ $(document).ready(async () => {
         },
         onLogin: async (options = {}) => {
             const answer = await server.login(options);
-            console.log(options);
             if(answer.result) {
                 struct.setUser(options);
                 onSuccessLogin(answer.data);
@@ -98,6 +97,7 @@ $(document).ready(async () => {
 
 
         onGamePage: () => {
+            graph.output('myLoginText', struct.user.login);
             graph.init();
             ui.handleArrowKeys(onMove);
             var updateScene = setInterval(getScene(onGetScene), UPDATE_SCENE_INTERVAL * 1000);
@@ -105,6 +105,7 @@ $(document).ready(async () => {
         },
         onMove: async (direction) => {
             // Нажатие на клавишу
+            debugger;
             if(direction) {
                 await server.changeDirection(struct.user.id, direction);
             }

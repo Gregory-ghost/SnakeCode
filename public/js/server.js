@@ -22,6 +22,7 @@ function Server() {
 
 function User(options = {}) {
 	this.login = options.login;
+	this.name = options.name;
 
 }
 
@@ -33,15 +34,24 @@ function Struct() {
 	this.user = {};
 
 	this.set = function(data = {}) {
-		debugger;
 		this.foods = data.foods;
         this.snakes = data.snakes;
         this.snakesBody = data.snakesBody;
+        for(let i = 0; i < data.snakes.length; i++) {
+        	let snake = data.snakes[i];
+        	let body = [];
+        	for(let y = 0; y < this.snakesBody.length; y++) {
+        		let item = this.snakesBody[y];
+        		if(snake.id == item.snake_id) {
+					body.push({id: item.id, x: item.x, y: item.y});
+				}
+			}
+			snake['body'] = body;
+		}
         this.maps = data.maps;
 	};
 
 	this.setUser = function(user = {}) {
-		console.log('setUser :: ', user);
 		this.user = user;
 	};
 

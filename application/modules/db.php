@@ -199,7 +199,7 @@ class DB {
     }
     // Получить тело питона
     public function getSnakeBody($id) {
-        $sql = 'SELECT * FROM snake_body WHERE snake_id = :id';
+        $sql = 'SELECT * FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
