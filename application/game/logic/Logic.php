@@ -22,6 +22,20 @@ class Logic {
         return $randomString;
     }
 
+    public function startSession() {
+        if ( session_id() ) return true;
+        else return session_start();
+    }
+    public function destroySession() {
+        if ( session_id() ) {
+            // Если есть активная сессия, удаляем куки сессии,
+            setcookie(session_name(), session_id(), time()-60*60*24);
+            // и уничтожаем сессию
+            session_unset();
+            session_destroy();
+        }
+    }
+
     private function genericToken() {
         return $this->random_string(64);
     }

@@ -9,7 +9,7 @@ require_once 'System.php';
 require_once 'MyUser.php';
 
 class Struct {
-    public $map;
+    public $maps;
     public $snakes;
     public $foods;
     public $users;
@@ -23,10 +23,10 @@ class Struct {
     public function __construct($options = null)
     {
         if ($options) {
-            if (isset($options->map)) {
-                $this->map = [];
-                foreach ($options->map as $item) {
-                    $this->map[] = new Map($item);
+            if (isset($options->maps)) {
+                $this->maps = [];
+                foreach ($options->maps as $item) {
+                    $this->maps[] = new Map($item);
                 }
             }
             if (isset($options->snakes)) {

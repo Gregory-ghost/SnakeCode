@@ -33,6 +33,7 @@ function Struct() {
 	this.user = {};
 
 	this.set = function(data = {}) {
+		debugger;
 		this.foods = data.foods;
         this.snakes = data.snakes;
         this.snakesBody = data.snakesBody;
@@ -40,6 +41,7 @@ function Struct() {
 	};
 
 	this.setUser = function(user = {}) {
+		console.log('setUser :: ', user);
 		this.user = user;
 	};
 

@@ -9,8 +9,8 @@ class Router {
 	private $db;
 
 	public function __construct() {
+        $this->startSession();
         $this->db = new DB();
-
 
         $options = new stdClass();
 
@@ -31,7 +31,6 @@ class Router {
 
         // TODO :: сделать проверку может ли отдать структуру по таймауту
         // TODO :: как из логики обратиться к запросам из бд
-
 
 
 
@@ -61,6 +60,20 @@ class Router {
 		//$COMMAND = $game->getCommand();
 		//print_r($this->game->executeCommand($COMMAND->CHANGE_DIRECTION, (object) [ 'id' => 12, 'direction' => 'left']));
 	}
+
+    public function startSession() {
+        if ( session_id() ) return true;
+        else return session_start();
+    }
+    public function destroySession() {
+        if ( session_id() ) {
+            // Если есть активная сессия, удаляем куки сессии,
+            setcookie(session_name(), session_id(), time()-60*60*24);
+            // и уничтожаем сессию
+            session_unset();
+            session_destroy();
+        }
+    }
 
 	// Хороший ответ, возвращаем данные
 	private function good($text) {
