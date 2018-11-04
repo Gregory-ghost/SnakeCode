@@ -183,6 +183,14 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
+    // Изменить состояние еды питона
+    public function updateSnakeEating($id, $eating) {
+        $sql = "UPDATE snake SET eating = :eating WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':eating', $eating, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
     // Удалить питона
     public function deleteSnake($id) {
         $sql = "DELETE FROM snake WHERE id =  :id";

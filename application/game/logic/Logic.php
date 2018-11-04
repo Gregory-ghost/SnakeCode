@@ -214,29 +214,23 @@ class Logic {
                 $x = $body[0]->x;
                 $y = $body[0]->y;
 
-                $map = $this->db->getMapById($snake->map_id);
-                $sizeSnake = 64;
-                if($map) {
-                    $sizeSnake = $map->snake_size;
-                }
-
                 // Направление
                 switch ( $snake->direction ) {
                     case 'up':
-                        $y -= $sizeSnake;
+                        $y -= 1;
                         break;
                     case 'down':
-                        $y += $sizeSnake;
+                        $y += 1;
                         break;
                     case 'left':
-                        $x -= $sizeSnake;
+                        $x -= 1;
                         break;
                     case 'right':
-                        $x += $sizeSnake;
+                        $x += 1;
                         break;
                 }
 
-                $cOptions = (object) array(
+                $newPos = (object) array(
                     'id' => $options->id,
                     'x' => $x,
                     'y' => $y,
@@ -253,30 +247,26 @@ class Logic {
                     // Увеличиваем счетчик eating
                     $eating = $snake->eating;
                     $eating += $food->value;
-                    $isSet = $this->setSnakeProperty((object) array(
-                        'id' => $snake->id,
+                    $res = $this->updateSnakeEating((object) array(
+                        'id'     => $snake->id,
                         'eating' => $eating,
                     ));
-                    // Съесть еду
-                    $this->eatFood($food->id);
+                    if(!$res) return false;
+
+                    $res = $this->db->deleteFood($food->id);
+                    if($res) {
+                        // Съесть еду
+                        $this->destroyFood($food->id);
+                    }
                 }
 
 
                 // Проверяем позицию змеи на столкновение
-                $isMove = !$this->isCanMove($cOptions);
-                if ( $isMove ) {
-                    // Проверяем врезался ли в другого удава
-                    $isCrashed = $this->isCrashedInSnake($cOptions);
-                    if ( $isCrashed ) {
-                        // Столкнулись, поэтому уничтожаем питона
-                        $this->destroySnake($options->id);
-                        $isMove = true;
-                    }
-                }
+                $isMove = $this->isCanMove($newPos);
                 // Подвигаем змею
                 if ( $isMove ) {
                     // Ни с чем не столкнулись, проверяем на состояние
-                    $isUpdatePosition = $this->setPositionSnake( $cOptions );
+                    $isUpdatePosition = $this->setPositionSnake( $newPos );
                     if ( $isUpdatePosition ) {
                         // Координаты обновлены
                         return true;
@@ -308,40 +298,54 @@ class Logic {
         return false;
     }
 
+    public function updateSnakeEating($options) {
+        if($options) {
+            if(isset($options->id) and isset($options->eating)) {
+                $res = $this->db->updateSnakeEating($options->id, $options->eating);
+                if($res) {
+                    $isSet = $this->setSnakeProperty((object) array(
+                        'id' => $options->id,
+                        'eating' => $options->eating,
+                    ));
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     // Установить координаты удава
     private function setPositionSnake( $options = null ) {
         if ( $options and isset($options->id) ) {
             $snake = $this->getSnake($options->id);
             if ( $snake and isset($options->x) and isset($options->y) ) {
-                $body = $snake->body;
                 $head = (object) array(
+                    'snake_id' => $options->id,
                     'x' => $options->x,
                     'y' => $options->y,
                 );
-                // Добавляем в начало
-                array_unshift($body, $head);
-                // Убираем последний элемент
-                $lastElement = array_pop($body);
 
-                $isSet = false;
+                $res = $this->db->createSnakeBody($head);
+                if(!$res) return false;
+                // Добавляем в начало
+                array_unshift($this->struct->snakesBody, $head);
+
                 if ( $snake->eating > 0 ) {
                     // Увеличиваем змею, если она ест
                     $eating = $snake->eating;
                     $eating--;
-                    array_push($body, $lastElement);
-                    $this->setSnakeProperty((object) array(
-                        'id' => $snake->id,
-                        'body' => $body,
+
+                    $res = $this->updateSnakeEating((object) array(
+                        'id'     => $snake->id,
                         'eating' => $eating,
                     ));
+                    return $res;
                 } else {
                     // Не увеличиваем змею, подвигаем
-                    $isSet = $this->setSnakeProperty((object) array(
-                        'id' => $snake->id,
-                        'body' => $body,
-                    ));
+                    // Убираем последний элемент
+                    $lastElement = $this->destroySnakeBodyTail($options->id);
+                    if($lastElement) return true;
                 }
-                return $isSet;
             }
         }
         return false;
@@ -349,16 +353,33 @@ class Logic {
 
     // Может ли удав двигаться дальше
     private function isCanMove($options = null) {
-        if ( $options and isset($options->x) and isset($options->y) ) {
-            $mapSizeX = $this->getMapSize("x"); // Получаем размер карты X
-            $mapSizeY = $this->getMapSize("y"); // Получаем размер карты Y
+        if ( $options and isset($options->x) and isset($options->y) and isset($options->id) ) {
             $x = $options->x;
             $y = $options->y;
-            // Проверяем выход за границы карты
-            if ( $x > $mapSizeX or $x < 0 ) {
-                return true;
-            }
-            if ( $y > $mapSizeY or $y < 0 ) {
+
+            $snake = $this->getSnake($options->id);
+            if($snake) {
+                // Выход за границы карты
+                $map = $this->getMap($snake->map_id);
+                if($map) {
+                    if($x > $map->width or $x < 0) {
+                        return false;
+                    }
+                    if($y > $map->height or $y < 0) {
+                        return false;
+                    }
+                }
+
+                // Проверяем врезался ли в другого удава
+                $isCrashed = $this->isCrashedInSnake($options);
+                if ( $isCrashed ) {
+                    $res = $this->db->deleteSnake($options->id);
+                    if($res) {
+                        // Столкнулись, поэтому уничтожаем питона
+                        $this->destroySnake($options->id);
+                        return false;
+                    }
+                }
                 return true;
             }
         }
@@ -368,19 +389,19 @@ class Logic {
     // Проверяем врезался ли в другого удава
     private function isCrashedInSnake( $options = null ) {
         if ( $options and isset($options->id) ) {
-            $snakes = $this->struct->snakes;
-            foreach ($snakes as $snake) {
-                if ( $snake->id != $options->id and isset($options->x) and isset($options->y) ) {
-                    // Это другой удав
-                    $body = $snake->body;
-                    foreach ($body as $bcoord) {
-                        // Тело удава
-                        if ( $bcoord->x == $options->x and $bcoord->y == $options->y ) {
-                            // Врезались в удава
-                            return true;
+            if(isset($options->x) and isset($options->y)) {
+                $snakesBody = $this->struct->snakesBody;
+                foreach ($snakesBody as $item) {
+                    if($item->snake_id == $options->id) {
+                        foreach ($snakesBody as $itemEnemy) {
+                            if($item->snake_id != $itemEnemy->snake_id and $item->id != $itemEnemy->id) {
+                                if ( $itemEnemy->x == $options->x and $itemEnemy->y == $options->y ) {
+                                    // Врезались в удава
+                                    return true;
+                                }
+                            }
                         }
                     }
-
                 }
             }
         }
@@ -419,18 +440,37 @@ class Logic {
         return false;
     }
 
-    // Получает размер карты
-    private function getMapSize( $options = null ) {
-        if ($options) {
-            if($options == "x") {
-                $maps = $this->struct->map->sizeX*$this->struct->map->sizeSnake;
-                return $maps;
-            } else if($options == "y") {
-                $maps = $this->struct->map->sizeY*$this->struct->map->sizeSnake;
-                return $maps;
+    // Убрать хвост
+    public function destroySnakeBodyTail($options = null) {
+        if($options) {
+            $snakes = $this->struct->snakesBody;
+            $body = [];
+            foreach ($snakes as $key => $item) {
+                if ( $item->snake_id == $options ) {
+                    $body[] = $item;
+                }
+            }
+            $lastElement = array_pop($body);
+            if($lastElement) {
+                $res = $this->destroySnakeBodyById($lastElement->id);
+                if($res) {
+                    return $lastElement;
+                }
             }
         }
+        return false;
+    }
 
+    // Получает размер карты
+    private function getMap( $options = null ) {
+        if ( $options ) {
+            $maps = $this->struct->maps;
+            foreach ($maps as $map) {
+                if ($map->id == $options) {
+                    return $map;
+                }
+            }
+        }
         return false;
     }
 
@@ -482,7 +522,7 @@ class Logic {
     }
 
     // Съесть еду
-    public function eatFood( $options = null ) {
+    public function destroyFood( $options = null ) {
         if ( $options ) {
             $foods = $this->struct->foods;
             foreach ($foods as $key => $food) {
