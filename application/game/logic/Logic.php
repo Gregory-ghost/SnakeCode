@@ -391,8 +391,11 @@ class Logic {
         if ($options and isset($options->id)) {
             $snake = $this->getSnake($options->id);
             if ( $snake && isset($options->direction) ) {
-                $snake->direction = $options->direction;
-                return true;
+                $res = $this->db->updateSnakeDirection($options->id, $options->direction);
+                if($res) {
+                    $snake->direction = $options->direction;
+                    return true;
+                }
             }
         }
         return false;
@@ -408,7 +411,10 @@ class Logic {
     public function addFood($options = null) {
         if ( $options ) {
             $this->struct->foods[] = new Food($options);
-            return true;
+            $res = $this->db->createFood($options);
+            if($res) {
+                return true;
+            }
         }
         return false;
     }

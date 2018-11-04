@@ -175,6 +175,14 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
+    // Изменить направление питона
+    public function updateSnakeDirection($id, $direction) {
+        $sql = "UPDATE snake SET direction = :direction WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':direction', $direction, PDO::PARAM_STR);
+        $res = $stmt->execute();
+        return $res;
+    }
     // Удалить питона
     public function deleteSnake($id) {
         $sql = "DELETE FROM snake WHERE id =  :id";
@@ -240,6 +248,22 @@ class DB {
 
 
     /*Food*/
+    // Создать еду
+    public function createFood($options) {
+        $ftype = $options['type'];
+        $fvalue = $options['value'];
+        $x = $options['x'];
+        $y = $options['y'];
+
+        $sql = "INSERT INTO snake_body (ftype, fvalue, x, y) VALUES (:ftype, :fvalue, :x, :y)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':ftype', $ftype, PDO::PARAM_INT);
+        $stmt->bindParam(':fvalue', $fvalue, PDO::PARAM_INT);
+        $stmt->bindParam(':x', $x, PDO::PARAM_INT);
+        $stmt->bindParam(':y', $y, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
     // Получить еду
     public function getFoods() {
         $query = 'SELECT * FROM food';
