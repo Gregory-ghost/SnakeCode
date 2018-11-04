@@ -12,6 +12,11 @@ class Logic {
         $this->db = new DB();
     }
 
+    /*
+        * Авторизация
+        * Описаны основные функции для входа, создания сессии
+     */
+
     private function random_string($length = 64) {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
@@ -173,8 +178,11 @@ class Logic {
     // Создать удава
     public function createSnake($options = null) {
         if ( $options ) {
-            $this->struct->snakes[] = new Snake($options);
-            return true;
+            $res = $this->db->createSnake($options);
+            if($res) {
+                $this->struct->snakes[] = new Snake($options);
+                return true;
+            }
         }
         return false;
     }
@@ -182,11 +190,14 @@ class Logic {
     // Уничтожить удава
     public function destroySnake($options = null) {
         if ( $options ) {
-            $snakes = $this->struct->snake;
+            $snakes = $this->struct->snakes;
             foreach ($snakes as $key => $snake) {
                 if ( $snake->id == $options ) {
-                    unset($this->struct->snakes[$key]);
-                    return true;
+                    $res = $this->db->deleteSnake($snake->id);
+                    if($res) {
+                        unset($this->struct->snakes[$key]);
+                        return true;
+                    }
                 }
             }
         }
@@ -197,12 +208,18 @@ class Logic {
     public function moveSnake($options = null) {
         if ( $options and isset($options->id) ) {
             $snake = $this->getSnake($options->id);
-            if ( $snake ) {
+            $body = $this->getSnakeBody($options->id);
+            if ( $body ) {
                 // Координаты головы удава
-                $x = $snake->body[0]->x;
-                $y = $snake->body[0]->y;
+                $x = $body[0]->x;
+                $y = $body[0]->y;
 
-                $sizeSnake = $this->struct->map->sizeSnake;
+                $map = $this->db->getMapById($snake->map_id);
+                $sizeSnake = 64;
+                if($map) {
+                    $sizeSnake = $map->snake_size;
+                }
+
                 // Направление
                 switch ( $snake->direction ) {
                     case 'up':
@@ -370,6 +387,38 @@ class Logic {
         return false;
     }
 
+    // Получить тело удава
+    public function getSnakeBody( $options = null ) {
+        if ( $options ) {
+            $snakes = $this->struct->snakesBody;
+            $body = [];
+            foreach ($snakes as $item) {
+                if ($item->snake_id == $options) {
+                    $body[] = $item;
+                }
+            }
+            return $body;
+        }
+        return false;
+    }
+
+    // Уничтожить удава
+    public function destroySnakeBodyById($options = null) {
+        if ( $options ) {
+            $snakes = $this->struct->snakesBody;
+            foreach ($snakes as $key => $body) {
+                if ( $body->id == $options ) {
+                    $res = $this->db->deleteSnakeBody($body->id);
+                    if($res) {
+                        unset($this->struct->snakesBody[$key]);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     // Получает размер карты
     private function getMapSize( $options = null ) {
         if ($options) {
@@ -410,9 +459,9 @@ class Logic {
     // Добавить новую еду на карту
     public function addFood($options = null) {
         if ( $options ) {
-            $this->struct->foods[] = new Food($options);
             $res = $this->db->createFood($options);
             if($res) {
+                $this->struct->foods[] = new Food($options);
                 return true;
             }
         }
@@ -438,20 +487,23 @@ class Logic {
             $foods = $this->struct->foods;
             foreach ($foods as $key => $food) {
                 if ( $food->id == $options ) {
-                    unset($this->struct->foods[$key]);
-                    return true;
+                    $res = $this->db->deleteFood($food->id);
+                    if($res) {
+                        unset($this->struct->foods[$key]);
+                        return true;
+                    }
                 }
             }
         }
         return false;
     }
 
-    // Змея наехала на еду
+    // Змея наехала головой на еду
     public function triggerFood( $options = null ) {
         if ( $options ) {
-            $snake = $this->getSnake($options);
-            if ( $snake ) {
-                $head = $snake->body[0];
+            $body = $this->getSnakeBody($options);
+            if ( $body ) {
+                $head = $body[0];
                 $foods = $this->struct->foods;
                 foreach ($foods as $key => $food) {
                     if ( $food->x == $head->x and $food->y == $head->y ) {

@@ -4,6 +4,7 @@ class Map {
     public $id;
     public $width;
     public $height;
+    public $snake_size;
     public $last_updated;
 
     public function __construct($options = null)
@@ -23,6 +24,10 @@ class Map {
             }
             if(isset($options->last_updated)) {
                 $this->last_updated = $options->last_updated;
+
+            }
+            if(isset($options->snake_size)) {
+                $this->snake_size = $options->snake_size;
 
             }
         }
