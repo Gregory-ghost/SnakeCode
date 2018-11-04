@@ -204,6 +204,13 @@ class Logic {
         return false;
     }
 
+    public function moveSnakes() {
+        $snakes = $this->struct->snakes;
+        foreach($snakes as $snake) {
+            $this->moveSnake($snake->id);
+        }
+    }
+
     // Подвинуть удава на 1 клетку
     public function moveSnake($options = null) {
         if ( $options and isset($options->id) ) {
@@ -236,14 +243,9 @@ class Logic {
                     'y' => $y,
                 );
 
+                // Столкновение с едой
                 $food = $this->triggerFood($options->id);
                 if ( $food ) {
-                    // Проверяем тип еды с которой соприкаснулись
-                    if ( $food->type == "poison" ) {
-                        // Это яд
-                    } else {
-                        // Это обычная еда
-                    }
                     // Увеличиваем счетчик eating
                     $eating = $snake->eating;
                     $eating += $food->value;
@@ -266,16 +268,12 @@ class Logic {
                 // Подвигаем змею
                 if ( $isMove ) {
                     // Ни с чем не столкнулись, проверяем на состояние
-                    $isUpdatePosition = $this->setPositionSnake( $newPos );
+                    $isUpdatePosition = $this->moveSnakePosition( $newPos );
                     if ( $isUpdatePosition ) {
                         // Координаты обновлены
                         return true;
                     }
-
                 }
-                return false;
-
-
             }
         }
         return false;
@@ -314,8 +312,8 @@ class Logic {
         return false;
     }
 
-    // Установить координаты удава
-    private function setPositionSnake( $options = null ) {
+    // Сдвиг удава
+    private function moveSnakePosition( $options = null ) {
         if ( $options and isset($options->id) ) {
             $snake = $this->getSnake($options->id);
             if ( $snake and isset($options->x) and isset($options->y) ) {
@@ -480,9 +478,36 @@ class Logic {
         if ($options and isset($options->id)) {
             $snake = $this->getSnake($options->id);
             if ( $snake && isset($options->direction) ) {
+                $direction = $options->direction;
+                // Проверка на противоположные направления
+                switch($direction) {
+                    case 'left':
+                        if($snake->direction == 'right') {
+                            return true;
+                        }
+                        break;
+                    case 'right':
+                        if($snake->direction == 'left') {
+                            return true;
+                        }
+                        break;
+                    case 'up':
+                        if($snake->direction == 'down') {
+                            return true;
+                        }
+                        break;
+                    case 'down':
+                        if($snake->direction == 'up') {
+                            return true;
+                        }
+                        break;
+                }
                 $res = $this->db->updateSnakeDirection($options->id, $options->direction);
-                if($res) {
-                    $snake->direction = $options->direction;
+                if ($res) {
+                    $isSet = $this->setSnakeProperty((object)array(
+                        'id' => $options->id,
+                        'direction' => $options->direction,
+                    ));
                     return true;
                 }
             }
