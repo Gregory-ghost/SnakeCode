@@ -426,6 +426,7 @@ class Logic {
         if ( $options ) {
             $snakes = $this->struct->snakesBody;
             foreach ($snakes as $key => $body) {
+                print_r($body);
                 if ( $body->id == $options ) {
                     $res = $this->db->deleteSnakeBody($body->id);
                     if($res) {
@@ -449,6 +450,8 @@ class Logic {
                 }
             }
             $lastElement = array_pop($body);
+            echo 'test';
+            print_r($lastElement);
             if($lastElement) {
                 $res = $this->destroySnakeBodyById($lastElement->id);
                 if($res) {

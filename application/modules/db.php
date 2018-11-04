@@ -66,9 +66,9 @@ class DB {
     }
     //Создать пользователя
     public function saveUser($options) {
-        $name = $options['name'];
-        $login = $options['login'];
-        $password = $options['password'];
+        $name = $options->name;
+        $login = $options->login;
+        $password = $options->password;
 
         $sql = "INSERT INTO user (name, login, password) VALUES (:name, :login, :password)";
         $stmt = $this->conn->prepare($sql);
@@ -102,9 +102,9 @@ class DB {
     public function createToken($options) {
         if(!$options) return false;
 
-        $user_id = $options['user_id'];
-        $token = $options['token'];
-        $expiredAt = $options['expiredAt'];
+        $user_id = $options->user_id;
+        $token = $options->token;
+        $expiredAt = $options->expiredAt;
 
         $sql = "INSERT INTO user_access_token (user_id, token, expiredAt) VALUES (:user_id, :token, :expiredAt)";
         $stmt = $this->conn->prepare($sql);
@@ -165,8 +165,8 @@ class DB {
     }
     // Создать питона
     public function createSnake($options) {
-        $user_id = $options['user_id'];
-        $direction = $options['direction'];
+        $user_id = $options->user_id;
+        $direction = $options->direction;
 
         $sql = "INSERT INTO snake (user_id, direction, body) VALUES (:user_id, :direction, :body)";
         $stmt = $this->conn->prepare($sql);
@@ -179,6 +179,7 @@ class DB {
     public function updateSnakeDirection($id, $direction) {
         $sql = "UPDATE snake SET direction = :direction WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->bindValue(':direction', $direction, PDO::PARAM_STR);
         $res = $stmt->execute();
         return $res;
@@ -187,6 +188,7 @@ class DB {
     public function updateSnakeEating($id, $eating) {
         $sql = "UPDATE snake SET eating = :eating WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->bindValue(':eating', $eating, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
@@ -223,9 +225,9 @@ class DB {
     }
     // Создать тело питона
     public function createSnakeBody($options) {
-        $snake_id = $options['snake_id'];
-        $x = $options['x'];
-        $y = $options['y'];
+        $snake_id = $options->snake_id;
+        $x = $options->x;
+        $y = $options->y;
 
         $sql = "INSERT INTO snake_body (snake_id, x, y) VALUES (:snake_id, :x, :y)";
         $stmt = $this->conn->prepare($sql);
@@ -258,10 +260,10 @@ class DB {
     /*Food*/
     // Создать еду
     public function createFood($options) {
-        $ftype = $options['type'];
-        $fvalue = $options['value'];
-        $x = $options['x'];
-        $y = $options['y'];
+        $ftype = $options->type;
+        $fvalue = $options->value;
+        $x = $options->x;
+        $y = $options->y;
 
         $sql = "INSERT INTO snake_body (ftype, fvalue, x, y) VALUES (:ftype, :fvalue, :x, :y)";
         $stmt = $this->conn->prepare($sql);
@@ -326,8 +328,8 @@ class DB {
     }
     // Создать карту
     public function createMap($options) {
-        $width = $options['width'];
-        $height = $options['height'];
+        $width = $options->width;
+        $height = $options->height;
 
         $sql = "INSERT INTO map (width, height) VALUES (:width, :height)";
         $stmt = $this->conn->prepare($sql);
