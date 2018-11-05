@@ -273,6 +273,13 @@ class Logic {
                         // Координаты обновлены
                         return true;
                     }
+                } else {
+                    $res = $this->db->deleteSnake($options->id);
+                    if($res) {
+                        // Столкнулись, поэтому уничтожаем питона
+                        $this->destroySnake($options->id);
+                        return false;
+                    }
                 }
             }
         }
@@ -371,12 +378,7 @@ class Logic {
                 // Проверяем врезался ли в другого удава
                 $isCrashed = $this->isCrashedInSnake($options);
                 if ( $isCrashed ) {
-                    $res = $this->db->deleteSnake($options->id);
-                    if($res) {
-                        // Столкнулись, поэтому уничтожаем питона
-                        $this->destroySnake($options->id);
-                        return false;
-                    }
+                    return false;
                 }
                 return true;
             }
@@ -426,11 +428,13 @@ class Logic {
         if ( $options ) {
             $snakes = $this->struct->snakesBody;
             foreach ($snakes as $key => $body) {
-                if ( $body->id == $options ) {
-                    $res = $this->db->deleteSnakeBody($body->id);
-                    if($res) {
-                        unset($this->struct->snakesBody[$key]);
-                        return true;
+                if(isset($body->id)) {
+                    if ( $body->id == $options ) {
+                        $res = $this->db->deleteSnakeBody($body->id);
+                        if($res) {
+                            unset($this->struct->snakesBody[$key]);
+                            return true;
+                        }
                     }
                 }
             }
@@ -448,6 +452,7 @@ class Logic {
                     $body[] = $item;
                 }
             }
+
             $lastElement = array_pop($body);
             if($lastElement) {
                 $res = $this->destroySnakeBodyById($lastElement->id);

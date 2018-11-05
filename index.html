@@ -12,10 +12,29 @@
 </head>
 
 <body>
+
+<nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
+	<a class="navbar-brand" href="#">Snake of PI</a>
+	<ul class="nav navbar-nav">
+		<li class="nav-item active">
+			<a class="nav-link" href="#">Главная <span class="sr-only">(current)</span></a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="#">Игра</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="#">Турнирная таблица</a>
+		</li>
+	</ul>
+</nav>
 	<div id="game_wrapper">
 		<div class="gamePage hidden page">
 			<h1>Вы вошли как <span class="myLoginText">Гость</span></h1>
 			<canvas class="game_canvas" id="game">Javascript не поддерживается</canvas>
+		</div>
+
+		<div class="profilePage hidden page">
+			<button class="btn btn-blue" class="startGameBtn">Начать игру</button>
 		</div>
 
 		<div class="loginPage hidden page">

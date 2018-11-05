@@ -3,12 +3,15 @@
 function UI() {
 
     let c = {
-        gameWrapper: $('#game_wrapper'),
         loginPage: $('.loginPage'),
-        registerPage: $('.registerPage'),
         gamePage: $('.gamePage'),
+        registerPage: $('.registerPage'),
+        profilePage: $('#profilePage'),
+
+        gameWrapper: $('#game_wrapper'),
         loginForm: $('#loginForm'),
         registerForm: $('#registerForm'),
+        startGameBtn: $('.startGameBtn'),
     };
 
 

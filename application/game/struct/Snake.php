@@ -5,6 +5,7 @@ class Snake {
     public $name;
     public $direction;
     public $eating;
+    public $map_id;
 
     public function __construct($options = null)
     {
@@ -23,6 +24,10 @@ class Snake {
             }
             if(isset($options->eating)) {
                 $this->eating = $options->eating;
+
+            }
+            if(isset($options->map_id)) {
+                $this->map_id = $options->map_id;
 
             }
         }
