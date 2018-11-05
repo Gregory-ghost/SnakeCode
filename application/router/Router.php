@@ -32,33 +32,6 @@ class Router {
         // TODO :: сделать проверку может ли отдать структуру по таймауту
         // TODO :: как из логики обратиться к запросам из бд
 
-
-
-
-
-//        print_r($this->game);
-
-        $optionUser = array(
-            'width' => 14,
-            'height' => 7,
-        );
-//        print_r($this->db->createMap($optionUser));
-
-//		print_r($this->db->getUser('vasya'));
-        /*$optionSnake = array(
-            'user_id' => 1,
-            'direction' => 'right',
-        );
-		print_r($this->db->createSnake($optionSnake));*/
-        /*$optionUser = array(
-            'name' => 'Петя',
-            'login' => 'petya',
-            'password' => '111',
-        );
-        print_r($this->db->saveUser($optionUser));*/
-
-		//$COMMAND = $game->getCommand();
-		//print_r($this->game->executeCommand($COMMAND->CHANGE_DIRECTION, (object) [ 'id' => 12, 'direction' => 'left']));
 	}
 
     public function startSession() {

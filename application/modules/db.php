@@ -212,7 +212,7 @@ class DB {
 
     /*Snake_body*/
     public function getSnakesBody() {
-        $query = 'SELECT * FROM snake_body';
+        $query = 'SELECT * FROM snake_body ORDER BY id DESC';
         return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
     }
     // Получить тело питона
@@ -335,6 +335,15 @@ class DB {
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':width', $width, PDO::PARAM_INT);
         $stmt->bindValue(':height', $height, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
+    // Изменить последнего времени обновления
+    public function updateMapLastUpdated($id, $last_updated) {
+        $sql = "UPDATE map SET last_updated = :last_updated WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':last_updated', $last_updated, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
     }
