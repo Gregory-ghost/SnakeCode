@@ -596,9 +596,33 @@ class Logic {
         return false;
     }
 
-    // Привет
     // Получение информации о сцене
-    public function getScene ( $options = null ) {
-        return $this->struct;
+    public function getScene ( $options = null ){
+        if ( $options ) {
+            $this-> moveSnake();
+            $this->struct->maps = $this->db->getMaps() ;
+            $this->struct->foods = $this->db->getFoods() ;
+            $this->struct->users = $this->db->getUsers() ;
+            $this->struct->snakesbody = $this->db->getSnakesBody() ;
+            $this->struct->system = $this->db->getSystem() ;
+            $this->struct->myUser = (object) array(
+                'id'    => 0,
+                'name'  => 'noname',
+                'login' => 'nologin',
+            );
+            if  ( session_id() ) {
+                $token = $_SESSION['token id'];
+                $this->struct->myUser = $this->db->getUserByToken($token);
+            }
+            // Если существует (isset)
+            if (isset($options->id)) {
+                $map = $this->db->getMapById($options->id);
+                $time = time();
+                if ($time > $map->last_updated){
+                    return $this->struct;
+                }
+            }
+        }
+        return false;
     }
 }
