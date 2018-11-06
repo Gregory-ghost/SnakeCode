@@ -596,6 +596,7 @@ class Logic {
         return false;
     }
 
+    // Привет
     // Получение информации о сцене
     public function getScene ( $options = null ) {
         return $this->struct;
