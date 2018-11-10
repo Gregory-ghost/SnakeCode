@@ -3,28 +3,29 @@ function Server() {
 	this.changeDirection = function (id = 0, direction = 'left') {
 		return $.get('api', { method: 'changeDirection', id, direction });
 	};
+    this.createSnake = function (options) {
+        return $.get('api', { method: 'createSnake', ...options });
+    };
+
 	this.login = function (options = {}) {
 		return $.get('api', { method: 'login', ...options });
 	};
 	this.register = function (options) {
 		return $.get('api', { method: 'register', ...options });
 	};
+	this.logout = function () {
+		return $.get('api', { method: 'logout', ...{}});
+	};
 	this.getCurrentUser = function() {
 		return $.get('api', { method: 'getCurrentUser' });
 	};
 
-    this.getScene = function() {
-        return $.get('api', { method: 'getScene' });
+    this.getScene = function(id = 1) {
+        return $.get('api', { method: 'getScene', id });
     };
 
 }
 
-
-function User(options = {}) {
-	this.login = options.login;
-	this.name = options.name;
-
-}
 
 function Struct() {
 	this.foods = [];
@@ -32,6 +33,11 @@ function Struct() {
 	this.maps = [];
 	this.snakesBody = [];
 	this.user = {};
+
+	this.snake = {};
+	this.map = {
+		id: 1,
+	};
 
 	this.set = function(data = {}) {
 		this.foods = data.foods;
@@ -51,11 +57,26 @@ function Struct() {
         this.maps = data.maps;
 	};
 
+	// Текущий пользователь
 	this.setUser = function(user = {}) {
 		this.user = user;
 	};
-
+	this.destroyUser = function() {
+		this.user = {};
+	};
 	this.getUser = function() {
 		return this.user;
-	}
+	};
+
+	// Активная змейка
+    this.setSnake = function(snake = {}) {
+        this.snake = snake;
+    };
+    this.destroySnake = function() {
+        this.snake = {};
+    };
+    this.getSnake = function() {
+        return this.snake;
+    };
+
 }

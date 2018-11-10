@@ -27,12 +27,18 @@ $(document).ready(async () => {
         onErrorRegister = callbacks.onErrorRegister;
         handleClickLoginBtn = callbacks.handleClickLoginBtn;
 
+        onProfilePage = callbacks.onProfilePage;
+        onSuccessLogout = callbacks.onSuccessLogout;
+        onErrorLogout = callbacks.onErrorLogout;
+        handleClickLogoutBtn = callbacks.handleClickLogoutBtn;
+        handleClickStartGameBtn = callbacks.handleClickStartGameBtn;
+
         onGamePage = callbacks.onGamePage;
         onMove = callbacks.onMove;
         onGetScene = callbacks.onGetScene;
 
 
-        isLoggedIn();
+        isLoggedIn(); // Проверка на авторизацию
 
     }
 
@@ -42,11 +48,12 @@ $(document).ready(async () => {
             let isLoggedIn = answer.result;
             if(isLoggedIn) {
                 struct.setUser(answer.data["myUser"]);
-                ui.Router('GamePage', onGamePage);
+                ui.Router('ProfilePage', onProfilePage);
             } else {
                 ui.Router('LoginPage', onLoginPage);
             }
         },
+        // Страница входа
         onLoginPage: () => {
             ui.handleLogin(onLogin);
             ui.handleClickRegisterBtn(handleClickRegisterBtn);
@@ -71,6 +78,7 @@ $(document).ready(async () => {
             ui.Router('RegisterPage', onRegisterPage);
         },
 
+        // Страница регистрации
         onRegisterPage: () => {
             ui.handleRegister(onRegister);
             ui.handleClickLoginBtn(handleClickLoginBtn);
@@ -95,9 +103,44 @@ $(document).ready(async () => {
             ui.Router('LoginPage', onLoginPage);
         },
 
-
-        onGamePage: () => {
+        // Страница профиля
+        onProfilePage: () => {
             graph.output('myLoginText', struct.user.login);
+            ui.handleClickLoginBtn(handleClickLogoutBtn);
+        },
+        handleClickLogoutBtn: async () => {
+            const answer = await server.logout();
+            if(answer.result) {
+                struct.destroyUser();
+                onSuccessLogout();
+            } else {
+                onErrorLogout(answer.error);
+            }
+        },
+        handleClickStartGameBtn: async () => {
+            let snake = {
+                user_id: struct.user.id,
+                map_id: struct.map.id,
+                direction: 'right',
+            };
+            const answer = await server.createSnake(snake);
+            if(answer.result) {
+                struct.setSnake(answer.data);
+                onSuccessLogout();
+            } else {
+                onErrorLogout(answer.error);
+            }
+        },
+        onSuccessLogout: () => {
+            ui.Router('LoginPage', onLoginPage);
+            ui.showMessage('Вы успешно вышли из профиля');
+        },
+        onErrorLogout: (err) => {
+            ui.showMessage(err);
+        },
+
+        // Страница игры
+        onGamePage: () => {
             graph.init();
             ui.handleArrowKeys(onMove);
             var updateScene = setInterval(getScene(onGetScene), UPDATE_SCENE_INTERVAL * 1000);
@@ -119,7 +162,7 @@ $(document).ready(async () => {
     });
 
 	async function getScene(callback) {
-        const answer = await server.getScene();
+        const answer = await server.getScene(struct.map.id);
         getAnswer(answer, callback);
 	}
 

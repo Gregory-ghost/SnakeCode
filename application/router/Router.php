@@ -21,10 +21,21 @@ class Router {
         $options->users = $this->db->getUsers();
         $options->snakesBody = $this->db->getSnakesBody();
         $options->system = $this->db->getSystem();
-        $options->myUser = (object) array(
+
+        // Текущий пользователь из сессии
+        if  ( session_id() ) {
+            $token = $_SESSION['token id'];
+            $options->myUser = $this->db->getUserByToken($token);
+        } else {
+            $options->myUser = (object) array(
+                'id'    => 0,
+                'name'  => 'noname',
+                'login' => 'nologin',
+            );
+        }
+        // Активная змея пользователя
+        $options->mySnake = (object) array(
             'id'    => 0,
-            'name'  => 'noname',
-            'login' => 'nologin',
         );
 
 		$this->game = new Game($options);

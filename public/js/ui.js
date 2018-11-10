@@ -6,12 +6,14 @@ function UI() {
         loginPage: $('.loginPage'),
         gamePage: $('.gamePage'),
         registerPage: $('.registerPage'),
-        profilePage: $('#profilePage'),
+        profilePage: $('.profilePage'),
 
         gameWrapper: $('#game_wrapper'),
         loginForm: $('#loginForm'),
         registerForm: $('#registerForm'),
+
         startGameBtn: $('.startGameBtn'),
+        logoutBtn: $('.logoutBtn'),
     };
 
 
@@ -25,6 +27,11 @@ function UI() {
             case 'RegisterPage':
                 c.gameWrapper.find('.page').addClass('hidden');
                 c.registerPage.removeClass('hidden');
+
+                break;
+            case 'ProfilePage':
+                c.gameWrapper.find('.page').addClass('hidden');
+                c.profilePage.removeClass('hidden');
 
                 break;
             case 'GamePage':
@@ -89,6 +96,15 @@ function UI() {
 
     this.handleClickLoginBtn = (callback) => {
         c.registerPage.find('.loginLink').bind("click", (event) => {
+            event.preventDefault();
+            callback();
+            return false;
+
+        })
+    };
+
+    this.handleClickLogoutBtn = (callback) => {
+        c.logoutBtn.bind("click", (event) => {
             event.preventDefault();
             callback();
             return false;

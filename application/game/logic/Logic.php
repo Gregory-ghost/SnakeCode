@@ -38,7 +38,9 @@ class Logic {
             // и уничтожаем сессию
             session_unset();
             session_destroy();
+            return true;
         }
+        return false;
     }
 
     private function genericToken() {
@@ -142,6 +144,10 @@ class Logic {
         }
         return false;
     }
+    // Выход
+    public function logout($options) {
+        return $this->destroySession();
+    }
 
     /*
         * Удав
@@ -179,9 +185,18 @@ class Logic {
     public function createSnake($options = null) {
         if ( $options ) {
             $res = $this->db->createSnake($options);
-            if($res) {
-                $this->struct->snakes[] = new Snake($options);
-                return true;
+            if(!$res) return false;
+            if(isset($options->user_id)) {
+                $res = $this->db->getLastSnakeByUserId($options->user_id);
+                if($res) {
+                    $this->struct->snakes[] = new Snake($res);
+                    $res = $this->createSnakeBody((object) array(
+                        'snake_id' => $res->id,
+                        'x' => 0,
+                        'y' => 0,
+                    ));
+                    if($res) return true;
+                }
             }
         }
         return false;
@@ -408,6 +423,22 @@ class Logic {
         return false;
     }
 
+    // Создать тело удава
+    public function createSnakeBody($options = null) {
+        if ( $options ) {
+            $res = $this->db->createSnakeBody($options);
+            if(!$res) return false;
+            if(isset($options->id)) {
+                $res = $this->db->getLastSnakeBodyBySnakeId($options->id);
+                if($res) {
+                    $this->struct->snakesBody[] = new SnakeBody($res);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     // Получить тело удава
     public function getSnakeBody( $options = null ) {
         if ( $options ) {
@@ -597,7 +628,37 @@ class Logic {
     }
 
     // Получение информации о сцене
-    public function getScene ( $options = null ) {
-        return $this->struct;
+    public function getScene ( $options = null ){
+        if ( $options ) {
+            $this->struct->maps = $this->db->getMaps() ;
+            $this->struct->foods = $this->db->getFoods() ;
+            $this->struct->users = $this->db->getUsers() ;
+            $this->struct->snakesbody = $this->db->getSnakesBody() ;
+            $this->struct->system = $this->db->getSystem() ;
+
+            if  ( session_id() ) {
+                $token = $_SESSION['token id'];
+                $this->struct->myUser = $this->db->getUserByToken($token);
+            } else {
+                $this->struct->myUser = (object) array(
+                    'id'    => 0,
+                    'name'  => 'noname',
+                    'login' => 'nologin',
+                );
+            }
+            // Если существует (isset)
+            if (isset($options->id)) {
+                $map = $this->db->getMapById($options->id);
+                $time = time();
+                $next_time = 20; // 20 seconds
+                if ($time > $map->last_updated + $next_time) {
+                    // Показываем сцену
+                    $this->moveSnake();
+                    $this->db->updateMapLastUpdated($options->id, time());
+                    return $this->struct;
+                }
+            }
+        }
+        return false;
     }
 }

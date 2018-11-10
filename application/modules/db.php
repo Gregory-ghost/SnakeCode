@@ -163,12 +163,20 @@ class DB {
         $stm->execute();
         return $stm->fetchObject('stdClass');
     }
+    // Получить последнего созданного питона у пользователя
+    public function getLastSnakeByUserId($id) {
+        $sql = 'SELECT * FROM snake WHERE user_id = :id ORDER BY id DESC LIMIT 1';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':id', $id, PDO::PARAM_INT);
+        $stm->execute();
+        return $stm->fetchObject('stdClass');
+    }
     // Создать питона
     public function createSnake($options) {
         $user_id = $options->user_id;
         $direction = $options->direction;
 
-        $sql = "INSERT INTO snake (user_id, direction, body) VALUES (:user_id, :direction, :body)";
+        $sql = "INSERT INTO snake (user_id, direction) VALUES (:user_id, :direction)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->bindParam(':direction', $direction, PDO::PARAM_STR);
@@ -222,6 +230,14 @@ class DB {
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
         return $stm->fetchAll(PDO::FETCH_CLASS);
+    }
+    // Получить последнее созданное тело у питона
+    public function getLastSnakeBodyBySnakeId($id) {
+        $sql = 'SELECT * FROM snake_body WHERE snake_id = :id ORDER BY id DESC LIMIT 1';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':id', $id, PDO::PARAM_INT);
+        $stm->execute();
+        return $stm->fetchObject('stdClass');
     }
     // Создать тело питона
     public function createSnakeBody($options) {
