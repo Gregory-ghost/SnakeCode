@@ -102,6 +102,14 @@ function UI() {
 
         })
     };
+    this.handleClickStartGameBtn = (callback) => {
+        c.startGameBtn.bind("click", (event) => {
+            event.preventDefault();
+            callback();
+            return false;
+
+        })
+    };
 
     this.handleClickLogoutBtn = (callback) => {
         c.logoutBtn.bind("click", (event) => {

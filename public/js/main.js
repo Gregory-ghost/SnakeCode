@@ -18,24 +18,23 @@ $(document).ready(async () => {
         onLoginPage = callbacks.onLoginPage;
         onLogin = callbacks.onLogin;
         onSuccessLogin = callbacks.onSuccessLogin;
-        onErrorLogin = callbacks.onErrorLogin;
         handleClickRegisterBtn = callbacks.handleClickRegisterBtn;
 
         onRegisterPage = callbacks.onRegisterPage;
         onRegister = callbacks.onRegister;
         onSuccessRegister = callbacks.onSuccessRegister;
-        onErrorRegister = callbacks.onErrorRegister;
         handleClickLoginBtn = callbacks.handleClickLoginBtn;
 
         onProfilePage = callbacks.onProfilePage;
         onSuccessLogout = callbacks.onSuccessLogout;
-        onErrorLogout = callbacks.onErrorLogout;
         handleClickLogoutBtn = callbacks.handleClickLogoutBtn;
         handleClickStartGameBtn = callbacks.handleClickStartGameBtn;
 
         onGamePage = callbacks.onGamePage;
         onMove = callbacks.onMove;
         onGetScene = callbacks.onGetScene;
+
+        onError = callbacks.onError;
 
 
         isLoggedIn(); // Проверка на авторизацию
@@ -64,15 +63,12 @@ $(document).ready(async () => {
                 struct.setUser(options);
                 onSuccessLogin(answer.data);
             } else {
-                onErrorLogin(answer.error);
+                onError(answer.error);
             }
         },
         onSuccessLogin: (data = {}) => {
             ui.Router('GamePage', onGamePage);
             ui.showMessage(data);
-        },
-        onErrorLogin: (err) => {
-            ui.showMessage(err);
         },
         handleClickRegisterBtn: (err) => {
             ui.Router('RegisterPage', onRegisterPage);
@@ -89,15 +85,12 @@ $(document).ready(async () => {
                 struct.setUser(options);
                 onSuccessRegister(answer.data);
             } else {
-                onErrorRegister(answer.error);
+                onError(answer.error);
             }
         },
         onSuccessRegister: (data = {}) => {
             ui.Router('GamePage', onGamePage);
             ui.showMessage(data);
-        },
-        onErrorRegister: (err) => {
-            ui.showMessage(err);
         },
         handleClickLoginBtn: (err) => {
             ui.Router('LoginPage', onLoginPage);
@@ -114,7 +107,7 @@ $(document).ready(async () => {
                 struct.destroyUser();
                 onSuccessLogout();
             } else {
-                onErrorLogout(answer.error);
+                onError(answer.error);
             }
         },
         handleClickStartGameBtn: async () => {
@@ -125,18 +118,15 @@ $(document).ready(async () => {
             };
             const answer = await server.createSnake(snake);
             if(answer.result) {
-                struct.setSnake(answer.data);
-                onSuccessLogout();
+                struct.setSnake(answer.data["mySnake"]);
+                ui.Router('GamePage', onGamePage);
             } else {
-                onErrorLogout(answer.error);
+                onError(answer.error);
             }
         },
         onSuccessLogout: () => {
             ui.Router('LoginPage', onLoginPage);
             ui.showMessage('Вы успешно вышли из профиля');
-        },
-        onErrorLogout: (err) => {
-            ui.showMessage(err);
         },
 
         // Страница игры
@@ -158,6 +148,10 @@ $(document).ready(async () => {
             if (result) {
                 graph.draw(struct);
             }
+        },
+
+        onError: (err) => {
+            ui.showMessage(err);
         },
     });
 

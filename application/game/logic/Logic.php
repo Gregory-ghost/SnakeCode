@@ -637,7 +637,7 @@ class Logic {
             $this->struct->system = $this->db->getSystem() ;
 
             if  ( session_id() ) {
-                $token = $_SESSION['token id'];
+                $token = $_SESSION['token_id'];
                 $this->struct->myUser = $this->db->getUserByToken($token);
             } else {
                 $this->struct->myUser = (object) array(

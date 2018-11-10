@@ -24,7 +24,7 @@ class Router {
 
         // Текущий пользователь из сессии
         if  ( session_id() ) {
-            $token = $_SESSION['token id'];
+            $token = $_SESSION['token_id'];
             $options->myUser = $this->db->getUserByToken($token);
         } else {
             $options->myUser = (object) array(
