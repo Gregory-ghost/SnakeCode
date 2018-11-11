@@ -56,7 +56,8 @@ function Struct() {
                     body.push({id: item.id, x: item.x, y: item.y});
 				}
 			}
-			snake['body'] = body;
+			debugger;
+            s.snakes[i]['body'] = body;
 		}
         s.maps = data.maps;
 	};

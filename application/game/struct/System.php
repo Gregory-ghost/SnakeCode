@@ -4,8 +4,6 @@ class System {
     public $id;
     public $name;
     public $value;
-    public $login;
-    public $password;
 
     public function __construct($options = null)
     {

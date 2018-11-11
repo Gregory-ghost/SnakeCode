@@ -3,7 +3,7 @@
 // ПИ 21
 
 $(document).ready(async () => {
-    const UPDATE_SCENE_INTERVAL = 5; // Интервал обращений к серверу в сек
+    const UPDATE_SCENE_INTERVAL = 1; // Интервал обращений к серверу в сек
 
 	const server = new Server();
 	const ui = new UI();
@@ -32,6 +32,7 @@ $(document).ready(async () => {
         onSnakeDestroy = callbacks.onSnakeDestroy;
         onGameEnd = callbacks.onGameEnd;
         onMove = callbacks.onMove;
+        onUpdateScene = callbacks.onUpdateScene;
         onGetScene = callbacks.onGetScene;
 
         onError = callbacks.onError;
@@ -138,6 +139,12 @@ $(document).ready(async () => {
             graph.init();
             ui.handleArrowKeys(onMove);
 
+            // Обновление сцены по интервалу
+            onUpdateScene();
+
+
+        },
+        onUpdateScene: () => {
             let intervalID = 0;
             let wait =
                 ms => new Promise(
@@ -166,28 +173,31 @@ $(document).ready(async () => {
                 );
             let handleSnakeDestroy =
                 () => new Promise(
-                    r => r(onSnakeDestroy(() => {
-                        clearInterval(intervalID);
-                        onGameEnd('game end')
+                    r => r(onSnakeDestroy((res) => {
+                        if(res) {
+                            clearInterval(intervalID);
+                            onGameEnd('game end')
+                        }
                     }))
                 );
 
-            repeat(UPDATE_SCENE_INTERVAL * 1000, () => Promise.all([myfunction()])) // UPDATE_SCENE_INTERVAL * 1000
+            repeat(UPDATE_SCENE_INTERVAL * 1000, () => Promise.all([myfunction()]).then(handleSnakeDestroy())) // UPDATE_SCENE_INTERVAL * 1000
                 .then(handleStopGame())
+                .then(handleSnakeDestroy())
                 .then(getScene(onGetScene));
-
         },
         onSnakeDestroy: (callback) => {
-            let snakes = struct.getSnakes();
-            let mySnake = struct.getSnake();
+            let snakes = struct.getSnakes(),
+                mySnake = struct.getSnake(),
+                isFound = false;
 
             $.each(snakes, (i, snake) => {
                 if(snake.id == mySnake.id) {
-                    if(snake.deleted_at > 0) {
-                        callback();
-                    }
+                    // Не нашел питона
+                    isFound = true;
                 }
             });
+            callback(!isFound);
 
         },
         onMove: async (direction) => {
@@ -201,6 +211,8 @@ $(document).ready(async () => {
             console.log('onGetScene');
             if (result) {
                 console.log('onGetScene true');
+                let s = struct.get();
+                debugger;
                 graph.draw(struct.get());
             }
         },

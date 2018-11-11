@@ -74,6 +74,7 @@ function Graph() {
             lastPosition = {},
             countItems = body.length;
 
+        debugger;
         for(let i = 0; i < countItems; i++) {
             let snakePositionSprite = {},
                 item = body[i];

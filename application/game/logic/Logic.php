@@ -210,6 +210,7 @@ class Logic {
                 if ( $snake->id == $options ) {
                     $count = $this->db->getSnakesBodyCountBySnake($snake->id);
                     if($count > 0) {
+                        // TODO :: дописать функцию обновления очков
                         $res = $this->db->updateUserScore($snake->user_id, $count);
                         if(!$res) return false;
                     }
@@ -370,8 +371,10 @@ class Logic {
 
                 $res = $this->db->createSnakeBody($head);
                 if(!$res) return false;
+                $res = $this->db->getLastSnakeBodyBySnakeId($options->id);
+                if(!$res) return false;
                 // Добавляем в начало
-                array_unshift($this->struct->snakesBody, $head);
+                array_unshift($this->struct->snakesBody, $res);
                 if(isset($snake->eating)) {
                     if ( $snake->eating > 0 ) {
                         // Увеличиваем змею, если она ест
@@ -656,12 +659,12 @@ class Logic {
     // Получение информации о сцене
     public function getScene ( $options = null ){
         if ( $options ) {
-            $this->struct->maps = $this->db->getMaps() ;
-            $this->struct->foods = $this->db->getFoods() ;
-            $this->struct->users = $this->db->getUsers() ;
-            $this->struct->snakes = $this->db->getSnakes() ;
-            $this->struct->snakesBody = $this->db->getSnakesBody() ;
-            $this->struct->system = $this->db->getSystem() ;
+            $this->struct->maps = $this->db->getMaps();
+            $this->struct->foods = $this->db->getFoods();
+            $this->struct->users = $this->db->getUsers();
+            $this->struct->snakes = $this->db->getSnakes();
+            $this->struct->snakesBody = $this->db->getSnakesBody();
+            $this->struct->system = $this->db->getSystem();
 
             if  ( session_id() ) {
                 $token = $_SESSION['token_id'];
