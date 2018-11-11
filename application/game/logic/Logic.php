@@ -428,8 +428,8 @@ class Logic {
         if ( $options ) {
             $res = $this->db->createSnakeBody($options);
             if(!$res) return false;
-            if(isset($options->id)) {
-                $res = $this->db->getLastSnakeBodyBySnakeId($options->id);
+            if(isset($options->snake_id)) {
+                $res = $this->db->getLastSnakeBodyBySnakeId($options->snake_id);
                 if($res) {
                     $this->struct->snakesBody[] = new SnakeBody($res);
                     return true;

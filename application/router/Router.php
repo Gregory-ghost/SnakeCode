@@ -33,10 +33,6 @@ class Router {
                 'login' => 'nologin',
             );
         }
-        // Активная змея пользователя
-        $options->mySnake = (object) array(
-            'id'    => 0,
-        );
 
 		$this->game = new Game($options);
 

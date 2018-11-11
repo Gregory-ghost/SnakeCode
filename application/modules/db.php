@@ -173,8 +173,8 @@ class DB {
     }
     // Создать питона
     public function createSnake($options) {
-        $user_id = $options['user_id'];
-        $direction = $options['direction'];
+        $user_id = $options->user_id;
+        $direction = $options->direction;
 
         $sql = "INSERT INTO snake (user_id, direction) VALUES (:user_id, :direction)";
         $stmt = $this->conn->prepare($sql);
@@ -241,9 +241,9 @@ class DB {
     }
     // Создать тело питона
     public function createSnakeBody($options) {
-        $snake_id = $options['snake_id'];
-        $x = $options['x'];
-        $y = $options['y'];
+        $snake_id = $options->snake_id;
+        $x = $options->x;
+        $y = $options->y;
 
         $sql = "INSERT INTO snake_body (snake_id, x, y) VALUES (:snake_id, :x, :y)";
         $stmt = $this->conn->prepare($sql);

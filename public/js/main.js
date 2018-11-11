@@ -10,8 +10,6 @@ $(document).ready(async () => {
 	const graph = new Graph();
 	const struct = new Struct();
 
-	let user = struct.getUser();
-
 
     function F1(callbacks) {
         isLoggedIn = callbacks.isLoggedIn;
@@ -98,8 +96,10 @@ $(document).ready(async () => {
 
         // Страница профиля
         onProfilePage: () => {
-            graph.output('myLoginText', struct.user.login);
-            ui.handleClickLoginBtn(handleClickLogoutBtn);
+            let user = struct.getUser();
+            graph.output('myLoginText', user.login);
+            ui.handleClickLogoutBtn(handleClickLogoutBtn);
+            ui.handleClickStartGameBtn(handleClickStartGameBtn);
         },
         handleClickLogoutBtn: async () => {
             const answer = await server.logout();
@@ -112,13 +112,15 @@ $(document).ready(async () => {
         },
         handleClickStartGameBtn: async () => {
             let snake = {
-                user_id: struct.user.id,
-                map_id: struct.map.id,
+                user_id: struct.getUser().id,
+                map_id: struct.getMap().id,
                 direction: 'right',
             };
             const answer = await server.createSnake(snake);
             if(answer.result) {
-                struct.setSnake(answer.data["mySnake"]);
+                struct.set(answer.data);
+                let user = struct.getUser();
+                getMySnake(user.id);
                 ui.Router('GamePage', onGamePage);
             } else {
                 onError(answer.error);
@@ -132,6 +134,8 @@ $(document).ready(async () => {
         // Страница игры
         onGamePage: () => {
             graph.init();
+            let snake = struct.getSnake();
+            console.log('snake :: ' + snake);
             ui.handleArrowKeys(onMove);
             var updateScene = setInterval(getScene(onGetScene), UPDATE_SCENE_INTERVAL * 1000);
             getScene(onGetScene);
@@ -140,7 +144,7 @@ $(document).ready(async () => {
             // Нажатие на клавишу
             debugger;
             if(direction) {
-                await server.changeDirection(struct.user.id, direction);
+                await server.changeDirection(struct.getUser().id, direction);
             }
         },
         onGetScene: (result = false) => {
@@ -155,12 +159,16 @@ $(document).ready(async () => {
         },
     });
 
-	async function getScene(callback) {
-        const answer = await server.getScene(struct.map.id);
-        getAnswer(answer, callback);
-	}
+    getMySnake = (uid) => {
 
-	function getAnswer(answer = {}, callback) {
+    };
+
+	getScene = async (callback) => {
+        const answer = await server.getScene(struct.getMap().id);
+        getAnswer(answer, callback);
+	};
+
+	getAnswer = (answer = {}, callback) => {
         if(answer.result) {
             console.log(answer.data);
             struct.set(answer.data);
@@ -169,10 +177,10 @@ $(document).ready(async () => {
             error(answer.error);
             callback(answer.result);
         }
-	}
+	};
 
-	function error(error = "") {
-		console.log("Ошибка :: %s", error)
+	error = (err = "") => {
+		console.log("Ошибка :: %s", err)
 	}
 
 

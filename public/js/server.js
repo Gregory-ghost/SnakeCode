@@ -27,56 +27,69 @@ function Server() {
 }
 
 
-function Struct() {
-	this.foods = [];
-	this.snakes = [];
-	this.maps = [];
-	this.snakesBody = [];
-	this.user = {};
 
-	this.snake = {};
-	this.map = {
-		id: 1,
+function Struct() {
+	this.struct = {
+		foods: [],
+		snakes: [],
+		maps: [],
+		snakesBody: [],
+		user: {},
+
+		snake: {},
+		map: {
+			id:1,
+		},
 	};
 
 	this.set = function(data = {}) {
-		this.foods = data.foods;
-        this.snakes = data.snakes;
-        this.snakesBody = data.snakesBody;
+		let s = this.struct;
+		s.foods = data.foods;
+        s.snakes = data.snakes;
+        s.snakesBody = data.snakesBody;
         for(let i = 0; i < data.snakes.length; i++) {
         	let snake = data.snakes[i];
         	let body = [];
-        	for(let y = 0; y < this.snakesBody.length; y++) {
-        		let item = this.snakesBody[y];
+        	for(let y = 0; y < s.snakesBody.length; y++) {
+        		let item = s.snakesBody[y];
         		if(snake.id == item.snake_id) {
 					body.push({id: item.id, x: item.x, y: item.y});
 				}
 			}
 			snake['body'] = body;
 		}
-        this.maps = data.maps;
+        s.maps = data.maps;
+	};
+
+	this.get = function(data = {}) {
+		return this.struct;
 	};
 
 	// Текущий пользователь
 	this.setUser = function(user = {}) {
-		this.user = user;
+		this.struct.user = user;
 	};
 	this.destroyUser = function() {
-		this.user = {};
+		this.struct.user = {};
 	};
 	this.getUser = function() {
-		return this.user;
+		return this.struct.user;
 	};
 
 	// Активная змейка
     this.setSnake = function(snake = {}) {
-        this.snake = snake;
+        this.struct.snake = snake;
     };
     this.destroySnake = function() {
-        this.snake = {};
+        this.struct.snake = {};
     };
     this.getSnake = function() {
-        return this.snake;
+        return this.struct.snake;
+    };
+
+
+    this.getMap = function() {
+        return this.struct.map;
     };
 
 }
