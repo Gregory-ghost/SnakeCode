@@ -47,13 +47,13 @@ function Struct() {
 		s.foods = data.foods;
         s.snakes = data.snakes;
         s.snakesBody = data.snakesBody;
-        for(let i = 0; i < data.snakes.length; i++) {
-        	let snake = data.snakes[i];
+        for(let i = 0; i < s.snakes.length; i++) {
+        	let snake = s.snakes[i];
         	let body = [];
         	for(let y = 0; y < s.snakesBody.length; y++) {
-        		let item = s.snakesBody[y];
-        		if(snake.id == item.snake_id) {
-					body.push({id: item.id, x: item.x, y: item.y});
+                let item = s.snakesBody[y];
+                if(snake.id == item.snake_id) {
+                    body.push({id: item.id, x: item.x, y: item.y});
 				}
 			}
 			snake['body'] = body;
@@ -88,6 +88,9 @@ function Struct() {
     };
 
 
+    this.getSnakes = function() {
+        return this.struct.snakes;
+    };
     this.getMap = function() {
         return this.struct.map;
     };

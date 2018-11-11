@@ -13,6 +13,7 @@ function UI() {
         registerForm: $('#registerForm'),
 
         startGameBtn: $('.startGameBtn'),
+        stopGameBtn: $('.stopGameBtn'),
         logoutBtn: $('.logoutBtn'),
     };
 
@@ -104,6 +105,14 @@ function UI() {
     };
     this.handleClickStartGameBtn = (callback) => {
         c.startGameBtn.bind("click", (event) => {
+            event.preventDefault();
+            callback();
+            return false;
+
+        })
+    };
+    this.handleClickStopGameBtn = (callback) => {
+        c.stopGameBtn.bind("click", (event) => {
             event.preventDefault();
             callback();
             return false;

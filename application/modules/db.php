@@ -64,6 +64,14 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
+    public function updateUserScore($id, $score) {
+        $sql = "UPDATE user SET score = :score WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':score', $score, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
     //Создать пользователя
     public function saveUser($options) {
         $name = $options['name'];
@@ -192,6 +200,15 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
+    // Изменить время удаления змеи
+    public function updateSnakeDeletedAt($id, $deleted_at) {
+        $sql = "UPDATE snake SET deleted_at = :deleted_at WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':deleted_at', $deleted_at, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
     // Изменить состояние еды питона
     public function updateSnakeEating($id, $eating) {
         $sql = "UPDATE snake SET eating = :eating WHERE id = :id";
@@ -222,6 +239,13 @@ class DB {
     public function getSnakesBody() {
         $query = 'SELECT * FROM snake_body ORDER BY id DESC';
         return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
+    }
+    public function getSnakesBodyCountBySnake($id) {
+        $sql = 'SELECT count(*) FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':id', $id, PDO::PARAM_INT);
+        $stm->execute();
+        return $stm->fetchColumn();
     }
     // Получить тело питона
     public function getSnakeBody($id) {

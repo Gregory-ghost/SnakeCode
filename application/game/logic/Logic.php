@@ -208,9 +208,30 @@ class Logic {
             $snakes = $this->struct->snakes;
             foreach ($snakes as $key => $snake) {
                 if ( $snake->id == $options ) {
+                    $count = $this->db->getSnakesBodyCountBySnake($snake->id);
+                    if($count > 0) {
+                        $res = $this->db->updateUserScore($snake->user_id, $count);
+                        if(!$res) return false;
+                    }
                     $res = $this->db->deleteSnake($snake->id);
                     if($res) {
                         unset($this->struct->snakes[$key]);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    // Уничтожаем тело удава
+    public function destroySnakeBody($options = null) {
+        if ( $options ) {
+            $snakesBody = $this->struct->snakesBody;
+            foreach ($snakesBody as $key => $item) {
+                if ( $item->snake_id == $options ) {
+                    $res = $this->db->deleteSnakeBody($item->id);
+                    if($res) {
+                        unset($this->struct->snakesBody[$key]);
                         return true;
                     }
                 }
@@ -228,9 +249,10 @@ class Logic {
 
     // Подвинуть удава на 1 клетку
     public function moveSnake($options = null) {
-        if ( $options and isset($options->id) ) {
-            $snake = $this->getSnake($options->id);
-            $body = $this->getSnakeBody($options->id);
+        if ( $options ) {
+            $id = $options;
+            $snake = $this->getSnake($id);
+            $body = $this->getSnakeBody($id);
             if ( $body ) {
                 // Координаты головы удава
                 $x = $body[0]->x;
@@ -253,13 +275,13 @@ class Logic {
                 }
 
                 $newPos = (object) array(
-                    'id' => $options->id,
+                    'id' => $id,
                     'x' => $x,
                     'y' => $y,
                 );
 
                 // Столкновение с едой
-                $food = $this->triggerFood($options->id);
+                $food = $this->triggerFood($id);
                 if ( $food ) {
                     // Увеличиваем счетчик eating
                     $eating = $snake->eating;
@@ -289,10 +311,11 @@ class Logic {
                         return true;
                     }
                 } else {
-                    $res = $this->db->deleteSnake($options->id);
+                    $res = $this->db->deleteSnake($id);
                     if($res) {
                         // Столкнулись, поэтому уничтожаем питона
-                        $this->destroySnake($options->id);
+                        $this->destroySnake($id);
+                        $this->destroySnakeBody($id);
                         return false;
                     }
                 }
@@ -349,22 +372,23 @@ class Logic {
                 if(!$res) return false;
                 // Добавляем в начало
                 array_unshift($this->struct->snakesBody, $head);
+                if(isset($snake->eating)) {
+                    if ( $snake->eating > 0 ) {
+                        // Увеличиваем змею, если она ест
+                        $eating = $snake->eating;
+                        $eating--;
 
-                if ( $snake->eating > 0 ) {
-                    // Увеличиваем змею, если она ест
-                    $eating = $snake->eating;
-                    $eating--;
-
-                    $res = $this->updateSnakeEating((object) array(
-                        'id'     => $snake->id,
-                        'eating' => $eating,
-                    ));
-                    return $res;
-                } else {
-                    // Не увеличиваем змею, подвигаем
-                    // Убираем последний элемент
-                    $lastElement = $this->destroySnakeBodyTail($options->id);
-                    if($lastElement) return true;
+                        $res = $this->updateSnakeEating((object) array(
+                            'id'     => $snake->id,
+                            'eating' => $eating,
+                        ));
+                        return $res;
+                    } else {
+                        // Не увеличиваем змею, подвигаем
+                        // Убираем последний элемент
+                        $lastElement = $this->destroySnakeBodyTail($options->id);
+                        if($lastElement) return true;
+                    }
                 }
             }
         }
@@ -409,6 +433,8 @@ class Logic {
                 foreach ($snakesBody as $item) {
                     if($item->snake_id == $options->id) {
                         foreach ($snakesBody as $itemEnemy) {
+                            if(!isset($item->id)) return false;
+                            if(!isset($itemEnemy->id)) return false;
                             if($item->snake_id != $itemEnemy->snake_id and $item->id != $itemEnemy->id) {
                                 if ( $itemEnemy->x == $options->x and $itemEnemy->y == $options->y ) {
                                     // Врезались в удава
@@ -633,7 +659,8 @@ class Logic {
             $this->struct->maps = $this->db->getMaps() ;
             $this->struct->foods = $this->db->getFoods() ;
             $this->struct->users = $this->db->getUsers() ;
-            $this->struct->snakesbody = $this->db->getSnakesBody() ;
+            $this->struct->snakes = $this->db->getSnakes() ;
+            $this->struct->snakesBody = $this->db->getSnakesBody() ;
             $this->struct->system = $this->db->getSystem() ;
 
             if  ( session_id() ) {
@@ -650,11 +677,11 @@ class Logic {
             if (isset($options->id)) {
                 $map = $this->db->getMapById($options->id);
                 $time = time();
-                $next_time = 20; // 20 seconds
+                $next_time = 4; // 20 seconds
                 if ($time > $map->last_updated + $next_time) {
                     // Показываем сцену
-                    $this->moveSnake();
-                    $this->db->updateMapLastUpdated($options->id, time());
+                    $this->moveSnakes();
+                    //$this->db->updateMapLastUpdated($options->id, time());
                     return $this->struct;
                 }
             }

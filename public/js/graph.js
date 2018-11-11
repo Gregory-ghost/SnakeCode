@@ -62,7 +62,7 @@ function Graph() {
 
     this.drawSnakes = (snakes = {}) => {
         // Отрисовываем всех змей
-            for(let i = 0; i < snakes.length; i++) {
+        for(let i = 0; i < snakes.length; i++) {
             this.drawSnake(snakes[i]);
         }
     };

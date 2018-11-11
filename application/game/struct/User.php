@@ -6,6 +6,7 @@ class User {
     public $token;
     public $login;
     public $password;
+    public $score;
 
     public function __construct($options = null)
     {
@@ -28,6 +29,10 @@ class User {
             }
             if(isset($options->password)) {
                 $this->password = $options->password;
+
+            }
+            if(isset($options->score)) {
+                $this->score = $options->score;
 
             }
         }

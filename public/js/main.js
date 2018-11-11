@@ -3,7 +3,7 @@
 // ПИ 21
 
 $(document).ready(async () => {
-    const UPDATE_SCENE_INTERVAL = 100; // Интервал обращений к серверу в сек
+    const UPDATE_SCENE_INTERVAL = 5; // Интервал обращений к серверу в сек
 
 	const server = new Server();
 	const ui = new UI();
@@ -29,6 +29,8 @@ $(document).ready(async () => {
         handleClickStartGameBtn = callbacks.handleClickStartGameBtn;
 
         onGamePage = callbacks.onGamePage;
+        onSnakeDestroy = callbacks.onSnakeDestroy;
+        onGameEnd = callbacks.onGameEnd;
         onMove = callbacks.onMove;
         onGetScene = callbacks.onGetScene;
 
@@ -134,25 +136,80 @@ $(document).ready(async () => {
         // Страница игры
         onGamePage: () => {
             graph.init();
-            let snake = struct.getSnake();
-            console.log('snake :: ' + snake);
             ui.handleArrowKeys(onMove);
-            var updateScene = setInterval(getScene(onGetScene), UPDATE_SCENE_INTERVAL * 1000);
-            getScene(onGetScene);
+
+            let intervalID = 0;
+            let wait =
+                ms => new Promise(
+                    r => setTimeout(r, ms)
+                );
+
+            let repeat =
+                (ms, func) => new Promise(
+                    r => (
+                        intervalID = setInterval(func, ms),
+                            wait(ms).then(r)
+                    )
+                );
+
+            let myfunction =
+                () => new Promise(
+                    r => r(getScene(onGetScene))
+                );
+
+            let handleStopGame =
+                () => new Promise(
+                    r => r(ui.handleClickStopGameBtn(() => {
+                        clearInterval(intervalID);
+                        onGameEnd('game end')
+                    }))
+                );
+            let handleSnakeDestroy =
+                () => new Promise(
+                    r => r(onSnakeDestroy(() => {
+                        clearInterval(intervalID);
+                        onGameEnd('game end')
+                    }))
+                );
+
+            repeat(UPDATE_SCENE_INTERVAL * 1000, () => Promise.all([myfunction()])) // UPDATE_SCENE_INTERVAL * 1000
+                .then(handleStopGame())
+                .then(getScene(onGetScene));
+
+        },
+        onSnakeDestroy: (callback) => {
+            let snakes = struct.getSnakes();
+            let mySnake = struct.getSnake();
+
+            $.each(snakes, (i, snake) => {
+                if(snake.id == mySnake.id) {
+                    if(snake.deleted_at > 0) {
+                        callback();
+                    }
+                }
+            });
+
         },
         onMove: async (direction) => {
             // Нажатие на клавишу
-            debugger;
             if(direction) {
-                await server.changeDirection(struct.getUser().id, direction);
+                await server.changeDirection(struct.getSnake().id, direction);
             }
         },
         onGetScene: (result = false) => {
             // Получение сцены
+            console.log('onGetScene');
             if (result) {
-                graph.draw(struct);
+                console.log('onGetScene true');
+                graph.draw(struct.get());
             }
         },
+        onGameEnd: (result = false) => {
+            // Закончилась игра
+            //let score = 0;
+            ui.showMessage(result);
+        },
+
 
         onError: (err) => {
             ui.showMessage(err);
@@ -160,17 +217,20 @@ $(document).ready(async () => {
     });
 
     getMySnake = (uid) => {
+        let snakes = struct.getSnakes(),
+            mySnake = {};
 
+        $.each(snakes, (i, snake) => {
+            if(snake.user_id == uid) {
+                mySnake = snake;
+            }
+        });
+        struct.setSnake(mySnake);
     };
 
 	getScene = async (callback) => {
         const answer = await server.getScene(struct.getMap().id);
-        getAnswer(answer, callback);
-	};
-
-	getAnswer = (answer = {}, callback) => {
         if(answer.result) {
-            console.log(answer.data);
             struct.set(answer.data);
             callback(answer.result);
         } else {
