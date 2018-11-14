@@ -1,152 +1,10 @@
 <?php
 
-require_once dirname(__DIR__).'/../modules/DB.php';
-
 class Logic {
     private $struct;
-    private $db;
 
     public function __construct($struct) {
-        $this->startSession();
         $this->struct = $struct;
-        $this->db = new DB();
-    }
-
-    /*
-        * Авторизация
-        * Описаны основные функции для входа, создания сессии
-     */
-
-    private function random_string($length = 64) {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
-    }
-
-    public function startSession() {
-        if ( session_id() ) return true;
-        else return session_start();
-    }
-    public function destroySession() {
-        if ( session_id() ) {
-            // Если есть активная сессия, удаляем куки сессии,
-            setcookie(session_name(), session_id(), time()-60*60*24);
-            // и уничтожаем сессию
-            session_unset();
-            session_destroy();
-            return true;
-        }
-        return false;
-    }
-
-    private function genericToken() {
-        return $this->random_string(64);
-    }
-
-    private function updateUserToken($id) {
-        if(!$id) return false;
-        $token = $this->genericToken();
-        $res3 = $this->db->createUserToken($id, $token);
-        if(!$res3) return false;
-        // Получение токена
-        $res = $this->db->getUserById($id);
-        if(!$res) return false;
-
-        $this->startSession();
-        $_SESSION['token_id'] = $res->token;
-        // Сохранение пользователя для дальнейшней работы
-        $res4 = $this->saveUserInStruct($res->token);
-        return $res4;
-    }
-
-    private function saveUserInStruct($token) {
-        if ( $token ) {
-            $res = $this->db->getUserByToken($token);
-            if(!$res) return false;
-            $options = (object) array(
-                'id'    => $res->id,
-                'login' => $res->login,
-                'name'  => $res->name,
-            );
-            $this->struct->myUser = $options;
-            return true;
-        }
-        return false;
-    }
-
-    public function getCurrentUser() {
-        if ( session_id() ) {
-            $token = $_SESSION['token_id'];
-            return $this->saveUserInStruct($token);
-        }
-        return false;
-    }
-
-    // Авторизация
-    public function login($options = null) {
-        if ( $options ) {
-            if (isset($options->login)) {
-                $login = $options->login;
-                $res = $this->db->getUserByLogin($login);
-                if($res) {
-                    if(!isset($options->password)) return false;
-                    $password = $options->password;
-                    // Получение пользователя
-                    $res = $this->db->getUser($login, $password);
-                    if(!$res) return false;
-
-                    // Получение токена по TokenId
-                    $res2 = $this->db->getTokenByTokenId($res->token);
-                    if($res2) {
-                        $time = time();
-                        if($time > $res2->expiredAt) {
-                            return $this->updateUserToken($res->id);
-                        } else {
-                            $res3 = $this->startSession();
-                            if(!$res3) {}
-                            $_SESSION['token_id'] = $res->token;
-                            // Сохранение пользователя для дальнейшней работы
-                            return $this->saveUserInStruct($res->token);
-                        }
-                    } else {
-                        return $this->updateUserToken($res->id);
-                    }
-
-
-                }
-            }
-        }
-        return false;
-    }
-    // Регистрация
-    public function register($options = null) {
-        if ( $options ) {
-            if (isset($options->login)) {
-                $login = $options->login;
-                $res = $this->db->getUserByLogin($login);
-                if(!$res) {
-                    if(isset($options->password) && isset($options->name)) {
-                        $res = $this->db->saveUser($options);
-                        if(!$res) return false;
-
-                        // Получение пользователя
-                        $res2 = $this->db->getUserByLogin($login);
-                        if(!$res2) return false;
-
-                        return $this->updateUserToken($res2->id);
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    // Выход
-    public function logout($options) {
-        return $this->destroySession();
     }
 
     /*
@@ -184,20 +42,8 @@ class Logic {
     // Создать удава
     public function createSnake($options = null) {
         if ( $options ) {
-            $res = $this->db->createSnake($options);
-            if(!$res) return false;
-            if(isset($options->user_id)) {
-                $res = $this->db->getLastSnakeByUserId($options->user_id);
-                if($res) {
-                    $this->struct->snakes[] = new Snake($res);
-                    $res = $this->createSnakeBody((object) array(
-                        'snake_id' => $res->id,
-                        'x' => 0,
-                        'y' => 0,
-                    ));
-                    if($res) return true;
-                }
-            }
+            $this->struct->snakes[] = new Snake($options);
+            return true;
         }
         return false;
     }
@@ -208,39 +54,53 @@ class Logic {
             $snakes = $this->struct->snakes;
             foreach ($snakes as $key => $snake) {
                 if ( $snake->id == $options ) {
-                    $count = $this->db->getSnakesBodyCountBySnake($snake->id);
-                    if($count > 0) {
-                        // TODO :: дописать функцию обновления очков
-                        $res = $this->db->updateUserScore($snake->user_id, $count);
-                        if(!$res) return false;
-                    }
-                    $res = $this->db->deleteSnake($snake->id);
-                    if($res) {
-                        unset($this->struct->snakes[$key]);
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    // Уничтожаем тело удава
-    public function destroySnakeBody($options = null) {
-        if ( $options ) {
-            $snakesBody = $this->struct->snakesBody;
-            foreach ($snakesBody as $key => $item) {
-                if ( $item->snake_id == $options ) {
-                    $res = $this->db->deleteSnakeBody($item->id);
-                    if($res) {
-                        unset($this->struct->snakesBody[$key]);
-                        return true;
-                    }
+                    unset($this->struct->snakes[$key]);
+                    return true;
                 }
             }
         }
         return false;
     }
 
+    // Изменить направление удава
+    public function changeDirection($options = null)
+    {
+        if ($options and isset($options->id)) {
+            $snake = $this->getSnake($options->id);
+            if ( $snake && isset($options->direction) ) {
+                $direction = $options->direction;
+                // Проверка на противоположные направления
+                switch($direction) {
+                    case 'left':
+                        if($snake->direction == 'right') {
+                            return true;
+                        }
+                        break;
+                    case 'right':
+                        if($snake->direction == 'left') {
+                            return true;
+                        }
+                        break;
+                    case 'up':
+                        if($snake->direction == 'down') {
+                            return true;
+                        }
+                        break;
+                    case 'down':
+                        if($snake->direction == 'up') {
+                            return true;
+                        }
+                        break;
+                }
+                $isSet = $this->setSnakeProperty((object)array(
+                    'id' => $options->id,
+                    'direction' => $options->direction,
+                ));
+                return true;
+            }
+        }
+        return false;
+    }
     public function moveSnakes() {
         $snakes = $this->struct->snakes;
         foreach($snakes as $snake) {
@@ -253,7 +113,7 @@ class Logic {
         if ( $options ) {
             $id = $options;
             $snake = $this->getSnake($id);
-            $body = $this->getSnakeBody($id);
+            $body = $snake->body;
             if ( $body ) {
                 // Координаты головы удава
                 $x = $body[0]->x;
@@ -293,11 +153,7 @@ class Logic {
                     ));
                     if(!$res) return false;
 
-                    $res = $this->db->deleteFood($food->id);
-                    if($res) {
-                        // Съесть еду
-                        $this->destroyFood($food->id);
-                    }
+                    $this->destroyFood($food->id);
                 }
 
 
@@ -306,19 +162,14 @@ class Logic {
                 // Подвигаем змею
                 if ( $isMove ) {
                     // Ни с чем не столкнулись, проверяем на состояние
-                    $isUpdatePosition = $this->moveSnakePosition( $newPos );
+                    $isUpdatePosition = $this->updateSnakePosition( $newPos );
                     if ( $isUpdatePosition ) {
                         // Координаты обновлены
                         return true;
                     }
                 } else {
-                    $res = $this->db->deleteSnake($id);
-                    if($res) {
-                        // Столкнулись, поэтому уничтожаем питона
-                        $this->destroySnake($id);
-                        $this->destroySnakeBody($id);
-                        return false;
-                    }
+                    // Столкнулись, поэтому уничтожаем питона
+                    $this->destroySnake($id);
                 }
             }
         }
@@ -345,21 +196,17 @@ class Logic {
     public function updateSnakeEating($options) {
         if($options) {
             if(isset($options->id) and isset($options->eating)) {
-                $res = $this->db->updateSnakeEating($options->id, $options->eating);
-                if($res) {
-                    $isSet = $this->setSnakeProperty((object) array(
-                        'id' => $options->id,
-                        'eating' => $options->eating,
-                    ));
-                    return true;
-                }
+                $isSet = $this->setSnakeProperty((object) array(
+                    'id' => $options->id,
+                    'eating' => $options->eating,
+                ));
+                return true;
             }
         }
         return false;
     }
-
     // Сдвиг удава
-    private function moveSnakePosition( $options = null ) {
+    private function updateSnakePosition( $options = null ) {
         if ( $options and isset($options->id) ) {
             $snake = $this->getSnake($options->id);
             if ( $snake and isset($options->x) and isset($options->y) ) {
@@ -369,12 +216,8 @@ class Logic {
                     'y' => $options->y,
                 );
 
-                $res = $this->db->createSnakeBody($head);
-                if(!$res) return false;
-                $res = $this->db->getLastSnakeBodyBySnakeId($options->id);
-                if(!$res) return false;
                 // Добавляем в начало
-                array_unshift($this->struct->snakesBody, $res);
+                $this->addSnakeBody($head);
                 if(isset($snake->eating)) {
                     if ( $snake->eating > 0 ) {
                         // Увеличиваем змею, если она ест
@@ -432,17 +275,18 @@ class Logic {
     private function isCrashedInSnake( $options = null ) {
         if ( $options and isset($options->id) ) {
             if(isset($options->x) and isset($options->y)) {
-                $snakesBody = $this->struct->snakesBody;
-                foreach ($snakesBody as $item) {
-                    if($item->snake_id == $options->id) {
-                        foreach ($snakesBody as $itemEnemy) {
-                            if(!isset($item->id)) return false;
-                            if(!isset($itemEnemy->id)) return false;
-                            if($item->snake_id != $itemEnemy->snake_id and $item->id != $itemEnemy->id) {
-                                if ( $itemEnemy->x == $options->x and $itemEnemy->y == $options->y ) {
-                                    // Врезались в удава
-                                    return true;
-                                }
+
+                $snake = $this->getSnake($options->id);
+                $bodys = $snake->body;
+                $snakes = $this->struct->snakes;
+
+                foreach ($snakes as $enemySnake) {
+                    if($enemySnake->id != $snake->id) {
+                        foreach($enemySnake as $bodyEnemy) {
+                            $body = $bodys[0];
+                            if($bodyEnemy->x == $body->x and $bodyEnemy->y == $body->y) {
+                                // Врезались в удава
+                                return true;
                             }
                         }
                     }
@@ -453,73 +297,92 @@ class Logic {
     }
 
     // Создать тело удава
-    public function createSnakeBody($options = null) {
+    public function addSnakeBody($options = null) {
         if ( $options ) {
-            $res = $this->db->createSnakeBody($options);
-            if(!$res) return false;
             if(isset($options->snake_id)) {
-                $res = $this->db->getLastSnakeBodyBySnakeId($options->snake_id);
-                if($res) {
-                    $this->struct->snakesBody[] = new SnakeBody($res);
+                $snake = $this->getSnake($options->snake_id);
+                $body = $snake->body;
+                $body[] = $options;
+                // добавляем в начало
+                array_unshift($body, $options);
+                $isSet = $this->setSnakeProperty((object)array(
+                    'id' => $options->snake_id,
+                    'body' => $body,
+                ));
+                return true;
+            }
+        }
+        return false;
+    }
+    // Получить тело удава
+    public function getSnakeBody( $options = null ) {
+        if ( $options ) {
+            $snake = $this->getSnake($options);
+            $body = $snake->body;
+            return $body;
+        }
+        return false;
+    }
+    // Уничтожить удава
+    public function destroySnakeBody($options = null) {
+        if ( $options ) {
+            $bodys = $this->struct->snakes_body;
+            foreach ($bodys as $key => $body) {
+                if ( $body->id == $options ) {
+                    unset($this->struct->snakes[$key]);
                     return true;
                 }
             }
         }
         return false;
     }
-
-    // Получить тело удава
-    public function getSnakeBody( $options = null ) {
+    // Уничтожить удава
+    public function destroySnakeBodyBySnakeId($options = null) {
         if ( $options ) {
-            $snakes = $this->struct->snakesBody;
-            $body = [];
-            foreach ($snakes as $item) {
-                if ($item->snake_id == $options) {
-                    $body[] = $item;
+            $isFound = false;
+            $bodys = $this->struct->snakes_body;
+            foreach ($bodys as $key => $body) {
+                if ( $body->snake_id == $options ) {
+                    unset($this->struct->snakes[$key]);
+                    $isFound = true;
                 }
             }
-            return $body;
+            return $isFound;
         }
         return false;
     }
-
     // Уничтожить удава
     public function destroySnakeBodyById($options = null) {
         if ( $options ) {
-            $snakes = $this->struct->snakesBody;
-            foreach ($snakes as $key => $body) {
+            $snake = $this->getSnake($options);
+            $bodys = $snake->body;
+            foreach ($bodys as $key => $body) {
                 if(isset($body->id)) {
                     if ( $body->id == $options ) {
-                        $res = $this->db->deleteSnakeBody($body->id);
-                        if($res) {
-                            unset($this->struct->snakesBody[$key]);
-                            return true;
-                        }
+                        unset($bodys[$key]);
+                        $isSet = $this->setSnakeProperty((object)array(
+                            'id' => $options,
+                            'body' => $bodys,
+                        ));
+                        return true;
                     }
                 }
             }
         }
         return false;
     }
-
     // Убрать хвост
     public function destroySnakeBodyTail($options = null) {
         if($options) {
-            $snakes = $this->struct->snakesBody;
-            $body = [];
-            foreach ($snakes as $key => $item) {
-                if ( $item->snake_id == $options ) {
-                    $body[] = $item;
-                }
-            }
+            $snake = $this->getSnake($options);
+            $bodys = $snake->body;
 
-            $lastElement = array_pop($body);
-            if($lastElement) {
-                $res = $this->destroySnakeBodyById($lastElement->id);
-                if($res) {
-                    return $lastElement;
-                }
-            }
+            // последний элемент извлечение
+            array_pop($bodys);
+            $isSet = $this->setSnakeProperty((object)array(
+                'id' => $options,
+                'body' => $bodys,
+            ));
         }
         return false;
     }
@@ -537,48 +400,6 @@ class Logic {
         return false;
     }
 
-    // Изменить направление удава
-    public function changeDirection($options = null)
-    {
-        if ($options and isset($options->id)) {
-            $snake = $this->getSnake($options->id);
-            if ( $snake && isset($options->direction) ) {
-                $direction = $options->direction;
-                // Проверка на противоположные направления
-                switch($direction) {
-                    case 'left':
-                        if($snake->direction == 'right') {
-                            return true;
-                        }
-                        break;
-                    case 'right':
-                        if($snake->direction == 'left') {
-                            return true;
-                        }
-                        break;
-                    case 'up':
-                        if($snake->direction == 'down') {
-                            return true;
-                        }
-                        break;
-                    case 'down':
-                        if($snake->direction == 'up') {
-                            return true;
-                        }
-                        break;
-                }
-                $res = $this->db->updateSnakeDirection($options->id, $options->direction);
-                if ($res) {
-                    $isSet = $this->setSnakeProperty((object)array(
-                        'id' => $options->id,
-                        'direction' => $options->direction,
-                    ));
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     /*
         * Еда
@@ -589,15 +410,11 @@ class Logic {
     // Добавить новую еду на карту
     public function addFood($options = null) {
         if ( $options ) {
-            $res = $this->db->createFood($options);
-            if($res) {
-                $this->struct->foods[] = new Food($options);
-                return true;
-            }
+            $this->struct->foods[] = new Food($options);
+            return true;
         }
         return false;
     }
-
     // Получить еду
     public function getFood( $options = null ) {
         if ( $options ) {
@@ -610,24 +427,19 @@ class Logic {
         }
         return false;
     }
-
     // Съесть еду
     public function destroyFood( $options = null ) {
         if ( $options ) {
             $foods = $this->struct->foods;
             foreach ($foods as $key => $food) {
                 if ( $food->id == $options ) {
-                    $res = $this->db->deleteFood($food->id);
-                    if($res) {
-                        unset($this->struct->foods[$key]);
-                        return true;
-                    }
+                    unset($this->struct->foods[$key]);
+                    return true;
                 }
             }
         }
         return false;
     }
-
     // Змея наехала головой на еду
     public function triggerFood( $options = null ) {
         if ( $options ) {
@@ -648,16 +460,10 @@ class Logic {
     /*
         * Сцена
     */
-    // Обновление сцены
-    public function updateScene( $options = null ) {
-        if ( $options ) {
-            return true;
-        }
-        return false;
-    }
 
     // Получение информации о сцене
     public function getScene ( $options = null ){
+        return false;
         if ( $options ) {
             $this->struct->maps = $this->db->getMaps();
             $this->struct->foods = $this->db->getFoods();

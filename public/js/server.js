@@ -1,7 +1,9 @@
 function Server() {
 
+	let token;
+
 	this.changeDirection = function (id = 0, direction = 'left') {
-		return $.get('api', { method: 'changeDirection', id, direction });
+		return $.get('api', { method: 'changeDirection', id, direction, token });
 	};
     this.createSnake = function (options) {
         return $.get('api', { method: 'createSnake', ...options });
@@ -56,7 +58,6 @@ function Struct() {
                     body.push({id: item.id, x: item.x, y: item.y});
 				}
 			}
-			debugger;
             s.snakes[i]['body'] = body;
 		}
         s.maps = data.maps;

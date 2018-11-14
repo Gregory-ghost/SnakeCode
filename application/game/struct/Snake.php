@@ -5,9 +5,8 @@ class Snake {
     public $name;
     public $direction;
     public $eating;
-    public $map_id;
     public $user_id;
-    public $deleted_at;
+    public $body;
 
     public function __construct($options = null)
     {
@@ -28,16 +27,12 @@ class Snake {
                 $this->eating = $options->eating;
 
             }
-            if(isset($options->map_id)) {
-                $this->map_id = $options->map_id;
-
-            }
             if(isset($options->user_id)) {
                 $this->user_id = $options->user_id;
 
             }
-            if(isset($options->deleted_at)) {
-                $this->deleted_at = $options->deleted_at;
+            if(isset($options->body)) {
+                $this->body = $options->body;
 
             }
         }
