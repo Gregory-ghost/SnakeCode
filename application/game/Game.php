@@ -17,6 +17,14 @@ class Game {
         $this->input  = new Input($this->logic);
     }
 
+    public function getMaps() {
+        $maps = $this->db->getMaps();
+        if($maps) {
+            return $maps;
+        }
+        return false;
+    }
+
     public function init($map_id) {
         if ($map_id) {
             $map = $this->db->getMapById($map_id);

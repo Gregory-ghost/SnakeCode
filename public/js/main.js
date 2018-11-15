@@ -2,26 +2,92 @@
 // Питон / Змея
 // ПИ 21
 
+
 $(document).ready(async () => {
     const UPDATE_SCENE_INTERVAL = 1; // Интервал обращений к серверу в сек
 
 	const server = new Server();
-	const ui = new UI();
+	const ui = new UI(handlerUI);
 	const graph = new Graph();
-	const struct = new Struct();
+	const user = new User(handlerUser);
+
+
+	const handlerUI = {
+	    isLoggedIn: () => {
+            let token = server.token;
+            if(token) {
+                ui.switchPage('LoginPage');
+                user.init();
+            }
+        },
+        onStartGame: async () => {
+            const answer = await server.getMaps();
+            if(answer.result) {
+                ui.switchPage('MapsPage');
+                // Отрисовываем выборку карт
+                graph.initMaps(answer.result.maps);
+                // Ловим нажатия на карту
+                ui.initMaps();
+            } else {
+                error(answer.error);
+            }
+        },
+        onGamePage: async () => {
+            const answer = await server.startGame();
+            if(answer.result) {
+                ui.switchPage('MapsPage');
+                // Отрисовываем выборку карт
+                graph.initMaps(answer.result.maps);
+                // Ловим нажатия на карту
+                ui.initMaps();
+            } else {
+                error(answer.error);
+            }
+        },
+    };
+
+	const handlerUser = {
+	    onSwitchPage: (page = '') => {
+	        // Переключатель страниц
+	        ui.switchPage(page);
+        },
+        onLogin: async (options = {}) => {
+	        // Авторизация на сервере
+            const answer = await server.login(options);
+            if(answer.result) {
+                server.setToken(answer.data.token);
+                ui.switchPage('ProfilePage');
+                ui.initProfile();
+            } else {
+                error(answer.error);
+            }
+        },
+        onRegister: async (options = {}) => {
+	        // Регистрация на сервере
+            const answer = await server.register(options);
+            if(answer.result) {
+                server.setToken(answer.data.token);
+                ui.switchPage('ProfilePage');
+                ui.initProfile();
+            } else {
+                error(answer.error);
+            }
+        },
+        onLogout: async (options = {}) => {
+	        // Выход из профиля
+            const answer = await server.logout();
+            if(answer.result) {
+                server.setToken('');
+                ui.switchPage('LoginPage');
+                user.init();
+            } else {
+                error(answer.error);
+            }
+        },
+    };
 
 
     function F1(callbacks) {
-        isLoggedIn = callbacks.isLoggedIn;
-        onLoginPage = callbacks.onLoginPage;
-        onLogin = callbacks.onLogin;
-        onSuccessLogin = callbacks.onSuccessLogin;
-        handleClickRegisterBtn = callbacks.handleClickRegisterBtn;
-
-        onRegisterPage = callbacks.onRegisterPage;
-        onRegister = callbacks.onRegister;
-        onSuccessRegister = callbacks.onSuccessRegister;
-        handleClickLoginBtn = callbacks.handleClickLoginBtn;
 
         onProfilePage = callbacks.onProfilePage;
         onSuccessLogout = callbacks.onSuccessLogout;
@@ -43,59 +109,6 @@ $(document).ready(async () => {
     }
 
     const f1 = new F1({
-        isLoggedIn: async () => {
-            const answer = await server.getCurrentUser();
-            let isLoggedIn = answer.result;
-            if(isLoggedIn) {
-                struct.setUser(answer.data["myUser"]);
-                ui.Router('ProfilePage', onProfilePage);
-            } else {
-                ui.Router('LoginPage', onLoginPage);
-            }
-        },
-        // Страница входа
-        onLoginPage: () => {
-            ui.handleLogin(onLogin);
-            ui.handleClickRegisterBtn(handleClickRegisterBtn);
-        },
-        onLogin: async (options = {}) => {
-            const answer = await server.login(options);
-            if(answer.result) {
-                struct.setUser(options);
-                onSuccessLogin(answer.data);
-            } else {
-                onError(answer.error);
-            }
-        },
-        onSuccessLogin: (data = {}) => {
-            ui.Router('GamePage', onGamePage);
-            ui.showMessage(data);
-        },
-        handleClickRegisterBtn: (err) => {
-            ui.Router('RegisterPage', onRegisterPage);
-        },
-
-        // Страница регистрации
-        onRegisterPage: () => {
-            ui.handleRegister(onRegister);
-            ui.handleClickLoginBtn(handleClickLoginBtn);
-        },
-        onRegister: async (options = {}) => {
-            const answer = await server.register(options);
-            if(answer.result) {
-                struct.setUser(options);
-                onSuccessRegister(answer.data);
-            } else {
-                onError(answer.error);
-            }
-        },
-        onSuccessRegister: (data = {}) => {
-            ui.Router('GamePage', onGamePage);
-            ui.showMessage(data);
-        },
-        handleClickLoginBtn: (err) => {
-            ui.Router('LoginPage', onLoginPage);
-        },
 
         // Страница профиля
         onProfilePage: () => {

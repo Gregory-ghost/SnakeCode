@@ -4,4 +4,5 @@
 const COMMAND = [
     'CHANGE_DIRECTION' => 'changeDirection', // изменить направление змеи
     'GET_SCENE' => 'getScene', // получить информацию о сцене
+    'START_GAME' => 'startGame', // начать игру
 ];

@@ -1,11 +1,6 @@
 // Отрисовка сцены
 
 
-// TODO :: переделать построение карты, изменилась структура
-// TODO :: добавить авторизацию и регистрацию
-// TODO :: начальный экран для игры
-// TODO :: автоматическое обновление сцены
-
 
 function Graph() {
     let canvas = document.getElementById('game'),
@@ -23,6 +18,7 @@ function Graph() {
         gameWrapper: $('#game_wrapper'),
         pathSprites: '/public/img/sprite/',
         pathImages: '/public/img/',
+        maps: $('.mapsBlock')
     };
     let sprites = {};
 
@@ -31,10 +27,21 @@ function Graph() {
         sprites = this.loadImages();
     };
 
+    // Отрисовываем карты
+    this.initMaps = (maps) => {
+        $.each(maps, (i, map) => {
+            c.maps.append(getMapTemplate(map));
+        });
+    };
+    this.getMapTemplate = (map) => {
+        return '<div class="map_item">Карта номер '+map.id+'</div>';
+    };
+
     this.output = (c, txt) => {
         $('.' + c).html(txt);
     };
 
+    // Отрисовываем карту
     this.draw = (data = {}) => {
         // SIZE.width = data.maps[0].width;
         // SIZE.height = data.maps[0].height;
