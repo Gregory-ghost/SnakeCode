@@ -22,25 +22,34 @@ function Graph() {
     };
     let sprites = {};
 
-    this.init = () => {
-        this.setSpritesPath();
-        sprites = this.loadImages();
-    };
 
     // Отрисовываем карты
     this.initMaps = (maps) => {
+        if(maps.length > 0) {
+            c.maps.html('');
+        }
         $.each(maps, (i, map) => {
-            c.maps.append(getMapTemplate(map));
+            c.maps.append(this.getMapTemplate(map));
         });
     };
     this.getMapTemplate = (map) => {
         return '<div class="map_item">Карта номер '+map.id+'</div>';
     };
 
+    // Вывод в html блок
     this.output = (c, txt) => {
         $('.' + c).html(txt);
     };
 
+    // Подготовка сцены
+    this.init = () => {
+        this.setSpritesPath();
+        sprites = this.loadImages();
+    };
+    // Очистка сцены
+    this.clear = () => {
+        ctx.clearRect(0, 0, (SIZE.width * SIZE.sizeSnake), (SIZE.height * SIZE.sizeSnake));
+    };
     // Отрисовываем карту
     this.draw = (data = {}) => {
         // SIZE.width = data.maps[0].width;
@@ -54,10 +63,6 @@ function Graph() {
         this.drawSnakes(data.snakes);
     };
 
-    this.clear = () => {
-        // Очистка сцены
-        ctx.clearRect(0, 0, (SIZE.width * SIZE.sizeSnake), (SIZE.height * SIZE.sizeSnake));
-    };
 
     this.drawMap = () => {
         // Отрисовываем карту

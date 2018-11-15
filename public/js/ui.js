@@ -25,11 +25,14 @@ function UI(callbacks) {
         mapsBlock: $('.mapsBlock'),
     };
 
-    isLoggedIn();
+    // Подготавливаем модуль
+    this.init = () => {
+        isLoggedIn();
+    };
 
 
     // Переключатель страниц
-    this.switchPage = (page = '', callback) => {
+    this.switchPage = (page = '') => {
         switch(page) {
             case 'LoginPage':
                 c.gameWrapper.find('.page').addClass('hidden');
@@ -57,7 +60,6 @@ function UI(callbacks) {
 
                 break;
         }
-        callback(page);
     };
 
     this.initProfile = () => {

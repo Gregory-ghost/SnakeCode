@@ -6,6 +6,7 @@ body {
     background-size: 100% auto;
 }
 #game_wrapper {
+    margin-top: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -51,4 +52,17 @@ body {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     margin-bottom: 20px;
+}
+
+.mapsBlock {
+    margin-top: 30px;
+}
+.mapsBlock .map_item {
+    background: #fff;
+    width: 150px;
+    height: 150px;
+    padding: 30px;
+    font-size: 18px;
+    border-radius: 3px;
+    cursor: pointer;
 }

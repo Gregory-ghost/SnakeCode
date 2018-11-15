@@ -8,7 +8,7 @@ function Server() {
 	this.changeDirection = function (id = 0, direction = 'left') {
 		return $.get('api', { method: 'changeDirection', id, direction, token });
 	};
-    this.getMaps = function (options) {
+    this.getMaps = function () {
         return $.get('api', { method: 'getMaps', token });
     };
     this.startGame = function (options) {
