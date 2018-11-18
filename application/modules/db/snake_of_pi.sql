@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 15, 2018 at 09:50 PM
+-- Generation Time: Nov 19, 2018 at 12:05 AM
 -- Server version: 5.6.38-log
 -- PHP Version: 5.6.32
 
@@ -56,7 +56,7 @@ CREATE TABLE `map` (
 --
 
 INSERT INTO `map` (`id`, `width`, `height`, `last_updated`, `snake_size`) VALUES
-(1, 14, 7, 1541961328, 64);
+(1, 14, 7, 1542574970, 64);
 
 -- --------------------------------------------------------
 
@@ -77,12 +77,7 @@ CREATE TABLE `snake` (
 --
 
 INSERT INTO `snake` (`id`, `user_id`, `direction`, `map_id`, `eating`) VALUES
-(11, 2, 'right', 1, 0),
-(12, 2, 'right', 1, 0),
-(13, 2, 'right', 1, 0),
-(14, 2, 'right', 1, 0),
-(15, 2, 'right', 1, 0),
-(16, 2, 'right', 1, 0);
+(1, 2, '', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -102,14 +97,8 @@ CREATE TABLE `snake_body` (
 --
 
 INSERT INTO `snake_body` (`id`, `snake_id`, `x`, `y`) VALUES
-(15, 1, 14, 0),
-(31, 2, 13, 0),
-(164, 11, 10, 0),
-(165, 12, 6, 0),
-(166, 13, 5, 0),
-(167, 14, 4, 0),
-(168, 16, 3, 0),
-(169, 16, 2, 0);
+(6, 1, 1, 0),
+(7, 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -131,7 +120,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `name`, `token`, `login`, `password`, `score`) VALUES
-(2, 'Вася', 'c0723dc7f184f1176fc974b13c0a0ad8', 'vasya', 123, 1),
+(2, 'Вася', '7ea1c2b54484bdc0c7a8ab30b66d194a', 'vasya', 123, 1),
 (3, 'Петя', NULL, 'petya', 111, 0);
 
 -- --------------------------------------------------------
@@ -221,13 +210,13 @@ ALTER TABLE `map`
 -- AUTO_INCREMENT for table `snake`
 --
 ALTER TABLE `snake`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `snake_body`
 --
 ALTER TABLE `snake_body`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=170;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `user`
