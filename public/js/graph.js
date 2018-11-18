@@ -166,7 +166,13 @@ function Graph() {
             value = food.value,
             type = food.type,
             map_id = food.map_id;
-
+        let options = {
+            xsprite: sprites.eat[0],
+            ysprite: sprites.eat[1],
+            x: food.x,
+            y: food.y,
+        };
+        this.drawSprite(options);
         // Cubic curves example
         ctx.beginPath();
         ctx.moveTo(75,40);
@@ -203,6 +209,7 @@ function Graph() {
                 right: [192, 192],
                 left: [256, 128],
             },
+            // Еда
             eat: [0, 192],
         };
         return newSprites;
