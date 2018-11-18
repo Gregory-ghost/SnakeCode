@@ -45,19 +45,7 @@ class Router {
             $this->bad('logout fail');
     }
 
-    private function getMaps($token) {
-	    if($token) {
-            $userId = $this->user->checkToken($token);
-            if($userId) {
-                $maps = $this->game->getMaps();
-                return ($maps)
-                    ? $this->good($maps)
-                    : $this->bad('maps not found');
-            }
-        }
-        return $this->bad('get maps fail');
-    }
-	
+
 	public function answer($options) {
 	    if ( $options and isset($options->method) ) {
 	        $method = $options->method;
@@ -65,11 +53,23 @@ class Router {
                 switch ($method) {
                     case 'login'  : return $this->login($options->login, $options->password); break;
                     case 'logout' : return $this->logout($options->token); break;
-                    case 'getMaps' : return $this->getMaps($options->token); break;
-                    //...
                 }
                 $userId = $this->user->checkToken($options->token);
                 if ($userId) {
+                    switch($method) {
+                        case 'getMaps' :
+                            $maps = $this->game->getMaps();
+                            return ($maps)
+                                ? $this->good($this->game->getStruct())
+                                : $this->bad('maps not found');
+                            break;
+                        case 'startGame' :
+                            $game = $this->game->startGame($userId, $options->map_id);
+                            return ($game)
+                                ? $this->good($game)
+                                : $this->bad('start game not found');
+                            break;
+                    }
                     if (isset($options->map_id) and $this->game->init($options->map_id)) {
                         $COMMAND = $this->game->getCommand();
                         foreach ( $COMMAND as $command ) {

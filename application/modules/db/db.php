@@ -174,8 +174,8 @@ class DB {
         return $stm->fetchObject('stdClass');
     }
     // Получить последнего созданного питона у пользователя
-    public function getLastSnakeByUserId($id) {
-        $sql = 'SELECT * FROM snake WHERE user_id = :id ORDER BY id DESC LIMIT 1';
+    public function getSnakeByUserId($id) {
+        $sql = 'SELECT * FROM snake WHERE user_id = :id ORDER BY id DESC';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
@@ -184,11 +184,13 @@ class DB {
     // Создать питона
     public function createSnake($options) {
         $user_id = $options->user_id;
+        $map_id = $options->map_id;
         $direction = $options->direction;
 
-        $sql = "INSERT INTO snake (user_id, direction) VALUES (:user_id, :direction)";
+        $sql = "INSERT INTO snake (user_id, direction, map_id) VALUES (:user_id, :direction, :map_id)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':map_id', $map_id, PDO::PARAM_INT);
         $stmt->bindParam(':direction', $direction, PDO::PARAM_STR);
         $res = $stmt->execute();
         return $res;

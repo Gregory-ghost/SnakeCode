@@ -33,7 +33,7 @@ function Graph() {
         });
     };
     this.getMapTemplate = (map) => {
-        return '<div class="map_item">Карта номер '+map.id+'</div>';
+        return '<div class="map_item" data-map-id="'+map.id+'">Карта номер '+map.id+'</div>';
     };
 
     // Вывод в html блок

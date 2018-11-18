@@ -7,6 +7,7 @@ class Snake {
     public $eating;
     public $user_id;
     public $body;
+    public $deleted_at;
 
     public function __construct($options = null)
     {
@@ -33,6 +34,10 @@ class Snake {
             }
             if(isset($options->body)) {
                 $this->body = $options->body;
+
+            }
+            if(isset($options->deleted_at)) {
+                $this->deleted_at = $options->deleted_at;
 
             }
         }

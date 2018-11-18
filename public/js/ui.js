@@ -6,6 +6,7 @@ function UI(callbacks) {
     onStartGame = callbacks.onStartGame;
     onGamePage = callbacks.onGamePage;
     onGetMap = callbacks.onGetMap;
+    onChangeDirection = callbacks.onChangeDirection;
 
     let c = {
         loginPage: $('.loginPage'),
@@ -67,8 +68,12 @@ function UI(callbacks) {
     };
     this.initMaps = () => {
         c.mapsBlock.find('.map_item').click(() => {
-            onGetMap();
+            let map_id = $(this).attr('data-map-id');
+            onGetMap(map_id);
         })
+    };
+    this.initGame = () => {
+        this.handleArrowKeys(onChangeDirection);
     };
 
     this.handleArrowKeys = function (callback) {

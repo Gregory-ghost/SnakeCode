@@ -24,6 +24,52 @@ class Game {
         }
         return false;
     }
+    public function startGame($user_id, $map_id) {
+        if($user_id && $map_id) {
+            $options = (object) array(
+                'user_id' => $user_id,
+                'map_id'  => $map_id,
+                'direction' => 'right',
+            );
+            $res = $this->db->createSnake($options);
+            if(!$res) return false;
+            $snake = $this->db->getSnakeByUserId($user_id);
+            if($snake) {
+                $snake_id = $snake->id;
+                $options2 = (object) array(
+                    'snake_id' => $snake_id,
+                    'x' => 0,
+                    'y' => 0,
+                );
+                $this->struct->snakes[] = new Snake($snake);
+                $res = $this->db->createSnakeBody($options2);
+                if($res) {
+                    $snakeBody = $this->db->getLastSnakeBodyBySnakeId($snake->id);
+                    if($snakeBody) {
+                        $this->struct->snakesBody[] = new SnakeBody($snakeBody);
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public function finishGame($user_id, $map_id) {
+        if($user_id && $map_id) {
+            $snake = $this->db->getSnakeByUserId($user_id);
+            if($snake) {
+                $res = $this->db->deleteSnake($snake->id);
+                if($res) {
+                    $res = $this->db->deleteSnakeBodyFromSnake($snake->id);
+                    if($res) {
+                        return true;
+                    }
+                }
+            }
+
+        }
+        return false;
+    }
 
     public function init($map_id) {
         if ($map_id) {

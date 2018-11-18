@@ -5,6 +5,7 @@ class SnakeBody {
     public $snake_id;
     public $x;
     public $y;
+    public $deleted_at;
 
     public function __construct($options = null)
     {
@@ -23,6 +24,10 @@ class SnakeBody {
             }
             if(isset($options->snake_id)) {
                 $this->snake_id = $options->snake_id;
+
+            }
+            if(isset($options->deleted_at)) {
+                $this->deleted_at = $options->deleted_at;
 
             }
         }

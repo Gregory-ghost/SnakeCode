@@ -5,8 +5,8 @@ function Server() {
 		map_id;
 
 	// Обращения к серверу
-	this.changeDirection = function (id = 0, direction = 'left') {
-		return $.get('api', { method: 'changeDirection', id, direction, token });
+	this.changeDirection = function (direction = 'left') {
+		return $.get('api', { method: 'changeDirection', direction, token });
 	};
     this.getMaps = function () {
         return $.get('api', { method: 'getMaps', token });

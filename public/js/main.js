@@ -21,7 +21,6 @@ $(document).ready(async () => {
     const handlerUI = {
         isLoggedIn: () => {
             let token = server.token;
-            console.log('test');
             if(!token) {
                 ui.switchPage('LoginPage');
                 user.init();
@@ -42,12 +41,22 @@ $(document).ready(async () => {
                 error(answer.error);
             }
         },
-        onGetMap: async () => {
-            const answer = await server.startGame();
+        onGetMap: async (map_id = 0) => {
+            const answer = await server.startGame({map_id: map_id});
             if(answer.result) {
                 ui.switchPage('GamePage');
                 // Отрисовываем игру
                 graph.init(answer.result);
+                graph.draw(answer.result);
+            } else {
+                error(answer.error);
+            }
+        },
+        onChangeDirection: async (direction = 'right') => {
+            const answer = await server.changeDirection(direction);
+            if(answer.result) {
+                // Отрисовываем игру
+                graph.draw(answer.result);
             } else {
                 error(answer.error);
             }

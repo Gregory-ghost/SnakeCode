@@ -29,7 +29,6 @@ class Struct {
             foreach ($this->snakes as $key => $snake) {
                 foreach ($snakeBody as $body) {
                     if ($snake->id == $body->snake_id) {
-                        print_r($snake->id. '=='. $body->snake_id);
                         $snake->body[] = new SnakeBody($body);
                     }
                 }
