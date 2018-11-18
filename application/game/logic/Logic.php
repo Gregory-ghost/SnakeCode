@@ -54,7 +54,7 @@ class Logic {
             $snakes = $this->struct->snakes;
             foreach ($snakes as $key => $snake) {
                 if ( $snake->id == $options ) {
-                    unset($this->struct->snakes[$key]);
+                    $this->struct->snakes[$key]->deleted_at = true;
                     return true;
                 }
             }
@@ -284,9 +284,11 @@ class Logic {
                     if($enemySnake->id != $snake->id) {
                         foreach($enemySnake as $bodyEnemy) {
                             $body = $bodys[0];
-                            if($bodyEnemy->x == $body->x and $bodyEnemy->y == $body->y) {
-                                // Врезались в удава
-                                return true;
+                            if(isset($bodyEnemy->x) && isset($bodyEnemy->y) && isset($body->x) && isset($body->y)) {
+                                if($bodyEnemy->x == $body->x and $bodyEnemy->y == $body->y) {
+                                    // Врезались в удава
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -302,7 +304,6 @@ class Logic {
             if(isset($options->snake_id)) {
                 $snake = $this->getSnake($options->snake_id);
                 $body = $snake->body;
-                $body[] = $options;
                 // добавляем в начало
                 array_unshift($body, $options);
                 $isSet = $this->setSnakeProperty((object)array(
@@ -323,47 +324,37 @@ class Logic {
         }
         return false;
     }
-    // Уничтожить удава
+    // Уничтожить только одну часть тела
     public function destroySnakeBody($options = null) {
         if ( $options ) {
-            $bodys = $this->struct->snakes_body;
-            foreach ($bodys as $key => $body) {
-                if ( $body->id == $options ) {
-                    unset($this->struct->snakes[$key]);
-                    return true;
+            if(isset($options->snake_id) && isset($options->id)) {
+                $snakes = $this->struct->snakes;
+                foreach ($snakes as $key => $snake) {
+                    if($snake->id == $options->snake_id) {
+                        foreach($snake->body as $key2 => $item) {
+                            if(isset($item->id)) {
+                                if ($item->id == $options->id) {
+                                    $this->struct->snakes[$key]->body[$key2]->deleted_at = true;
+                                    return true;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
         return false;
     }
-    // Уничтожить удава
+    // Уничтожить все тело
     public function destroySnakeBodyBySnakeId($options = null) {
         if ( $options ) {
-            $isFound = false;
-            $bodys = $this->struct->snakes_body;
-            foreach ($bodys as $key => $body) {
-                if ( $body->snake_id == $options ) {
-                    unset($this->struct->snakes[$key]);
-                    $isFound = true;
-                }
-            }
-            return $isFound;
-        }
-        return false;
-    }
-    // Уничтожить удава
-    public function destroySnakeBodyById($options = null) {
-        if ( $options ) {
-            $snake = $this->getSnake($options);
-            $bodys = $snake->body;
-            foreach ($bodys as $key => $body) {
-                if(isset($body->id)) {
-                    if ( $body->id == $options ) {
-                        unset($bodys[$key]);
-                        $isSet = $this->setSnakeProperty((object)array(
-                            'id' => $options,
-                            'body' => $bodys,
-                        ));
+            if(isset($options->snake_id)) {
+                $snakes = $this->struct->snakes;
+                foreach ($snakes as $key => $snake) {
+                    if($snake->id == $options->snake_id) {
+                        foreach($snake->body as $key2 => $item) {
+                            $this->struct->snakes[$key]->body[$key2]->deleted_at = true;
+                        }
                         return true;
                     }
                 }
@@ -378,11 +369,16 @@ class Logic {
             $bodys = $snake->body;
 
             // последний элемент извлечение
-            array_pop($bodys);
-            $isSet = $this->setSnakeProperty((object)array(
-                'id' => $options,
-                'body' => $bodys,
-            ));
+            $last_elem = array_pop($bodys);
+            array_push($bodys, $last_elem);
+
+            if(isset($last_elem->id)) {
+                $options2 = (object)array(
+                    'id' => $last_elem->id,
+                    'snake_id' => $options,
+                );
+                $this->destroySnakeBody($options2);
+            }
         }
         return false;
     }
@@ -433,7 +429,7 @@ class Logic {
             $foods = $this->struct->foods;
             foreach ($foods as $key => $food) {
                 if ( $food->id == $options ) {
-                    unset($this->struct->foods[$key]);
+                    $this->struct->foods[$key]->deleted_at = true;
                     return true;
                 }
             }
@@ -457,44 +453,4 @@ class Logic {
         return false;
     }
 
-    /*
-        * Сцена
-    */
-
-    // Получение информации о сцене
-    public function getScene ( $options = null ){
-        return false;
-        if ( $options ) {
-            $this->struct->maps = $this->db->getMaps();
-            $this->struct->foods = $this->db->getFoods();
-            $this->struct->users = $this->db->getUsers();
-            $this->struct->snakes = $this->db->getSnakes();
-            $this->struct->snakesBody = $this->db->getSnakesBody();
-            $this->struct->system = $this->db->getSystem();
-
-            if  ( session_id() ) {
-                $token = $_SESSION['token_id'];
-                $this->struct->myUser = $this->db->getUserByToken($token);
-            } else {
-                $this->struct->myUser = (object) array(
-                    'id'    => 0,
-                    'name'  => 'noname',
-                    'login' => 'nologin',
-                );
-            }
-            // Если существует (isset)
-            if (isset($options->id)) {
-                $map = $this->db->getMapById($options->id);
-                $time = time();
-                $next_time = 4; // 20 seconds
-                if ($time > $map->last_updated + $next_time) {
-                    // Показываем сцену
-                    $this->moveSnakes();
-                    //$this->db->updateMapLastUpdated($options->id, time());
-                    return $this->struct;
-                }
-            }
-        }
-        return false;
-    }
 }

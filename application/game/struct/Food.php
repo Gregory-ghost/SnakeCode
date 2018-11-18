@@ -5,6 +5,7 @@ class Food {
     public $y;
     public $type;
     public $value;
+    public $deleted_at;
 
     public function __construct($options = null)
     {
@@ -23,6 +24,10 @@ class Food {
             }
             if(isset($options->value)) {
                 $this->value = $options->value;
+
+            }
+            if(isset($options->deleted_at)) {
+                $this->deleted_at = $options->deleted_at;
 
             }
         }

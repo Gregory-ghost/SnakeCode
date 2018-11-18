@@ -11,8 +11,8 @@ function Server() {
     this.getMaps = function () {
         return $.get('api', { method: 'getMaps', token });
     };
-    this.startGame = function (options) {
-        return $.get('api', { method: 'startGame', ...options, ...token });
+    this.startGame = function (map_id = 0) {
+        return $.get('api', { method: 'startGame', map_id, token });
     };
 
 	this.login = function (options = {}) {
@@ -24,8 +24,8 @@ function Server() {
 	this.logout = function () {
 		return $.get('api', { method: 'logout'});
 	};
-    this.getScene = function(id = 1) {
-        return $.get('api', { method: 'getScene', id });
+    this.getScene = function() {
+        return $.get('api', { method: 'getScene', map_id, token });
     };
 
     // Токены
@@ -35,5 +35,9 @@ function Server() {
 	this.getToken = () => {
     	return token;
 	};
+	// Карта
+    this.setMapId = (mapId = '') => {
+        map_id = mapId;
+    };
 
 }

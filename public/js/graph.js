@@ -86,7 +86,6 @@ function Graph() {
             lastPosition = {},
             countItems = body.length;
 
-        debugger;
         for(let i = 0; i < countItems; i++) {
             let snakePositionSprite = {},
                 item = body[i];
@@ -157,7 +156,7 @@ function Graph() {
     this.drawFoods = (foods = {}) => {
         // Отрисовываем всех змей
         for(let i = 0; i < foods.length; i++) {
-            this.drawSnake(foods[i]);
+            this.drawFood(foods[i]);
         }
     };
 

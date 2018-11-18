@@ -2,12 +2,15 @@
 
 function UI(callbacks) {
 
+    // колбеки
     isLoggedIn = callbacks.isLoggedIn;
     onStartGame = callbacks.onStartGame;
     onGamePage = callbacks.onGamePage;
     onGetMap = callbacks.onGetMap;
     onChangeDirection = callbacks.onChangeDirection;
+    onUpdateScene = callbacks.onUpdateScene;
 
+    // элементы страницы
     let c = {
         loginPage: $('.loginPage'),
         gamePage: $('.gamePage'),
@@ -25,6 +28,7 @@ function UI(callbacks) {
 
         mapsBlock: $('.mapsBlock'),
     };
+    const UPDATE_TIMEOUT = 1000; // время обновления сцены
 
     // Подготавливаем модуль
     this.init = () => {
@@ -67,13 +71,15 @@ function UI(callbacks) {
         this.handleClickStartGameBtn(onStartGame);
     };
     this.initMaps = () => {
-        c.mapsBlock.find('.map_item').click(() => {
-            let map_id = $(this).attr('data-map-id');
+        c.mapsBlock.find('[data-map-id]').bind("click", (e) => {
+            event.preventDefault();
+            let map_id = $(e.target).data('map-id');
             onGetMap(map_id);
         })
     };
     this.initGame = () => {
         this.handleArrowKeys(onChangeDirection);
+        setTimeout(onUpdateScene(), UPDATE_TIMEOUT);
     };
 
     this.handleArrowKeys = function (callback) {

@@ -42,12 +42,14 @@ $(document).ready(async () => {
             }
         },
         onGetMap: async (map_id = 0) => {
-            const answer = await server.startGame({map_id: map_id});
+            server.setMapId(map_id);
+            const answer = await server.startGame(map_id);
             if(answer.result) {
                 ui.switchPage('GamePage');
+                ui.initGame();
                 // Отрисовываем игру
-                graph.init(answer.result);
-                graph.draw(answer.result);
+                graph.init(answer.data);
+                graph.draw(answer.data);
             } else {
                 error(answer.error);
             }
@@ -56,7 +58,15 @@ $(document).ready(async () => {
             const answer = await server.changeDirection(direction);
             if(answer.result) {
                 // Отрисовываем игру
-                graph.draw(answer.result);
+            } else {
+                error(answer.error);
+            }
+        },
+        onUpdateScene: async (map_id = 0) => {
+            const answer = await server.getScene();
+            if(answer.result) {
+                // Отрисовываем игру
+                graph.draw(answer.data);
             } else {
                 error(answer.error);
             }

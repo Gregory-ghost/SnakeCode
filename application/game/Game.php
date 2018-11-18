@@ -24,8 +24,64 @@ class Game {
         }
         return false;
     }
+
+    public function init($map_id) {
+        if ($map_id) {
+            $map = $this->db->getMapById($map_id);
+            if($map) {
+                $snakes = $this->db->getSnakes($map_id);
+                $this->struct->addSnakes($snakes);
+                foreach($snakes as $snake) {
+                    $snakeBody = $this->db->getSnakeBody($snake->id);
+                    $this->struct->addSnakeBody($snakeBody);
+                }
+
+                $foods = $this->db->getFoods($map_id);
+                $this->struct->addFoods($foods);
+
+                $maps = $this->db->getMaps();
+                $this->struct->addMaps($maps);
+            }
+        }
+        return false;
+    }
+
+    // записать измененные данные в БД
+    public function updateData($map_id) {
+        if ($map_id) {
+                $this->db->updateSnakes($map_id, $this->struct->snakes);
+                $this->db->updateFoods($map_id, $this->struct->foods);
+                $this->db->updateMapLastUpdated($map_id, time());
+                return true;
+
+        }
+        return false;
+    }
+
+    // Получение информации о сцене
+    public function getScene($user_id, $map_id) {
+        if ( $map_id ) {
+            $this->init($map_id);
+            $struct = new stdClass();
+            $struct->snakes = $this->struct->snakes;
+            $struct->foods = $this->struct->foods;
+
+            $map = $this->db->getMapById($map_id);
+            $time = time();
+            $next_time = 4;
+            if ($time > $map->last_updated + $next_time) {
+                // Показываем сцену
+                $this->logic->moveSnakes();
+                $this->updateData($map_id);
+                return $this->struct;
+            }
+        }
+        return false;
+    }
+
     public function startGame($user_id, $map_id) {
         if($user_id && $map_id) {
+            $this->init($map_id);
             $options = (object) array(
                 'user_id' => $user_id,
                 'map_id'  => $map_id,
@@ -48,7 +104,10 @@ class Game {
                     if($snakeBody) {
                         $this->struct->snakesBody[] = new SnakeBody($snakeBody);
                     }
-                    return true;
+                    $struct = new stdClass();
+                    $struct->snakes = $this->struct->snakes;
+                    $struct->foods = $this->struct->foods;
+                    return $struct;
                 }
             }
         }
@@ -67,74 +126,6 @@ class Game {
                 }
             }
 
-        }
-        return false;
-    }
-
-    public function init($map_id) {
-        if ($map_id) {
-            $map = $this->db->getMapById($map_id);
-            if($map) {
-                $snakes = $this->db->getSnakes($map_id);
-                $this->struct->addSnakes($snakes);
-                foreach($snakes as $snake) {
-                    $snakeBody = $this->db->getSnakeBody($snake->id);
-                    $this->struct->addSnakeBody($snakeBody);
-                }
-
-                $foods = $this->db->getFoods($map_id);
-                $this->struct->addFoods($foods);
-            }
-
-            /*$game = $this->db->getGame($gameId);
-            if ($game) {
-                // заполнить игроков
-                $gamers = $this->db->getGamers($gameId);
-                $this->struct->fillGamers($gamers);
-                // заполнить карту
-                $map = $this->db->getMap($game->map_id);
-                $this->struct->fillMap($map);
-                // заполнить героев
-                $heroes = $this->db->getHeroes($gameId);
-                $this->struct->fillHeroes($heroes);
-                // заполнить предметы
-                // заполнить артефакты
-                $artifacts = $this->db->getArtifacts($gameId);
-                $this->struct->fillArtifacts($artifacts);
-                // заполнить строения
-                $mapBuildings = $this->db->getMapBuildings($gameId);
-                $this->struct->fillMapBuildings($mapBuildings);
-                // заполнить города
-                $towns = $this->db->getTowns($gameId);
-                $this->struct->fillTowns($towns);
-                // заполнить итемы
-                $items = $this->db->getItems($gameId);
-                $this->struct->fillItems($items);
-                return true;
-            }*/
-        }
-        return false;
-    }
-
-    // записать измененные данные в БД
-    public function updateData($gameId) {
-        if ($gameId) {
-            $game = $this->db->getGame($gameId);
-            if ($game) {
-                // записать игроков
-                $this->db->updateGamers($gameId, $this->struct->gamers);
-                // записать героев
-                $this->db->updateHeroes($gameId, $this->struct->heroes);
-                // записать артефакты
-                $this->db->updateArtifacts($gameId, $this->struct->artifacts);
-                // записать строения
-                $this->db->updateMapBuildings($gameId, $this->struct->mapBuildings);
-                // записать города
-                $this->db->updateTowns($gameId, $this->struct->towns);
-                // записать предметы
-                $this->db->updateItems($gameId, $this->struct->items);
-                return true;
-            }
         }
         return false;
     }

@@ -185,15 +185,48 @@ class DB {
     public function createSnake($options) {
         $user_id = $options->user_id;
         $map_id = $options->map_id;
-        $direction = $options->direction;
+        $direction = 'right';
+        if(isset($options->direction)) {
+            $direction = $options->direction;
+        }
+        $eating = 0;
+        if(isset($options->eating)) {
+            $eating = $options->eating;
+        }
 
-        $sql = "INSERT INTO snake (user_id, direction, map_id) VALUES (:user_id, :direction, :map_id)";
+        $sql = "INSERT INTO snake (user_id, direction, map_id, eating) VALUES (:user_id, :direction, :map_id, :eating)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->bindParam(':map_id', $map_id, PDO::PARAM_INT);
+        $stmt->bindParam(':eating', $eating, PDO::PARAM_INT);
         $stmt->bindParam(':direction', $direction, PDO::PARAM_STR);
         $res = $stmt->execute();
         return $res;
+    }
+    public function updateSnakes($map_id, $snakes) {
+        $res = false;
+        foreach ($snakes as $snake) {
+            if(isset($snake->id)) {
+                if(isset($snake->deleted_at)) {
+                    $res = $this->deleteSnake($snake->id);
+                } else {
+                    $res = $this->updateSnake($snake);
+                }
+                $res = $this->updateSnakesBody($snake);
+            } else {
+                $snake->map_id = $map_id;
+                $res = $this->createSnake($snake);
+            }
+        }
+        return $res;
+    }
+    public function updateSnake($snake) {
+        $sql = "UPDATE snake SET direction = :direction, eating = :eating WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':eating', $snake->eating, PDO::PARAM_INT);
+        $stmt->bindParam(':direction', $direction, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $snake->id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
     // Изменить направление питона
     public function updateSnakeDirection($id, $direction) {
@@ -281,6 +314,39 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
+    public function updateSnakesBody($snake) {
+        $res = false;
+        if(isset($snake->body)) {
+            $body = $snake->body;
+            foreach ($body as $item) {
+                if (isset($item->id)) {
+                    if(isset($item->deleted_at)) {
+                        $res = $this->deleteSnakeBody($item->id);
+                    } else {
+                        $res = $this->updateSnakeBody($item);
+                    }
+                } else {
+                    if(isset($snake->id)) {
+                        $item->snake_id = $snake->id;
+                        $res = $this->createSnakeBody($item);
+                    }
+                }
+
+            }
+        }
+        return $res;
+    }
+    public function updateSnakeBody($item) {
+        if($item) {
+            $sql = "UPDATE snake_body SET x = :x, y = :y WHERE id = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':x', $item->x, PDO::PARAM_INT);
+            $stmt->bindParam(':y', $item->y, PDO::PARAM_INT);
+            $stmt->bindParam(':id', $item->id, PDO::PARAM_INT);
+            return $stmt->execute();
+        }
+        return false;
+    }
     // Удалить тело питона
     public function deleteSnakeBody($id) {
         $sql = "DELETE FROM snake_body WHERE id =  :id";
@@ -308,13 +374,15 @@ class DB {
         $fvalue = $options['value'];
         $x = $options['x'];
         $y = $options['y'];
+        $map_id = $options['map_id'];
 
-        $sql = "INSERT INTO snake_body (ftype, fvalue, x, y) VALUES (:ftype, :fvalue, :x, :y)";
+        $sql = "INSERT INTO snake_body (ftype, fvalue, x, y, map_id) VALUES (:ftype, :fvalue, :x, :y, :map_id)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':ftype', $ftype, PDO::PARAM_INT);
         $stmt->bindParam(':fvalue', $fvalue, PDO::PARAM_INT);
         $stmt->bindParam(':x', $x, PDO::PARAM_INT);
         $stmt->bindParam(':y', $y, PDO::PARAM_INT);
+        $stmt->bindParam(':map_id', $map_id, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
     }
@@ -332,6 +400,30 @@ class DB {
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
+    }
+    public function updateFoods($map_id, $foods) {
+        $res = false;
+        foreach ($foods as $food) {
+            if(isset($snake->id)) {
+                if(isset($snake->deleted_at)) {
+                    $res = $this->deleteFood($food->id);
+                } else {
+                    $res = $this->updateFood($food);
+                }
+            } else {
+                $food->map_id = $map_id;
+                $res = $this->createFood($food);
+            }
+        }
+        return $res;
+    }
+    public function updateFood($food) {
+        $sql = "UPDATE food SET x = :x, y = :y WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':x', $food->x, PDO::PARAM_INT);
+        $stmt->bindParam(':x', $food->y, PDO::PARAM_INT);
+        $stmt->bindParam(':id', $food->id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
 
