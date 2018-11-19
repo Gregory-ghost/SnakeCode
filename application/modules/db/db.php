@@ -21,16 +21,6 @@ class DB {
     }
 
     // TODO :: вынести пользователя в отдельный модуль
-
-	// текущее время на сервере
-	public function getServerTime() {
-		$sql = 'SELECT CURRENT_TIMESTAMP() AS time';
-        $stm = $this->conn->prepare($sql);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-
-	}
-	
 	
 	
 	
@@ -397,14 +387,21 @@ class DB {
     }
     // Изменить последнего времени обновления
     public function updateMapLastUpdated($id) {
-        $sql = "UPDATE map SET last_updated = CURRENT_TIMESTAMP() WHERE id = :id";
+        $sql = "UPDATE map SET last_updated = UNIX_TIMESTAMP() WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
     }
 
+    // текущее время на сервере
+    public function getServerTime() {
+        $sql = 'SELECT UNIX_TIMESTAMP() AS time';
+        $stm = $this->conn->prepare($sql);
+        $stm->execute();
+        return $stm->fetchObject('stdClass');
 
+    }
 
 }
     
