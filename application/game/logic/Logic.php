@@ -475,13 +475,13 @@ class Logic {
                     'x'  => 1,
                     'y' => 1,
                 );
-                $options = (object) array(
+                $options2 = (object) array(
                     'user_id' => $options->user_id,
                     'map_id'  => $options->map_id,
                     'direction' => 'right',
                     'body'  => $body,
                 );
-                return $this->createSnake($options);
+                return $this->createSnake($options2);
             }
         }
         return false;

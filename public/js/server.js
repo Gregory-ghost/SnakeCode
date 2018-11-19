@@ -15,12 +15,12 @@ function Server() {
         return $.get('api', { method: 'startGame', map_id, token });
     };
 
-    this.login = function (options = {}) {
-        const result = $.get('api', { method: 'login', ...options });
+    this.login = async function (options = {}) {
+        const result = await $.get('api', { method: 'login', ...options });
         if(result.result) {
             token = result.data.token;
         }
-        return result.result;
+        return result;
     };
 	this.register = function (options) {
 		return $.get('api', { method: 'register', ...options });

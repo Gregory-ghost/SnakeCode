@@ -19,17 +19,19 @@ class Struct {
     public function addSnakes($snakes) {
         if (isset($snakes)) {
             $this->snakes = [];
-            foreach ($snakes as $snake) {
+            foreach ($snakes as $key => $snake) {
                 $this->snakes[] = new Snake($snake);
+                unset($this->snakes[$key]->deleted_at);
             }
         }
     }
     public function addSnakeBody($snakeBody) {
         if (isset($snakeBody)) {
             foreach ($this->snakes as $key => $snake) {
-                foreach ($snakeBody as $body) {
+                foreach ($snakeBody as $key2 => $body) {
                     if ($snake->id == $body->snake_id) {
                         $snake->body[] = new SnakeBody($body);
+                        unset($this->snakes[$key]->body[$key2]->deleted_at);
                     }
                 }
             }

@@ -56,6 +56,7 @@ class Router {
                 }
                 $userId = $this->user->checkToken($options->token);
                 if ($userId) {
+                    $options->user_id = $userId;
                     switch($method) {
                         case 'getMaps' :
                             $maps = $this->game->getMaps();
@@ -70,7 +71,7 @@ class Router {
                                 : $this->bad('scene not found');
                             break;
                     }
-                    if (isset($options->map_id) and $this->game->init($options->map_id)) {
+                    if (isset($options->map_id) and $this->game->getData($options->map_id)) {
                         $COMMAND = $this->game->getCommand();
                         foreach ( $COMMAND as $command ) {
                             if ( $command === $method ) {
@@ -80,7 +81,7 @@ class Router {
                                     $this->game->updateData($options->map_id); // записать измененные данные в БД
                                 }
                                 return ($result) ?
-                                    $this->good($this->game->getStruct()) :
+                                    $this->good($this->game->getData($options->map_id)) :
                                     $this->bad('game method return false');
                             }
                         }

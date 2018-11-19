@@ -1,25 +1,8 @@
-function User(server, switchPage) {
-
-    let c = {
-        startGameBtn: $('.startGameBtn'),
-        stopGameBtn: $('.stopGameBtn'),
-
-        mapsBlock: $('.mapsBlock'),
-        loginPage: $('.loginPage'),
-        gamePage: $('.gamePage'),
-        registerPage: $('.registerPage'),
-        profilePage: $('.profilePage'),
-        mapsPage: $('.mapsPage'),
-
-        loginForm: $('#loginForm'),
-        gameWrapper: $('#game_wrapper'),
-        registerForm: $('#registerForm'),
-
-        logoutBtn: $('.logoutBtn'),
-    };
+function User(server, c = {}, switchPage) {
 
     // Инициализация модуля
     this.init = () => {
+        switchPage('LoginPage');
         // Вызов хендлеров
     	this.handleLogin(this.onLogin);
         this.handleRegister(this.onRegister);
@@ -32,11 +15,7 @@ function User(server, switchPage) {
     	this.handleClickLogoutBtn(this.onLogout);
         this.handleClickStartGameBtn(this.onStartGame);
 
-        c.mapsBlock.find('[data-map-id]').bind("click", (e) => {
-            event.preventDefault();
-            let map_id = $(e.target).data('map-id');
-            this.onGetMap(map_id);
-        })
+
 	};
 
     // Нажатие на начать игру
@@ -65,11 +44,16 @@ function User(server, switchPage) {
     // Отрисовываем карты
     this.createMaps = (maps) => {
         if(maps.length > 0) {
-            c.maps.html('');
+            c.blocks.maps.html('');
         }
         $.each(maps, (i, map) => {
-            c.maps.append('<div class="map_item" data-map-id="'+map.id+'">Карта номер '+map.id+'</div>');
+            c.blocks.maps.append('<div class="map_item" data-map-id="'+map.id+'">Карта номер '+map.id+'</div>');
         });
+        c.blocks.maps.find('[data-map-id]').bind("click", (e) => {
+            event.preventDefault();
+            let map_id = $(e.target).data('map-id');
+            this.onGetMap(map_id);
+        })
     };
 
     // Авторизация на сервере
@@ -97,17 +81,17 @@ function User(server, switchPage) {
     /* Обработка нажатий */
 
     this.handleLogin = (callback) => {
-        c.loginForm.on("submit", (event) => {
+        c.form.login.on("submit", (event) => {
             event.preventDefault();
             callback({
-                login: c.loginForm.find("input[name='login']").val(),
-                password: c.loginForm.find("input[name='password']").val(),
+                login: c.form.login.find("input[name='login']").val(),
+                password: c.form.login.find("input[name='password']").val(),
             });
         });
     };
 
     this.handleClickRegisterBtn = (callback) => {
-        c.loginPage.find('.registerLink').bind("click", (event) => {
+        c.pages.login.find('.registerLink').bind("click", (event) => {
             event.preventDefault();
             callback();
             return false;
@@ -116,18 +100,18 @@ function User(server, switchPage) {
     };
 
     this.handleRegister = (callback) => {
-        c.registerForm.on("submit", (event) => {
+        c.form.register.on("submit", (event) => {
             event.preventDefault();
             callback({
-                name: c.registerForm.find("input[name='name']").val(),
-                login: c.registerForm.find("input[name='login']").val(),
-                password: c.registerForm.find("input[name='password']").val(),
+                name: c.form.register.find("input[name='name']").val(),
+                login: c.form.register.find("input[name='login']").val(),
+                password: c.form.register.find("input[name='password']").val(),
             });
         });
     };
 
     this.handleClickLoginBtn = (callback) => {
-        c.registerPage.find('.loginLink').bind("click", (event) => {
+        c.pages.register.find('.loginLink').bind("click", (event) => {
             event.preventDefault();
             callback();
             return false;
@@ -136,7 +120,7 @@ function User(server, switchPage) {
     };
 
     this.handleClickLogoutBtn = (callback) => {
-        c.logoutBtn.bind("click", (event) => {
+        c.btn.logout.bind("click", (event) => {
             event.preventDefault();
             callback();
             return false;
@@ -145,7 +129,7 @@ function User(server, switchPage) {
     };
 
     this.handleClickStartGameBtn = (callback) => {
-        c.startGameBtn.bind("click", (event) => {
+        c.btn.startGame.bind("click", (event) => {
             event.preventDefault();
             callback();
             return false;
@@ -154,7 +138,7 @@ function User(server, switchPage) {
     };
 
     this.handleClickStopGameBtn = (callback) => {
-        c.stopGameBtn.bind("click", (event) => {
+        c.btn.stopGame.bind("click", (event) => {
             event.preventDefault();
             callback();
             return false;

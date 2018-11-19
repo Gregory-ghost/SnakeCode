@@ -24,7 +24,7 @@ class DB {
 
 	// текущее время на сервере
 	public function getServerTime() {
-		$sql = 'SELECT CURRENT_TIMESTAMP()';
+		$sql = 'SELECT CURRENT_TIMESTAMP() AS time';
         $stm = $this->conn->prepare($sql);
         $stm->execute();
         return $stm->fetchObject('stdClass');
@@ -396,11 +396,10 @@ class DB {
         return $res;
     }
     // Изменить последнего времени обновления
-    public function updateMapLastUpdated($id, $last_updated) {
-        $sql = "UPDATE map SET last_updated = :last_updated WHERE id = :id";
+    public function updateMapLastUpdated($id) {
+        $sql = "UPDATE map SET last_updated = CURRENT_TIMESTAMP() WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->bindValue(':last_updated', $last_updated, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
     }
