@@ -15,9 +15,13 @@ function Server() {
         return $.get('api', { method: 'startGame', map_id, token });
     };
 
-	this.login = function (options = {}) {
-		return $.get('api', { method: 'login', ...options });
-	};
+    this.login = function (options = {}) {
+        const result = $.get('api', { method: 'login', ...options });
+        if(result.result) {
+            token = result.data.token;
+        }
+        return result.result;
+    };
 	this.register = function (options) {
 		return $.get('api', { method: 'register', ...options });
 	};
@@ -29,9 +33,6 @@ function Server() {
     };
 
     // Токены
-    this.setToken = (uToken = '') => {
-    	token = uToken;
-	};
 	this.getToken = () => {
     	return token;
 	};

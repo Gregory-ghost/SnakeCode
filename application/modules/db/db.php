@@ -1,9 +1,15 @@
 <?php
-
+// todo :: подключить модули, сделать разделение
+// чтобы не в одном было
 
 class DB {
 
     public $conn;
+    // подключаем модули
+    public $user;
+    public $snake;
+    public $food;
+    public $map;
 
     public function __construct() {
         $host = 'localhost';
@@ -16,6 +22,20 @@ class DB {
 
     // TODO :: вынести пользователя в отдельный модуль
 
+	// текущее время на сервере
+	public function getServerTime() {
+		$sql = 'SELECT CURRENT_TIMESTAMP()';
+        $stm = $this->conn->prepare($sql);
+        $stm->execute();
+        return $stm->fetchObject('stdClass');
+
+	}
+	
+	
+	
+	
+	
+	
     /*User*/
     // Получение пользователя
     public function getUsers() {
@@ -85,67 +105,11 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
-    public function createUserToken($id, $token) {
-        $expiredAt = time() + (7 * 24 * 60 * 60); // Week
-        $options = array(
-            'user_id' => $id,
-            'token' => $token,
-            'expiredAt' => $expiredAt,
-        );
-        $res = $this->createToken($options);
-        if(!$res) return false;
-        $res2 = $this->getTokenByToken($token);
-        if(!$res2) return false;
-
-        $res3 = $this->updateUserToken($id, $res2->id);
-        if(!$res3) return false;
-
-        return $res3;
-    }
+    
 
 
-    /*User_access_token*/
-    //Создать токен пользователя
-    public function createToken($options) {
-        if(!$options) return false;
-
-        $user_id = $options['user_id'];
-        $token = $options['token'];
-        $expiredAt = $options['expiredAt'];
-
-        $sql = "INSERT INTO user_access_token (user_id, token, expiredAt) VALUES (:user_id, :token, :expiredAt)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR);
-        $stmt->bindValue(':token', $token, PDO::PARAM_STR);
-        $stmt->bindValue(':expiredAt', $expiredAt, PDO::PARAM_STR);
-        $res = $stmt->execute();
-        return $res;
-    }
-    //Получить токен пользователя по token
-    public function getTokenByToken($token) {
-        $sql = 'SELECT * FROM user_access_token WHERE token = :token ORDER BY id DESC LIMIT 1';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':token', $token, PDO::PARAM_STR);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-    }
-    //Получить токен пользователя по tokenId
-    public function getTokenByTokenId($token) {
-        $sql = 'SELECT * FROM user_access_token WHERE id = :token ORDER BY id DESC LIMIT 1';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':token', $token, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-    }
-    //Получить токен пользователя по id
-    public function getTokenById($id) {
-        $sql = 'SELECT * FROM user_access_token WHERE id = :id ORDER BY id DESC LIMIT 1';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':id', $id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-    }
-
+    
+    
 
 
     /*Snake*/
@@ -157,14 +121,7 @@ class DB {
         $stm->execute();
         return $stm->fetchAll(PDO::FETCH_CLASS);
     }
-    // Получить питона пользователя
-    public function getUserSnakes($user_id) {
-        $sql = 'SELECT * FROM snake, user WHERE user.id = :user_id AND snake.user_id=user.id ORDER BY snake.id DESC';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchAll(PDO::FETCH_CLASS);
-    }
+    
     // Получить питона по id
     public function getSnakeById($id) {
         $sql = 'SELECT * FROM snake WHERE id = :id';
@@ -203,6 +160,7 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
+    // обновить всех питонов
     public function updateSnakes($map_id, $snakes) {
         $res = false;
         foreach ($snakes as $snake) {
@@ -220,11 +178,12 @@ class DB {
         }
         return $res;
     }
+    // обновить змейку
     public function updateSnake($snake) {
         $sql = "UPDATE snake SET direction = :direction, eating = :eating WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':eating', $snake->eating, PDO::PARAM_INT);
-        $stmt->bindParam(':direction', $direction, PDO::PARAM_STR);
+        $stmt->bindParam(':direction', $snake->direction, PDO::PARAM_STR);
         $stmt->bindParam(':id', $snake->id, PDO::PARAM_INT);
         return $stmt->execute();
     }
@@ -234,24 +193,6 @@ class DB {
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->bindValue(':direction', $direction, PDO::PARAM_STR);
-        $res = $stmt->execute();
-        return $res;
-    }
-    // Изменить время удаления змеи
-    public function updateSnakeDeletedAt($id, $deleted_at) {
-        $sql = "UPDATE snake SET deleted_at = :deleted_at WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->bindValue(':deleted_at', $deleted_at, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
-    }
-    // Изменить состояние еды питона
-    public function updateSnakeEating($id, $eating) {
-        $sql = "UPDATE snake SET eating = :eating WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->bindValue(':eating', $eating, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
     }
@@ -272,6 +213,9 @@ class DB {
         return $res;
     }
 
+
+
+
     /*Snake_body*/
     public function getSnakesBody() {
         $query = 'SELECT * FROM snake_body ORDER BY id DESC';
@@ -285,21 +229,15 @@ class DB {
         return $stm->fetchColumn();
     }
     // Получить тело питона
-    public function getSnakeBody($id) {
+    public function getSnakeBody($id)
+    {
         $sql = 'SELECT * FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
         return $stm->fetchAll(PDO::FETCH_CLASS);
     }
-    // Получить последнее созданное тело у питона
-    public function getLastSnakeBodyBySnakeId($id) {
-        $sql = 'SELECT * FROM snake_body WHERE snake_id = :id ORDER BY id DESC LIMIT 1';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':id', $id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-    }
+    
     // Создать тело питона
     public function createSnakeBody($options) {
         $snake_id = $options->snake_id;
@@ -314,6 +252,7 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
+    // обновить все тела змейки
     public function updateSnakesBody($snake) {
         $res = false;
         if(isset($snake->body)) {
@@ -336,6 +275,7 @@ class DB {
         }
         return $res;
     }
+    // обновить тело змейки
     public function updateSnakeBody($item) {
         if($item) {
             $sql = "UPDATE snake_body SET x = :x, y = :y WHERE id = :id";
@@ -428,28 +368,6 @@ class DB {
 
 
 
-    /*System*/
-    public function getSystem() {
-        $query = 'SELECT * FROM system';
-        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
-    }
-    // Получить систему по имени
-    public function getSystemByName($name) {
-        $sql = 'SELECT * FROM system WHERE name = :name';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':name', $name, PDO::PARAM_STR);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-    }
-    // Создать систему
-    public function createSystem($name, $value) {
-        $stmt = $this->conn->prepare("INSERT INTO system (name, value) VALUES (:name, :value)");
-        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
-        $stmt->bindParam(':value', $value, PDO::PARAM_STR);
-        $res = $stmt->execute();
-        return $res;
-    }
-
     /*Map*/
     // Получение карты
     public function getMaps() {
@@ -489,3 +407,4 @@ class DB {
 
 
 }
+    

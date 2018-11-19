@@ -63,14 +63,8 @@ class Router {
                                 ? $this->good($maps)
                                 : $this->bad('maps not found');
                             break;
-                        case 'startGame' :
-                            $game = $this->game->startGame($userId, $options->map_id);
-                            return ($game)
-                                ? $this->good($game)
-                                : $this->bad('start game not found');
-                            break;
                         case 'getScene' :
-                            $game = $this->game->getScene($userId, $options->map_id);
+                            $game = $this->game->getScene($options->map_id);
                             return ($game)
                                 ? $this->good($game)
                                 : $this->bad('scene not found');

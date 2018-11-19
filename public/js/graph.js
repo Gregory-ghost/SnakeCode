@@ -23,19 +23,6 @@ function Graph() {
     let sprites = {};
 
 
-    // Отрисовываем карты
-    this.initMaps = (maps) => {
-        if(maps.length > 0) {
-            c.maps.html('');
-        }
-        $.each(maps, (i, map) => {
-            c.maps.append(this.getMapTemplate(map));
-        });
-    };
-    this.getMapTemplate = (map) => {
-        return '<div class="map_item" data-map-id="'+map.id+'">Карта номер '+map.id+'</div>';
-    };
-
     // Вывод в html блок
     this.output = (c, txt) => {
         $('.' + c).html(txt);

@@ -24,7 +24,7 @@ class Game {
         }
         return false;
     }
-
+	// сформировать структуру
     public function init($map_id) {
         if ($map_id) {
             $map = $this->db->getMapById($map_id);
@@ -41,6 +41,7 @@ class Game {
 
                 $maps = $this->db->getMaps();
                 $this->struct->addMaps($maps);
+                return $this->struct;
             }
         }
         return false;
@@ -51,7 +52,7 @@ class Game {
         if ($map_id) {
                 $this->db->updateSnakes($map_id, $this->struct->snakes);
                 $this->db->updateFoods($map_id, $this->struct->foods);
-                $this->db->updateMapLastUpdated($map_id, time());
+                $this->db->updateMapLastUpdated($map_id);
                 return true;
 
         }
@@ -59,7 +60,7 @@ class Game {
     }
 
     // Получение информации о сцене
-    public function getScene($user_id, $map_id) {
+    public function getScene($map_id) {
         if ( $map_id ) {
             $this->init($map_id);
             $struct = new stdClass();
@@ -67,68 +68,18 @@ class Game {
             $struct->foods = $this->struct->foods;
 
             $map = $this->db->getMapById($map_id);
-            $time = time();
-            $next_time = 4;
+            $time = $this->db->getServerTime(); // todo
+            $next_time = 0.05; // время сравнения для движения
             if ($time > $map->last_updated + $next_time) {
                 // Показываем сцену
                 $this->logic->moveSnakes();
                 $this->updateData($map_id);
-                return $this->struct;
             }
+            return $this->init($map_id);
         }
         return false;
     }
 
-    public function startGame($user_id, $map_id) {
-        if($user_id && $map_id) {
-            $this->init($map_id);
-            $options = (object) array(
-                'user_id' => $user_id,
-                'map_id'  => $map_id,
-                'direction' => 'right',
-            );
-            $res = $this->db->createSnake($options);
-            if(!$res) return false;
-            $snake = $this->db->getSnakeByUserId($user_id);
-            if($snake) {
-                $snake_id = $snake->id;
-                $options2 = (object) array(
-                    'snake_id' => $snake_id,
-                    'x' => 0,
-                    'y' => 0,
-                );
-                $this->struct->snakes[] = new Snake($snake);
-                $res = $this->db->createSnakeBody($options2);
-                if($res) {
-                    $snakeBody = $this->db->getLastSnakeBodyBySnakeId($snake->id);
-                    if($snakeBody) {
-                        $this->struct->snakesBody[] = new SnakeBody($snakeBody);
-                    }
-                    $struct = new stdClass();
-                    $struct->snakes = $this->struct->snakes;
-                    $struct->foods = $this->struct->foods;
-                    return $struct;
-                }
-            }
-        }
-        return false;
-    }
-    public function finishGame($user_id, $map_id) {
-        if($user_id && $map_id) {
-            $snake = $this->db->getSnakeByUserId($user_id);
-            if($snake) {
-                $res = $this->db->deleteSnake($snake->id);
-                if($res) {
-                    $res = $this->db->deleteSnakeBodyFromSnake($snake->id);
-                    if($res) {
-                        return true;
-                    }
-                }
-            }
-
-        }
-        return false;
-    }
 
     public function getCommand() {
         return  (object) $this->input->getCommand();

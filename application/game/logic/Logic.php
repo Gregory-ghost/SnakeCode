@@ -26,6 +26,19 @@ class Logic {
         return false;
     }
 
+    // Получить удава по id пользователя
+    public function getSnakeByUserId( $options = null ) {
+        if ( $options ) {
+            $snakes = $this->struct->snakes;
+            foreach ($snakes as $snake) {
+                if ($snake->user_id == $options) {
+                    return $snake;
+                }
+            }
+        }
+        return false;
+    }
+
     // Получить удава
     public function getSnakeKey( $options = null ) {
         if ( $options ) {
@@ -65,8 +78,8 @@ class Logic {
     // Изменить направление удава
     public function changeDirection($options = null)
     {
-        if ($options and isset($options->id)) {
-            $snake = $this->getSnake($options->id);
+        if ($options and isset($options->userId)) {
+            $snake = $this->getSnakeByUserId($options->userId);
             if ( $snake && isset($options->direction) ) {
                 $direction = $options->direction;
                 // Проверка на противоположные направления
@@ -449,6 +462,41 @@ class Logic {
                     }
                 }
             }
+        }
+        return false;
+    }
+
+    // Начать игру
+    public function startGame($options) {
+        if($options) {
+            if(isset($options->user_id) && isset($options->map_id)) {
+
+                $body = (object) array(
+                    'x'  => 1,
+                    'y' => 1,
+                );
+                $options = (object) array(
+                    'user_id' => $options->user_id,
+                    'map_id'  => $options->map_id,
+                    'direction' => 'right',
+                    'body'  => $body,
+                );
+                return $this->createSnake($options);
+            }
+        }
+        return false;
+    }
+
+    // Закончить игру
+    public function finishGame($options) {
+        if($options) {
+            if(isset($options->user_id) && isset($options->map_id)) {
+                $snake = $this->getSnakeByUserId($options->user_id);
+                if ($snake) {
+                    return $this->destroySnake($snake->id);
+                }
+            }
+
         }
         return false;
     }
