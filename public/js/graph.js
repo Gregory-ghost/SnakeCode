@@ -23,11 +23,6 @@ function Graph() {
     let sprites = {};
 
 
-    // Вывод в html блок
-    this.output = (c, txt) => {
-        $('.' + c).html(txt);
-    };
-
     // Подготовка сцены
     this.init = () => {
         this.setSpritesPath();
@@ -37,23 +32,21 @@ function Graph() {
     this.clear = () => {
         ctx.clearRect(0, 0, (SIZE.width * SIZE.sizeSnake), (SIZE.height * SIZE.sizeSnake));
     };
+
     // Отрисовываем карту
     this.draw = (data = {}) => {
-        // SIZE.width = data.maps[0].width;
-        // SIZE.height = data.maps[0].height;
-        // SIZE.sizeSnake = data.maps[0].sizeSnake;
         c.game.attr({width: (SIZE.width * SIZE.sizeSnake) + SIZE.px, height: (SIZE.height * SIZE.sizeSnake) + SIZE.px});
 
         this.clear();
-        this.drawMap();
 
+        this.drawMap();
         this.drawSnakes(data.snakes);
+        this.drawFoods(data.foods);
     };
 
 
+    // Отрисовываем карту
     this.drawMap = () => {
-        // Отрисовываем карту
-
         let sprite = new Image();
         sprite.src = c.pathImages + 'bg2.png';
         sprite.addEventListener("load", function(){ ctx.drawImage(sprite, 0, 0, (SIZE.width * SIZE.sizeSnake), (SIZE.height * SIZE.sizeSnake))}, false);
@@ -66,15 +59,15 @@ function Graph() {
         }
     };
 
+    // Рисование змеи
     this.drawSnake = (snake = {}) => {
-        // Рисование змеи
-        let body = snake.body,
-            direction = snake.direction,
-            lastPosition = {},
-            countItems = body.length;
+        let body = snake.body, // Тело
+            direction = snake.direction, // Направление
+            lastPosition = {}, // Последняя позиция
+            countItems = body.length; // Количество тел в змейке
 
         for(let i = 0; i < countItems; i++) {
-            let snakePositionSprite = {},
+            let snakePositionSprite = {}, // Позиция спрайта
                 item = body[i];
             if(lastPosition.x) {
                 if(i > countItems-2) {
@@ -148,11 +141,6 @@ function Graph() {
     };
 
     this.drawFood = (food = {}) => {
-        let x = food.x,
-            y = food.y,
-            value = food.value,
-            type = food.type,
-            map_id = food.map_id;
         let options = {
             xsprite: sprites.eat[0],
             ysprite: sprites.eat[1],
@@ -160,16 +148,6 @@ function Graph() {
             y: food.y,
         };
         this.drawSprite(options);
-        // Cubic curves example
-        ctx.beginPath();
-        ctx.moveTo(75,40);
-        ctx.bezierCurveTo(75,37,70,25,50,25);
-        ctx.bezierCurveTo(20,25,20,62.5,20,62.5);
-        ctx.bezierCurveTo(20,80,40,102,75,120);
-        ctx.bezierCurveTo(110,102,130,80,130,62.5);
-        ctx.bezierCurveTo(130,62.5,130,25,100,25);
-        ctx.bezierCurveTo(85,25,75,37,75,40);
-        ctx.fill();
     };
 
 
