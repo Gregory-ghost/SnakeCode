@@ -79,7 +79,8 @@ function UI(callbacks) {
     };
     this.initGame = () => {
         this.handleArrowKeys(onChangeDirection);
-        setTimeout(onUpdateScene(), UPDATE_TIMEOUT);
+        // setTimeout(onUpdateScene(), UPDATE_TIMEOUT);
+        setInterval(() => onUpdateScene(), UPDATE_TIMEOUT);
     };
 
     this.handleArrowKeys = function (callback) {

@@ -41,6 +41,7 @@ class Game {
 
                 $maps = $this->db->getMaps();
                 $this->struct->addMaps($maps);
+                return true;
             }
         }
         return false;
@@ -51,7 +52,7 @@ class Game {
         if ($map_id) {
                 $this->db->updateSnakes($map_id, $this->struct->snakes);
                 $this->db->updateFoods($map_id, $this->struct->foods);
-                $this->db->updateMapLastUpdated($map_id, time());
+                $this->db->updateMapLastUpdated($map_id);
                 return true;
 
         }
@@ -59,7 +60,7 @@ class Game {
     }
 
     // Получение информации о сцене
-    public function getScene($user_id, $map_id) {
+    public function getScene($map_id) {
         if ( $map_id ) {
             $this->init($map_id);
             $struct = new stdClass();

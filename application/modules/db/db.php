@@ -165,22 +165,6 @@ class DB {
         $stm->execute();
         return $stm->fetchAll(PDO::FETCH_CLASS);
     }
-    // Получить питона по id
-    public function getSnakeById($id) {
-        $sql = 'SELECT * FROM snake WHERE id = :id';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':id', $id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-    }
-    // Получить последнего созданного питона у пользователя
-    public function getSnakeByUserId($id) {
-        $sql = 'SELECT * FROM snake WHERE user_id = :id ORDER BY id DESC';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':id', $id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-    }
     // Создать питона
     public function createSnake($options) {
         $user_id = $options->user_id;
@@ -224,7 +208,7 @@ class DB {
         $sql = "UPDATE snake SET direction = :direction, eating = :eating WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':eating', $snake->eating, PDO::PARAM_INT);
-        $stmt->bindParam(':direction', $direction, PDO::PARAM_STR);
+        $stmt->bindParam(':direction', $snake->direction, PDO::PARAM_STR);
         $stmt->bindParam(':id', $snake->id, PDO::PARAM_INT);
         return $stmt->execute();
     }
@@ -427,29 +411,6 @@ class DB {
     }
 
 
-
-    /*System*/
-    public function getSystem() {
-        $query = 'SELECT * FROM system';
-        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
-    }
-    // Получить систему по имени
-    public function getSystemByName($name) {
-        $sql = 'SELECT * FROM system WHERE name = :name';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':name', $name, PDO::PARAM_STR);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-    }
-    // Создать систему
-    public function createSystem($name, $value) {
-        $stmt = $this->conn->prepare("INSERT INTO system (name, value) VALUES (:name, :value)");
-        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
-        $stmt->bindParam(':value', $value, PDO::PARAM_STR);
-        $res = $stmt->execute();
-        return $res;
-    }
-
     /*Map*/
     // Получение карты
     public function getMaps() {
@@ -478,7 +439,7 @@ class DB {
     }
     // Изменить последнего времени обновления
     public function updateMapLastUpdated($id, $last_updated) {
-        $sql = "UPDATE map SET last_updated = :last_updated WHERE id = :id";
+        $sql = "UPDATE map SET last_updated = :last_updated AND time = CURRENT_TIMESTAMP() WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->bindValue(':last_updated', $last_updated, PDO::PARAM_INT);

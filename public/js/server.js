@@ -6,7 +6,7 @@ function Server() {
 
 	// Обращения к серверу
 	this.changeDirection = function (direction = 'left') {
-		return $.get('api', { method: 'changeDirection', direction, token });
+		return $.get('api', { method: 'changeDirection', direction, map_id, token });
 	};
     this.getMaps = function () {
         return $.get('api', { method: 'getMaps', token });
@@ -16,7 +16,11 @@ function Server() {
     };
 
 	this.login = function (options = {}) {
-		return $.get('api', { method: 'login', ...options });
+		const result = $.get('api', { method: 'login', ...options });
+		if(result.result) {
+			token = result.data.token;
+		}
+		return result.result;
 	};
 	this.register = function (options) {
 		return $.get('api', { method: 'register', ...options });
@@ -29,9 +33,6 @@ function Server() {
     };
 
     // Токены
-    this.setToken = (uToken = '') => {
-    	token = uToken;
-	};
 	this.getToken = () => {
     	return token;
 	};

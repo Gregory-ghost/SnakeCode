@@ -25,6 +25,18 @@ class Logic {
         }
         return false;
     }
+    // Получить удава по id пользователя
+    public function getSnakeByUserId( $options = null ) {
+        if ( $options ) {
+            $snakes = $this->struct->snakes;
+            foreach ($snakes as $snake) {
+                if ($snake->user_id == $options) {
+                    return $snake;
+                }
+            }
+        }
+        return false;
+    }
 
     // Получить удава
     public function getSnakeKey( $options = null ) {
@@ -65,8 +77,8 @@ class Logic {
     // Изменить направление удава
     public function changeDirection($options = null)
     {
-        if ($options and isset($options->id)) {
-            $snake = $this->getSnake($options->id);
+        if ($options and isset($options->userId)) {
+            $snake = $this->getSnakeByUserId($options->userId);
             if ( $snake && isset($options->direction) ) {
                 $direction = $options->direction;
                 // Проверка на противоположные направления

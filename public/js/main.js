@@ -20,7 +20,7 @@ $(document).ready(async () => {
     // Отлавливаем колбеки UI
     const handlerUI = {
         isLoggedIn: () => {
-            let token = server.token;
+            let token = server.getToken();
             if(!token) {
                 ui.switchPage('LoginPage');
                 user.init();
@@ -82,7 +82,6 @@ $(document).ready(async () => {
             // Авторизация на сервере
             const answer = await server.login(options);
             if(answer.result) {
-                server.setToken(answer.data.token);
                 ui.switchPage('ProfilePage');
                 ui.initProfile();
             } else {

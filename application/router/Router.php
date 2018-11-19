@@ -56,6 +56,7 @@ class Router {
                 }
                 $userId = $this->user->checkToken($options->token);
                 if ($userId) {
+                    $options->userId = $userId;
                     switch($method) {
                         case 'getMaps' :
                             $maps = $this->game->getMaps();
@@ -70,7 +71,7 @@ class Router {
                                 : $this->bad('start game not found');
                             break;
                         case 'getScene' :
-                            $game = $this->game->getScene($userId, $options->map_id);
+                            $game = $this->game->getScene($options->map_id);
                             return ($game)
                                 ? $this->good($game)
                                 : $this->bad('scene not found');
