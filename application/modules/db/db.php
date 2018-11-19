@@ -167,10 +167,11 @@ class DB {
             if(isset($snake->id)) {
                 if(isset($snake->deleted_at)) {
                     $res = $this->deleteSnake($snake->id);
+                    $res = $this->deleteSnakeBodyFromSnake($snake->id);
                 } else {
                     $res = $this->updateSnake($snake);
+                    $res = $this->updateSnakesBody($snake);
                 }
-                $res = $this->updateSnakesBody($snake);
             } else {
                 $snake->map_id = $map_id;
                 $res = $this->createSnake($snake);
