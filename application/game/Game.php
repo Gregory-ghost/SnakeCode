@@ -78,7 +78,9 @@ class Game {
                     $this->updateData($map_id);
                 }
             }
-            return $this->getData($map_id);
+            $data = $this->getData($map_id);
+//            print_r($data);
+            return $data;
         }
         return false;
     }

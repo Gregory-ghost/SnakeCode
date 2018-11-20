@@ -50,6 +50,8 @@ $(document).ready(async () => {
                 if(options) {
                     graph.init();
                     graph.draw(options);
+                    ui.init();
+                    updateScene();
                 }
                 break;
         }
@@ -65,15 +67,17 @@ $(document).ready(async () => {
                 error(answer.error);
             }
         },
-        onUpdateScene: async (map_id = 0) => {
-            const answer = await server.getScene();
-            if(answer.result) {
-                // Отрисовываем игру
-                graph.draw(answer.data);
-            } else {
-                error(answer.error);
-            }
-        },
+    };
+    updateScene = async () => {
+        const answer = await server.getScene();
+
+        if(answer.result) {
+            // Отрисовываем игру
+            graph.draw(answer.data);
+        } else {
+            error(answer.error);
+        }
+        setTimeout(() => updateScene(), 1000);
     };
 
 

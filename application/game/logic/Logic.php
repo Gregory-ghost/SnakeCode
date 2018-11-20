@@ -78,8 +78,8 @@ class Logic {
     // Изменить направление удава
     public function changeDirection($options = null)
     {
-        if ($options and isset($options->userId)) {
-            $snake = $this->getSnakeByUserId($options->userId);
+        if ($options and isset($options->user_id)) {
+            $snake = $this->getSnakeByUserId($options->user_id);
             if ( $snake && isset($options->direction) ) {
                 $direction = $options->direction;
                 // Проверка на противоположные направления
@@ -105,10 +105,7 @@ class Logic {
                         }
                         break;
                 }
-                $isSet = $this->setSnakeProperty((object)array(
-                    'id' => $options->id,
-                    'direction' => $options->direction,
-                ));
+                $snake->direction = $options->direction;
                 return true;
             }
         }
@@ -117,74 +114,72 @@ class Logic {
     public function moveSnakes() {
         $snakes = $this->struct->snakes;
         foreach($snakes as $snake) {
-            $this->moveSnake($snake->id);
-        }
-    }
-
-    // Подвинуть удава на 1 клетку
-    public function moveSnake($options = null) {
-        if ( $options ) {
-            $id = $options;
-            $snake = $this->getSnake($id);
-            $body = $snake->body;
-            if ( $body ) {
-                // Координаты головы удава
-                $x = $body[0]->x;
-                $y = $body[0]->y;
-
-                // Направление
-                switch ( $snake->direction ) {
-                    case 'up':
-                        $y -= 1;
-                        break;
-                    case 'down':
-                        $y += 1;
-                        break;
-                    case 'left':
-                        $x -= 1;
-                        break;
-                    case 'right':
-                        $x += 1;
-                        break;
-                }
-
-                $newPos = (object) array(
-                    'id' => $id,
-                    'x' => $x,
-                    'y' => $y,
+            $body = &$snake->body;
+            if ( !isset($body) ) {
+                $body[] = (object) array(
+                    "x" => 0,
+                    "y" => 0,
                 );
-
-                // Столкновение с едой
-                $food = $this->triggerFood($id);
-                if ( $food ) {
-                    // Увеличиваем счетчик eating
-                    $eating = $snake->eating;
-                    $eating += $food->value;
-                    $res = $this->updateSnakeEating((object) array(
-                        'id'     => $snake->id,
-                        'eating' => $eating,
-                    ));
-                    if(!$res) return false;
-
-                    $this->destroyFood($food->id);
-                }
-
-
-                // Проверяем позицию змеи на столкновение
-                $isMove = $this->isCanMove($newPos);
-                // Подвигаем змею
-                if ( $isMove ) {
-                    // Ни с чем не столкнулись, проверяем на состояние
-                    $isUpdatePosition = $this->updateSnakePosition( $newPos );
-                    if ( $isUpdatePosition ) {
-                        // Координаты обновлены
-                        return true;
-                    }
-                } else {
-                    // Столкнулись, поэтому уничтожаем питона
-                    $this->destroySnake($id);
-                }
             }
+            // Координаты головы удава
+            $x = $body[0]->x;
+            $y = $body[0]->y;
+
+            // Направление
+            switch ( $snake->direction ) {
+                case 'up':
+                    $y -= 1;
+                    break;
+                case 'down':
+                    $y += 1;
+                    break;
+                case 'left':
+                    $x -= 1;
+                    break;
+                case 'right':
+                    $x += 1;
+                    break;
+            }
+
+            $newPos = (object) array(
+                'snake_id' => $snake->id,
+                'x' => $x,
+                'y' => $y,
+            );
+
+            // Столкновение с едой
+            $food = $this->triggerFood($snake->id);
+            if ( $food ) {
+                // Увеличиваем счетчик eating
+                $snake->eating += $food->value;
+                $this->destroyFood($food->id);
+            }
+
+
+            // Проверяем позицию змеи на столкновение
+            $isMove = $this->isCanMove($newPos);
+            // Подвигаем змею
+            if ( $isMove ) {
+                // Ни с чем не столкнулись, проверяем на состояние
+                // Добавляем голову
+                array_unshift($body, $newPos);
+
+                if(!isset($snake->eating)) {
+                    $snake->eating = 0;
+                }
+                if ( $snake->eating > 0 ) {
+                    $snake->eating--;
+                    return true;
+                } else {
+                    // Убираем последний элемент
+                    $body[count($body) - 1]->deleted_at = true;
+                    return true;
+                }
+            } else {
+                // Столкнулись, поэтому уничтожаем питона
+                $this->destroySnake($snake->id);
+            }
+
         }
         return false;
     }
@@ -206,61 +201,14 @@ class Logic {
         return false;
     }
 
-    public function updateSnakeEating($options) {
-        if($options) {
-            if(isset($options->id) and isset($options->eating)) {
-                $isSet = $this->setSnakeProperty((object) array(
-                    'id' => $options->id,
-                    'eating' => $options->eating,
-                ));
-                return true;
-            }
-        }
-        return false;
-    }
-    // Сдвиг удава
-    private function updateSnakePosition( $options = null ) {
-        if ( $options and isset($options->id) ) {
-            $snake = $this->getSnake($options->id);
-            if ( $snake and isset($options->x) and isset($options->y) ) {
-                $head = (object) array(
-                    'snake_id' => $options->id,
-                    'x' => $options->x,
-                    'y' => $options->y,
-                );
-
-                // Добавляем в начало
-                $this->addSnakeBody($head);
-                if(isset($snake->eating)) {
-                    if ( $snake->eating > 0 ) {
-                        // Увеличиваем змею, если она ест
-                        $eating = $snake->eating;
-                        $eating--;
-
-                        $res = $this->updateSnakeEating((object) array(
-                            'id'     => $snake->id,
-                            'eating' => $eating,
-                        ));
-                        return $res;
-                    } else {
-                        // Не увеличиваем змею, подвигаем
-                        // Убираем последний элемент
-                        $lastElement = $this->destroySnakeBodyTail($options->id);
-                        if($lastElement) return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
 
     // Может ли удав двигаться дальше
     private function isCanMove($options = null) {
-        if ( $options and isset($options->x) and isset($options->y) and isset($options->id) ) {
+        if ( $options and isset($options->x) and isset($options->y) and isset($options->snake_id) ) {
             $x = $options->x;
             $y = $options->y;
 
-            $snake = $this->getSnake($options->id);
+            $snake = $this->getSnake($options->snake_id);
             if($snake) {
                 // Выход за границы карты
                 $map = $this->getMap($snake->map_id);
@@ -286,10 +234,10 @@ class Logic {
 
     // Проверяем врезался ли в другого удава
     private function isCrashedInSnake( $options = null ) {
-        if ( $options and isset($options->id) ) {
+        if ( $options and isset($options->snake_id) ) {
             if(isset($options->x) and isset($options->y)) {
 
-                $snake = $this->getSnake($options->id);
+                $snake = $this->getSnake($options->snake_id);
                 $bodys = $snake->body;
                 $snakes = $this->struct->snakes;
 
@@ -311,23 +259,6 @@ class Logic {
         return false;
     }
 
-    // Создать тело удава
-    public function addSnakeBody($options = null) {
-        if ( $options ) {
-            if(isset($options->snake_id)) {
-                $snake = $this->getSnake($options->snake_id);
-                $body = $snake->body;
-                // добавляем в начало
-                array_unshift($body, $options);
-                $isSet = $this->setSnakeProperty((object)array(
-                    'id' => $options->snake_id,
-                    'body' => $body,
-                ));
-                return true;
-            }
-        }
-        return false;
-    }
     // Получить тело удава
     public function getSnakeBody( $options = null ) {
         if ( $options ) {
@@ -471,13 +402,23 @@ class Logic {
         if($options) {
             if(isset($options->user_id) && isset($options->map_id)) {
 
-                $body = (object) array(
+                $snakes = &$this->struct->snakes;
+                // Есть ли у пользователя созданные змейки
+                foreach($snakes as $key => $snake) {
+                    if($snake->user_id == $options->user_id && $snake->map_id == $options->map_id) {
+                        // Удаляем
+                        $snake->deleted_at = true;
+                    }
+                }
+                $body = [];
+                $body[] = (object) array(
                     'x'  => 1,
                     'y' => 1,
                 );
                 $options2 = (object) array(
                     'user_id' => $options->user_id,
                     'map_id'  => $options->map_id,
+                    'eating' => 2,
                     'direction' => 'right',
                     'body'  => $body,
                 );

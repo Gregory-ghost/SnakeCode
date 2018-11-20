@@ -21,8 +21,97 @@ class DB {
     }
 
     // TODO :: вынести пользователя в отдельный модуль
-	
-	
+
+
+
+    //Создать пользователя
+    public function saveUser($options) {
+        $name = $options['name'];
+        $login = $options['login'];
+        $password = $options['password'];
+
+        $sql = "INSERT INTO user (name, login, password) VALUES (:name, :login, :password)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+        $stmt->bindValue(':login', $login, PDO::PARAM_STR);
+        $stmt->bindValue(':password', $password, PDO::PARAM_STR);
+        $res = $stmt->execute();
+        return $res;
+    }
+    // Создать питона
+    public function createSnake($options) {
+        $user_id = $options->user_id;
+        $map_id = $options->map_id;
+        $direction = 'right';
+        if(isset($options->direction)) {
+            $direction = $options->direction;
+        }
+        $eating = 0;
+        if(isset($options->eating)) {
+            $eating = $options->eating;
+        }
+
+        $sql = "INSERT INTO snake (user_id, direction, map_id, eating) VALUES (:user_id, :direction, :map_id, :eating)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':map_id', $map_id, PDO::PARAM_INT);
+        $stmt->bindParam(':eating', $eating, PDO::PARAM_INT);
+        $stmt->bindParam(':direction', $direction, PDO::PARAM_STR);
+        $res = $stmt->execute();
+
+        if(isset($options->body)) {
+            $snake = $this->getSnakeByUserId($options->user_id);
+            $snake->body = $options->body;
+            if($snake) {
+                $res = $this->updateSnakesBody($snake);
+            }
+        }
+        return $res;
+    }
+    // Создать тело питона
+    public function createSnakeBody($options) {
+        $snake_id = $options->snake_id;
+        $x = $options->x;
+        $y = $options->y;
+
+        $sql = "INSERT INTO snake_body (snake_id, x, y) VALUES (:snake_id, :x, :y)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':snake_id', $snake_id, PDO::PARAM_INT);
+        $stmt->bindParam(':x', $x, PDO::PARAM_INT);
+        $stmt->bindParam(':y', $y, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
+    // Создать еду
+    public function createFood($options) {
+        $ftype = $options['type'];
+        $fvalue = $options['value'];
+        $x = $options['x'];
+        $y = $options['y'];
+        $map_id = $options['map_id'];
+
+        $sql = "INSERT INTO snake_body (ftype, fvalue, x, y, map_id) VALUES (:ftype, :fvalue, :x, :y, :map_id)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':ftype', $ftype, PDO::PARAM_INT);
+        $stmt->bindParam(':fvalue', $fvalue, PDO::PARAM_INT);
+        $stmt->bindParam(':x', $x, PDO::PARAM_INT);
+        $stmt->bindParam(':y', $y, PDO::PARAM_INT);
+        $stmt->bindParam(':map_id', $map_id, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
+    // Создать карту
+    public function createMap($options) {
+        $width = $options['width'];
+        $height = $options['height'];
+
+        $sql = "INSERT INTO map (width, height) VALUES (:width, :height)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':width', $width, PDO::PARAM_INT);
+        $stmt->bindValue(':height', $height, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
 	
 	
 	
@@ -65,43 +154,6 @@ class DB {
         $stm->execute();
         return $stm->fetchObject('stdClass');
     }
-    // Изменить токен пользователя
-    public function updateUserToken($id, $token) {
-        $sql = "UPDATE user SET token = :token WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':token', $token, PDO::PARAM_STR);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
-    }
-    public function updateUserScore($id, $score) {
-        $sql = "UPDATE user SET score = :score WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':score', $score, PDO::PARAM_INT);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
-    }
-    //Создать пользователя
-    public function saveUser($options) {
-        $name = $options['name'];
-        $login = $options['login'];
-        $password = $options['password'];
-
-        $sql = "INSERT INTO user (name, login, password) VALUES (:name, :login, :password)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':name', $name, PDO::PARAM_STR);
-        $stmt->bindValue(':login', $login, PDO::PARAM_STR);
-        $stmt->bindValue(':password', $password, PDO::PARAM_STR);
-        $res = $stmt->execute();
-        return $res;
-    }
-    
-
-
-    
-    
-
-
     /*Snake*/
     // Получение питона
     public function getSnakes($map_id) {
@@ -111,7 +163,6 @@ class DB {
         $stm->execute();
         return $stm->fetchAll(PDO::FETCH_CLASS);
     }
-    
     // Получить питона по id
     public function getSnakeById($id) {
         $sql = 'SELECT * FROM snake WHERE id = :id';
@@ -128,25 +179,120 @@ class DB {
         $stm->execute();
         return $stm->fetchObject('stdClass');
     }
-    // Создать питона
-    public function createSnake($options) {
-        $user_id = $options->user_id;
-        $map_id = $options->map_id;
-        $direction = 'right';
-        if(isset($options->direction)) {
-            $direction = $options->direction;
-        }
-        $eating = 0;
-        if(isset($options->eating)) {
-            $eating = $options->eating;
-        }
+    /*Snake_body*/
+    public function getSnakesBody() {
+        $query = 'SELECT * FROM snake_body ORDER BY id DESC';
+        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
+    }
+    public function getSnakesBodyCountBySnake($id) {
+        $sql = 'SELECT count(*) FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':id', $id, PDO::PARAM_INT);
+        $stm->execute();
+        return $stm->fetchColumn();
+    }
+    // Получить тело питона
+    public function getSnakeBody($id)
+    {
+        $sql = 'SELECT * FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':id', $id, PDO::PARAM_INT);
+        $stm->execute();
+        return $stm->fetchAll(PDO::FETCH_CLASS);
+    }
+    /*Food*/
+    public function getFoods($map_id) {
+        $sql = 'SELECT * FROM food WHERE map_id = :map_id ORDER BY id DESC';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':map_id', $map_id, PDO::PARAM_INT);
+        $stm->execute();
+        return $stm->fetchAll(PDO::FETCH_CLASS);
+    }
+    /*Map*/
+    // Получение карты
+    public function getMaps() {
+        $query = 'SELECT * FROM map';
+        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
+    }
+    // Получить карту по id
+    public function getMapById($id) {
+        $sql = 'SELECT * FROM map WHERE id = :id';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':id', $id, PDO::PARAM_INT);
+        $stm->execute();
+        return $stm->fetchObject('stdClass');
+    }
 
-        $sql = "INSERT INTO snake (user_id, direction, map_id, eating) VALUES (:user_id, :direction, :map_id, :eating)";
+    // текущее время на сервере
+    public function getServerTime() {
+        $sql = 'SELECT UNIX_TIMESTAMP() AS time';
+        $stm = $this->conn->prepare($sql);
+        $stm->execute();
+        return $stm->fetchObject('stdClass');
+
+    }
+
+
+
+
+    // Удалить питона пользователя
+    public function deleteUserSnakes($user_id) {
+        $sql = "DELETE FROM snake WHERE user_id =  :user_id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->bindParam(':map_id', $map_id, PDO::PARAM_INT);
-        $stmt->bindParam(':eating', $eating, PDO::PARAM_INT);
-        $stmt->bindParam(':direction', $direction, PDO::PARAM_STR);
+        $res = $stmt->execute();
+        return $res;
+    }
+    // Удалить питона
+    public function deleteSnake($id) {
+        $sql = "DELETE FROM snake WHERE id =  :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
+    // Удалить тело питона
+    public function deleteSnakeBody($id) {
+        $sql = "DELETE FROM snake_body WHERE id =  :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
+    // Удалить часть тела питона
+    public function deleteSnakeBodyFromSnake($id) {
+        $sql = "DELETE FROM snake_body WHERE snake_id =  :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
+    // Удалить еду
+    public function deleteFood($id) {
+        $sql = "DELETE FROM food WHERE id =  :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $res = $stmt->execute();
+        return $res;
+    }
+
+
+
+
+
+    // Изменить токен пользователя
+    public function updateUserToken($id, $token) {
+        $sql = "UPDATE user SET token = :token WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':token', $token, PDO::PARAM_STR);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+    public function updateUserScore($id, $score) {
+        $sql = "UPDATE user SET score = :score WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':score', $score, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
     }
@@ -187,62 +333,6 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
-    // Удалить питона
-    public function deleteSnake($id) {
-        $sql = "DELETE FROM snake WHERE id =  :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
-    }
-    // Удалить питона пользователя
-    public function deleteUserSnakes($user_id) {
-        $sql = "DELETE FROM snake WHERE user_id =  :user_id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
-    }
-
-
-
-
-    /*Snake_body*/
-    public function getSnakesBody() {
-        $query = 'SELECT * FROM snake_body ORDER BY id DESC';
-        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
-    }
-    public function getSnakesBodyCountBySnake($id) {
-        $sql = 'SELECT count(*) FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':id', $id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchColumn();
-    }
-    // Получить тело питона
-    public function getSnakeBody($id)
-    {
-        $sql = 'SELECT * FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':id', $id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchAll(PDO::FETCH_CLASS);
-    }
-    
-    // Создать тело питона
-    public function createSnakeBody($options) {
-        $snake_id = $options->snake_id;
-        $x = $options->x;
-        $y = $options->y;
-
-        $sql = "INSERT INTO snake_body (snake_id, x, y) VALUES (:snake_id, :x, :y)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':snake_id', $snake_id, PDO::PARAM_INT);
-        $stmt->bindParam(':x', $x, PDO::PARAM_INT);
-        $stmt->bindParam(':y', $y, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
-    }
     // обновить все тела змейки
     public function updateSnakesBody($snake) {
         $res = false;
@@ -256,9 +346,10 @@ class DB {
                         $res = $this->updateSnakeBody($item);
                     }
                 } else {
+                    $item->snake_id = $snake->id;
                     if(isset($snake->id)) {
-                        $item->snake_id = $snake->id;
                         $res = $this->createSnakeBody($item);
+
                     }
                 }
 
@@ -277,60 +368,6 @@ class DB {
             return $stmt->execute();
         }
         return false;
-    }
-    // Удалить тело питона
-    public function deleteSnakeBody($id) {
-        $sql = "DELETE FROM snake_body WHERE id =  :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
-    }
-    // Удалить часть тела питона
-    public function deleteSnakeBodyFromSnake($id) {
-        $sql = "DELETE FROM snake_body WHERE snake_id =  :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
-    }
-
-
-
-
-    /*Food*/
-    // Создать еду
-    public function createFood($options) {
-        $ftype = $options['type'];
-        $fvalue = $options['value'];
-        $x = $options['x'];
-        $y = $options['y'];
-        $map_id = $options['map_id'];
-
-        $sql = "INSERT INTO snake_body (ftype, fvalue, x, y, map_id) VALUES (:ftype, :fvalue, :x, :y, :map_id)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':ftype', $ftype, PDO::PARAM_INT);
-        $stmt->bindParam(':fvalue', $fvalue, PDO::PARAM_INT);
-        $stmt->bindParam(':x', $x, PDO::PARAM_INT);
-        $stmt->bindParam(':y', $y, PDO::PARAM_INT);
-        $stmt->bindParam(':map_id', $map_id, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
-    }
-    public function getFoods($map_id) {
-        $sql = 'SELECT * FROM food WHERE map_id = :map_id ORDER BY id DESC';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':map_id', $map_id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchAll(PDO::FETCH_CLASS);
-    }
-    // Удалить еду
-    public function deleteFood($id) {
-        $sql = "DELETE FROM food WHERE id =  :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
     }
     public function updateFoods($map_id, $foods) {
         $res = false;
@@ -356,35 +393,6 @@ class DB {
         $stmt->bindParam(':id', $food->id, PDO::PARAM_INT);
         return $stmt->execute();
     }
-
-
-
-    /*Map*/
-    // Получение карты
-    public function getMaps() {
-        $query = 'SELECT * FROM map';
-        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
-    }
-    // Получить карту по id
-    public function getMapById($id) {
-        $sql = 'SELECT * FROM map WHERE id = :id';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':id', $id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-    }
-    // Создать карту
-    public function createMap($options) {
-        $width = $options['width'];
-        $height = $options['height'];
-
-        $sql = "INSERT INTO map (width, height) VALUES (:width, :height)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':width', $width, PDO::PARAM_INT);
-        $stmt->bindValue(':height', $height, PDO::PARAM_INT);
-        $res = $stmt->execute();
-        return $res;
-    }
     // Изменить последнего времени обновления
     public function updateMapLastUpdated($id) {
         $sql = "UPDATE map SET last_updated = UNIX_TIMESTAMP() WHERE id = :id";
@@ -394,14 +402,6 @@ class DB {
         return $res;
     }
 
-    // текущее время на сервере
-    public function getServerTime() {
-        $sql = 'SELECT UNIX_TIMESTAMP() AS time';
-        $stm = $this->conn->prepare($sql);
-        $stm->execute();
-        return $stm->fetchObject('stdClass');
-
-    }
 
 }
     

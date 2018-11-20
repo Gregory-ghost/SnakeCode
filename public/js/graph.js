@@ -41,11 +41,15 @@ function Graph(c = {}) {
         let body = snake.body, // Тело
             direction = snake.direction, // Направление
             lastPosition = {}, // Последняя позиция
-            countItems = body.length; // Количество тел в змейке
+            countItems = 0; // Количество тел в змейке
+
+        if(!body) return;
+        countItems = body.length;
 
         for(let i = 0; i < countItems; i++) {
             let snakePositionSprite = {}, // Позиция спрайта
                 item = body[i];
+
 
             // Здесь проверка на позицию
             // и отталкиваясь от этого определяется какая это часть змейки
@@ -95,8 +99,8 @@ function Graph(c = {}) {
             let options = {
                 xsprite: snakePositionSprite[0],
                 ysprite: snakePositionSprite[1],
-                x: item.x,
-                y: item.y,
+                x: item.x*SIZE.sizeSnake,
+                y: item.y*SIZE.sizeSnake,
             };
             lastPosition = body[i];
             this.drawSprite(options);
@@ -126,7 +130,7 @@ function Graph(c = {}) {
     this.drawSprite = (options = {}) => {
         if(options) {
             let sprite = new Image();
-            sprite.src = c.pathSprites + 'sprites.png';
+            sprite.src = c.path.sprites + 'sprites.png';
             sprite.addEventListener("load", function(){
                 ctx.drawImage(sprite, options.xsprite, options.ysprite, SIZE.sizeSnake ,SIZE.sizeSnake, options.x, options.y, SIZE.sizeSnake, SIZE.sizeSnake);
             }, false);

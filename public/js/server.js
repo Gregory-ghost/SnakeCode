@@ -6,7 +6,7 @@ function Server() {
 
 	// Обращения к серверу
 	this.changeDirection = function (direction = 'left') {
-		return $.get('api', { method: 'changeDirection', direction, token });
+		return $.get('api', { method: 'changeDirection', map_id, direction, token });
 	};
     this.getMaps = function () {
         return $.get('api', { method: 'getMaps', token });
