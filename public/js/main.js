@@ -77,7 +77,7 @@ $(document).ready(async () => {
         } else {
             error(answer.error);
         }
-        setTimeout(() => updateScene(), 1000);
+        setTimeout(() => updateScene(), 50);
     };
 
 
@@ -145,8 +145,8 @@ function Const() {
             footer: {
                 up: [192, 128],
                 down: [256, 192],
-                right: [192, 192],
-                left: [256, 128],
+                left: [192, 192],
+                right: [256, 128],
             },
             // Еда
             eat: [0, 192],

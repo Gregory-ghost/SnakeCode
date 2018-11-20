@@ -84,13 +84,12 @@ class DB {
     }
     // Создать еду
     public function createFood($options) {
-        $ftype = $options['type'];
-        $fvalue = $options['value'];
-        $x = $options['x'];
-        $y = $options['y'];
-        $map_id = $options['map_id'];
-
-        $sql = "INSERT INTO snake_body (ftype, fvalue, x, y, map_id) VALUES (:ftype, :fvalue, :x, :y, :map_id)";
+        $ftype = $options->type;
+        $fvalue = $options->value;
+        $x = $options->x;
+        $y = $options->y;
+        $map_id = $options->map_id;
+        $sql = "INSERT INTO food (type, value, x, y, map_id) VALUES (:ftype, :fvalue, :x, :y, :map_id)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':ftype', $ftype, PDO::PARAM_INT);
         $stmt->bindParam(':fvalue', $fvalue, PDO::PARAM_INT);
@@ -372,8 +371,8 @@ class DB {
     public function updateFoods($map_id, $foods) {
         $res = false;
         foreach ($foods as $food) {
-            if(isset($snake->id)) {
-                if(isset($snake->deleted_at)) {
+            if(isset($food->id)) {
+                if(isset($food->deleted_at)) {
                     $res = $this->deleteFood($food->id);
                 } else {
                     $res = $this->updateFood($food);
@@ -389,7 +388,7 @@ class DB {
         $sql = "UPDATE food SET x = :x, y = :y WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':x', $food->x, PDO::PARAM_INT);
-        $stmt->bindParam(':x', $food->y, PDO::PARAM_INT);
+        $stmt->bindParam(':y', $food->y, PDO::PARAM_INT);
         $stmt->bindParam(':id', $food->id, PDO::PARAM_INT);
         return $stmt->execute();
     }

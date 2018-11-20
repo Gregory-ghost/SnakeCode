@@ -153,6 +153,7 @@ class Logic {
                 // Увеличиваем счетчик eating
                 $snake->eating += $food->value;
                 $this->destroyFood($food->id);
+                $this->newFood($snake->map_id);
             }
 
 
@@ -348,7 +349,7 @@ class Logic {
     */
 
     // Добавить новую еду на карту
-    public function addFood($options = null) {
+    public function createFood($options = null) {
         if ( $options ) {
             $this->struct->foods[] = new Food($options);
             return true;
@@ -383,16 +384,33 @@ class Logic {
     // Змея наехала головой на еду
     public function triggerFood( $options = null ) {
         if ( $options ) {
-            $body = $this->getSnakeBody($options);
+            $snake = $this->getSnake($options);
+            $body = $snake->body;
             if ( $body ) {
                 $head = $body[0];
                 $foods = $this->struct->foods;
                 foreach ($foods as $key => $food) {
+
                     if ( $food->x == $head->x and $food->y == $head->y ) {
                         return $food;
                     }
                 }
             }
+        }
+        return false;
+    }
+    public function newFood($map_id) {
+        if($map_id) {
+
+            $map = $this->getMap($map_id);
+            $optionsFood = (object) array(
+                'x' => rand(1, $map->width-1),
+                'y'  => rand(1, $map->height-1),
+                'map_id'  => $map_id,
+                'type'  => 0,
+                'value'  => 1,
+            );
+            $res = $this->createFood($optionsFood);
         }
         return false;
     }
@@ -403,6 +421,7 @@ class Logic {
             if(isset($options->user_id) && isset($options->map_id)) {
 
                 $snakes = &$this->struct->snakes;
+                $foods = &$this->struct->foods;
                 // Есть ли у пользователя созданные змейки
                 foreach($snakes as $key => $snake) {
                     if($snake->user_id == $options->user_id && $snake->map_id == $options->map_id) {
@@ -410,19 +429,27 @@ class Logic {
                         $snake->deleted_at = true;
                     }
                 }
+                foreach($foods as $key => $food) {
+                    if($food->map_id == $options->map_id) {
+                        // Удаляем
+                        $food->deleted_at = true;
+                    }
+                }
                 $body = [];
                 $body[] = (object) array(
                     'x'  => 1,
                     'y' => 1,
                 );
-                $options2 = (object) array(
+
+                $this->newFood($options->map_id);
+                $optionsSnake = (object) array(
                     'user_id' => $options->user_id,
                     'map_id'  => $options->map_id,
                     'eating' => 2,
                     'direction' => 'right',
                     'body'  => $body,
                 );
-                return $this->createSnake($options2);
+                return $this->createSnake($optionsSnake);
             }
         }
         return false;

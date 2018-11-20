@@ -58,34 +58,47 @@ function Graph(c = {}) {
                 if(i > countItems-2) {
                     // Хвост
                     if(lastPosition.x == item.x && lastPosition.y > item.y) {
+                        // ползет вниз
                         snakePositionSprite = sprites.footer['down'];
                     } else if(lastPosition.x == item.x && lastPosition.y < item.y) {
+                        // ползет вверх
                         snakePositionSprite = sprites.footer['up'];
                     } else if(lastPosition.x > item.x && lastPosition.y == item.y) {
-                        snakePositionSprite = sprites.footer['left'];
-                    } else {
+                        // ползет вправо
                         snakePositionSprite = sprites.footer['right'];
+                    } else {
+                        // ползет влево
+                        snakePositionSprite = sprites.footer['left'];
                     }
                 } else {
                     // Тело
                     let predPosition = body[i+1];
                     if(predPosition.x < lastPosition.x) {
+                        // движется вправо
                         if(predPosition.y < lastPosition.y) {
+                            // заворачивает вправо сверху
                             snakePositionSprite = sprites.body['leftDown'];
                         } else if(predPosition.y > lastPosition.y) {
-                            snakePositionSprite = sprites.body['leftUp'];
+                            // заворачивает вправо снизу
+                            snakePositionSprite = sprites.body['rightDown'];
                         } else {
+                            // движется горизонтально
                             snakePositionSprite = sprites.body['lineHoriz'];
                         }
                     } else if(predPosition.x > lastPosition.x) {
+                        // движется влево
                         if(predPosition.y < lastPosition.y) {
+                            // заворачивает влево сверху
                             snakePositionSprite = sprites.body['leftUp'];
                         } else if(predPosition.y > lastPosition.y) {
-                            snakePositionSprite = sprites.body['leftDown'];
+                            // заворачивает влево снизу
+                            snakePositionSprite = sprites.body['rightUp'];
                         } else {
+                            // движется горизонтально
                             snakePositionSprite = sprites.body['lineHoriz'];
                         }
                     } else {
+                        // движется вертикально
                         snakePositionSprite = sprites.body['lineVert'];
                     }
                 }
@@ -94,7 +107,27 @@ function Graph(c = {}) {
                 if(!direction) {
                     direction = 'left';
                 }
-                snakePositionSprite = sprites.head[direction];
+                let predPosition = body[i+1];
+                if(predPosition) {
+                    if(predPosition.x < item.x) {
+                        // движется вправо
+                        snakePositionSprite = sprites.head['right'];
+                    } else if(predPosition.x > item.x) {
+                        // движется влево
+                        snakePositionSprite = sprites.head['left'];
+                    } else {
+                        if(predPosition.y < item.y) {
+                            // движется вниз
+                            snakePositionSprite = sprites.head['down'];
+                        } else {
+                            // движется вверх
+                            snakePositionSprite = sprites.head['up'];
+                        }
+                    }
+                } else {
+                    // нету тела, только голова
+                    snakePositionSprite = sprites.head[direction];
+                }
             }
             let options = {
                 xsprite: snakePositionSprite[0],
@@ -119,8 +152,8 @@ function Graph(c = {}) {
         let options = {
             xsprite: sprites.eat[0],
             ysprite: sprites.eat[1],
-            x: food.x,
-            y: food.y,
+            x: food.x*SIZE.sizeSnake,
+            y: food.y*SIZE.sizeSnake,
         };
         this.drawSprite(options);
     };

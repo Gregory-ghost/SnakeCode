@@ -70,7 +70,7 @@ class Game {
             $map = $this->db->getMapById($map_id);
             $getTime = $this->db->getServerTime(); // todo
             $time = $getTime->time;
-            $next_time = 0.05; // время сравнения для движения
+            $next_time = 0.005; // время сравнения для движения
             if(isset($map->last_updated)) {
                 if ($time > $map->last_updated + $next_time) {
                     // Показываем сцену
