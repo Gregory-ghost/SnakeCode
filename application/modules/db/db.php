@@ -4,32 +4,26 @@
 
 class DB {
 
-    public $conn;
+    private $conn;
     // подключаем модули
-    public $user;
+    /*public $user;
     public $snake;
     public $food;
-    public $map;
+    public $map;*/
 
     public function __construct() {
         $host = 'localhost';
         $dbName = 'snake_of_pi';
         $user = 'mysql';
         $pass = 'mysql';
-
-        $this->conn = new PDO('mysql:dbname='.$dbName.';host='.$host, $user, $pass);
+        $this->conn = new PDO('mysql:dbname=' . $dbName . ';host=' . $host, $user, $pass);
     }
-
-    // TODO :: вынести пользователя в отдельный модуль
-
-
 
     //Создать пользователя
     public function saveUser($options) {
         $name = $options['name'];
         $login = $options['login'];
         $password = $options['password'];
-
         $sql = "INSERT INTO user (name, login, password) VALUES (:name, :login, :password)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':name', $name, PDO::PARAM_STR);
@@ -38,6 +32,7 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
+
     // Создать питона
     public function createSnake($options) {
         $user_id = $options->user_id;
@@ -83,7 +78,7 @@ class DB {
         return $res;
     }
     // Создать еду
-    public function createFood($options) {
+   /* public function createFood($options) {
         $ftype = $options->type;
         $fvalue = $options->value;
         $x = $options->x;
@@ -98,7 +93,8 @@ class DB {
         $stmt->bindParam(':map_id', $map_id, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
-    }
+    }*/
+
     // Создать карту
     public function createMap($options) {
         $width = $options['width'];
@@ -136,14 +132,14 @@ class DB {
         $stm->execute();
         return $stm->fetchObject('stdClass');
     }
-    //Получить пользователя по id
+    /*//Получить пользователя по id
     public function getUserById($id) {
         $sql = 'SELECT id, login, name FROM user WHERE id = :id ORDER BY id DESC LIMIT 1';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
         return $stm->fetchObject('stdClass');
-    }
+    }*/
     //Получить пользователя
     public function getUser($login, $password) {
         $sql = 'SELECT * FROM user WHERE login = :login and password = :password';
@@ -162,7 +158,13 @@ class DB {
         $stm->execute();
         return $stm->fetchAll(PDO::FETCH_CLASS);
     }
-    // Получить питона по id
+
+    public function getSnakesBody() {
+        $query = 'SELECT * FROM snake_body ORDER BY id DESC';
+        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
+    }
+
+    /*// Получить питона по id
     public function getSnakeById($id) {
         $sql = 'SELECT * FROM snake WHERE id = :id';
         $stm = $this->conn->prepare($sql);
@@ -177,19 +179,16 @@ class DB {
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
         return $stm->fetchObject('stdClass');
-    }
-    /*Snake_body*/
-    public function getSnakesBody() {
-        $query = 'SELECT * FROM snake_body ORDER BY id DESC';
-        return $this->conn->query($query)->fetchAll(PDO::FETCH_CLASS);
-    }
-    public function getSnakesBodyCountBySnake($id) {
+    }*/
+
+    /*public function getSnakesBodyCountBySnake($id) {
         $sql = 'SELECT count(*) FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
         return $stm->fetchColumn();
-    }
+    }*/
+
     // Получить тело питона
     public function getSnakeBody($id)
     {
@@ -230,9 +229,6 @@ class DB {
         return $stm->fetchObject('stdClass');
 
     }
-
-
-
 
     // Удалить питона пользователя
     public function deleteUserSnakes($user_id) {
@@ -295,24 +291,24 @@ class DB {
         $res = $stmt->execute();
         return $res;
     }
+
     // обновить всех питонов
     public function updateSnakes($map_id, $snakes) {
-        $res = false;
         foreach ($snakes as $snake) {
-            if(isset($snake->id)) {
-                if(isset($snake->deleted_at)) {
-                    $res = $this->deleteSnake($snake->id);
-                    $res = $this->deleteSnakeBodyFromSnake($snake->id);
+            if (isset($snake->id)) {
+                if (isset($snake->deleted_at)) {
+                    $this->deleteSnake($snake->id);
+                    $this->deleteSnakeBodyFromSnake($snake->id);
                 } else {
-                    $res = $this->updateSnake($snake);
-                    $res = $this->updateSnakesBody($snake);
+                    $this->updateSnake($snake);
+                    $this->updateSnakesBody($snake);
                 }
             } else {
                 $snake->map_id = $map_id;
-                $res = $this->createSnake($snake);
+                $this->createSnake($snake);
             }
         }
-        return $res;
+        return true;
     }
     // обновить змейку
     public function updateSnake($snake) {
@@ -334,27 +330,24 @@ class DB {
     }
     // обновить все тела змейки
     public function updateSnakesBody($snake) {
-        $res = false;
-        if(isset($snake->body)) {
+        if (isset($snake->body)) {
             $body = $snake->body;
             foreach ($body as $item) {
                 if (isset($item->id)) {
                     if(isset($item->deleted_at)) {
-                        $res = $this->deleteSnakeBody($item->id);
+                        $this->deleteSnakeBody($item->id);
                     } else {
-                        $res = $this->updateSnakeBody($item);
+                        $this->updateSnakeBody($item);
                     }
                 } else {
                     $item->snake_id = $snake->id;
-                    if(isset($snake->id)) {
-                        $res = $this->createSnakeBody($item);
-
+                    if (isset($snake->id)) {
+                        $this->createSnakeBody($item);
                     }
                 }
-
             }
         }
-        return $res;
+        return true;
     }
     // обновить тело змейки
     public function updateSnakeBody($item) {
@@ -394,13 +387,20 @@ class DB {
     }
     // Изменить последнего времени обновления
     public function updateMapLastUpdated($id) {
-        $sql = "UPDATE map SET last_updated = UNIX_TIMESTAMP() WHERE id = :id";
+        $sql = "UPDATE map SET last_updated = ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
     }
 
-
+    // прошло ли необходимое время для изменения
+    public function isTimeToUpdate($id, $STEP) {
+        $sql = 'SELECT * FROM snake_of_pi.map AS map WHERE map.id=:id AND map.last_updated + '. $STEP .' < ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000);';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':id', $id, PDO::PARAM_INT);
+        $stm->execute();
+        return $stm->fetchObject('stdClass');
+    }
 }
     
