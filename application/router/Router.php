@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__DIR__).'/game/Game.php';
+require_once dirname(__DIR__) . '/game/Game.php';
 require_once dirname(__DIR__) . '/modules/db/db.php';
 require_once dirname(__DIR__) . '/modules/user/User.php';
 
@@ -18,18 +18,12 @@ class Router {
 
 	// Хороший ответ, возвращаем данные
 	private function good($text) {
-	    return [
-	        'result' => true,
-            'data' => $text,
-        ];
+	    return ['result' => true, 'data' => $text];
     }
 
     // Плохой ответ, возвращаем ошибку
     private function bad($text) {
-	    return [
-	        'result' => false,
-            'error' => $text,
-	        ];
+	    return ['result' => false, 'error' => $text];
     }
 
     private function login($login, $password) {
@@ -45,45 +39,36 @@ class Router {
             $this->bad('logout fail');
     }
 
-
+    // общий ответ на ВСЕ входящие запросы
 	public function answer($options) {
-	    if ( $options and isset($options->method) ) {
+	    if ($options && isset($options->method)) {
 	        $method = $options->method;
-            if ( $method ) {
+	        // выполнить неигровые команды (сопутствующие)
+            if ($method) {
                 switch ($method) {
                     case 'login'  : return $this->login($options->login, $options->password); break;
                     case 'logout' : return $this->logout($options->token); break;
                 }
-                $userId = $this->user->checkToken($options->token);
+                $userId = $this->user->checkToken($options->token); // проверить валидность токена пользователя
                 if ($userId) {
                     $options->user_id = $userId;
-                    switch($method) {
-                        case 'getMaps' :
-                            $maps = $this->game->getMaps();
-                            return ($maps)
-                                ? $this->good($maps)
-                                : $this->bad('maps not found');
-                            break;
-                        case 'getScene' :
-                            $game = $this->game->getScene($options->map_id);
-                            return ($game)
-                                ? $this->good($game)
-                                : $this->bad('scene not found');
-                            break;
-                    }
-                    if (isset($options->map_id) and $this->game->getData($options->map_id)) {
-                        $COMMAND = $this->game->getCommand();
-                        foreach ( $COMMAND as $command ) {
-                            if ( $command === $method ) {
-                                unset($options->method);
-                                $result = $this->game->executeCommand($method, $options);
-                                if ($result) {
-                                    $this->game->updateData($options->map_id); // записать измененные данные в БД
+                    $this->game->getData($options->map_id); // проинициализировать игру
+                    // выполнить любые команды ДЛЯ игры
+                    $COMMAND = $this->game->getCommand();
+                    foreach ($COMMAND as $command) {
+                        if ($command === $method) {
+                            unset($options->method);
+                            $result = $this->game->executeCommand($method, $options);
+                            if ($result) {
+                                if (isset($options->map_id)) {
+                                    if ($this->game->updateData($options->map_id)) { // записать измененные данные в БД
+                                        return $this->good($this->game->getData($options->map_id));
+                                    }
+                                    return $this->bad('no update');
                                 }
-                                return ($result) ?
-                                    $this->good($this->game->getData($options->map_id)) :
-                                    $this->bad('game method return false');
+                                return $this->good($result);
                             }
+                            return $this->bad('game method return false');
                         }
                     }
                 }
