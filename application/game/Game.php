@@ -69,7 +69,7 @@ class Game {
         if ($map_id && $this->db->isTimeToUpdate($map_id, 1000)) {
             $this->logic->moveSnakes();
             $this->db->updateSnakes($map_id, $this->struct->snakes);
-            //$this->db->updateFoods($map_id, $this->struct->foods);
+            $this->db->updateFoods($map_id, $this->struct->foods);
             $this->db->updateMapLastUpdated($map_id);
             return true;
         }
