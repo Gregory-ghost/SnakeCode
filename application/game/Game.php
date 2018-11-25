@@ -17,9 +17,30 @@ class Game {
         $this->input  = new Input($this->logic);
     }
 
-    private function startGame($map_id) {
-        return true;
-        //return ($map_id) ? $this->db->getMapById($map_id) : false;
+    private function startGame($map_id, $user_id) {
+        if($map_id && $user_id) {
+            $this->getData($map_id);
+            // проверка на существование змейки
+            $this->logic->checkUserSnake($map_id, $user_id);
+            // проверка на существование еды на карте
+            $this->logic->checkMapFood($map_id);
+            return true;
+        }
+        return false;
+    }
+    // Проверка на конец игры
+    public function finishGame($map_id, $user_id) {
+        if($map_id && $user_id) {
+            $this->getData($map_id);
+            // проверка на существование змейки
+            if($this->logic->isDieUserSnake($map_id, $user_id)) {
+                return (object) array(
+                    'finish' => true,
+                    'score' => 0,
+                );
+            }
+        }
+        return false;
     }
 
 	// Сформировать структуру
@@ -29,7 +50,7 @@ class Game {
             if ($map) {
                 $snakes = $this->db->getSnakes($map_id);
                 $this->struct->addSnakes($snakes);
-                foreach($snakes as $kes => $snake) {
+                foreach($snakes as $key => $snake) {
                     $snakeBody = $this->db->getSnakeBody($snake->id);
                     $this->struct->addSnakeBody($snakeBody);
                 }
@@ -64,7 +85,8 @@ class Game {
         switch ($name) {
             case $COMMAND->GET_MAPS  : return $this->db->getMaps();
             case $COMMAND->GET_SCENE : return $this->getData($options->map_id);
-            case $COMMAND->START_GAME: return $this->startGame($options->map_id);
+            case $COMMAND->START_GAME: return $this->startGame($options->map_id, $options->user_id);
+            case $COMMAND->FINISH_GAME: return $this->finishGame($options->map_id, $options->user_id);
         }
         $this->getData($options->map_id);
         return $this->input->executeCommand($name, $options);

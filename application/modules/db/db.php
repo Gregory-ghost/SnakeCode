@@ -171,7 +171,7 @@ class DB {
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
         return $stm->fetchObject('stdClass');
-    }
+    }*/
     // Получить последнего созданного питона у пользователя
     public function getSnakeByUserId($id) {
         $sql = 'SELECT * FROM snake WHERE user_id = :id ORDER BY id DESC';
@@ -179,7 +179,7 @@ class DB {
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
         return $stm->fetchObject('stdClass');
-    }*/
+    }
 
     /*public function getSnakesBodyCountBySnake($id) {
         $sql = 'SELECT count(*) FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
@@ -361,6 +361,7 @@ class DB {
         }
         return false;
     }
+    // обновить еду
     public function updateFoods($map_id, $foods) {
         $res = false;
         foreach ($foods as $food) {
@@ -395,10 +396,11 @@ class DB {
     }
 
     // прошло ли необходимое время для изменения
-    public function isTimeToUpdate($id, $STEP) {
-        $sql = 'SELECT * FROM snake_of_pi.map AS map WHERE map.id=:id AND map.last_updated + '. $STEP .' < ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000);';
+    public function isTimeToUpdate($id, $step) {
+        $sql = 'SELECT * FROM snake_of_pi.map AS map WHERE map.id=:id AND map.last_updated + :step < ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000);';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':id', $id, PDO::PARAM_INT);
+        $stm->bindValue(':step', $step, PDO::PARAM_INT);
         $stm->execute();
         return $stm->fetchObject('stdClass');
     }

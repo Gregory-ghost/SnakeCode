@@ -70,14 +70,22 @@ $(document).ready(async () => {
     };
     updateScene = async () => {
         const answer = await server.getScene();
+        let isFinish = false;
 
         if(answer.result) {
-            // Отрисовываем игру
-            graph.draw(answer.data);
+            if(answer.data.finish) {
+                isFinish = true;
+                c.modal.finish.modal();
+            } else {
+                // Отрисовываем игру
+                graph.draw(answer.data);
+            }
         } else {
             error(answer.error);
         }
-        setTimeout(() => updateScene(), 50);
+        if(!isFinish) {
+            setTimeout(() => updateScene(), 100);
+        }
     };
 
 
@@ -99,6 +107,9 @@ function Const() {
             game: $('.gamePage'),
             profile: $('.profilePage'),
             maps: $('.mapsPage'),
+        },
+        modal: {
+            finish: $('#modalFinishGame'),
         },
         btn: {
             startGame: $('.startGameBtn'),

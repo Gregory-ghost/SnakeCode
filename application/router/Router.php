@@ -52,7 +52,6 @@ class Router {
                 $userId = $this->user->checkToken($options->token); // проверить валидность токена пользователя
                 if ($userId) {
                     $options->user_id = $userId;
-                    $this->game->getData($options->map_id); // проинициализировать игру
                     // выполнить любые команды ДЛЯ игры
                     $COMMAND = $this->game->getCommand();
                     foreach ($COMMAND as $command) {
@@ -62,6 +61,11 @@ class Router {
                             if ($result) {
                                 if (isset($options->map_id)) {
                                     if ($this->game->updateData($options->map_id)) { // записать измененные данные в БД
+                                        // проверить что игра закончена
+                                        $isFinishGame = $this->game->finishGame($options->map_id, $options->user_id);
+                                        if($isFinishGame) {
+                                            return $this->good($isFinishGame);
+                                        }
                                         return $this->good($this->game->getData($options->map_id));
                                     }
                                     return $this->bad('no update');

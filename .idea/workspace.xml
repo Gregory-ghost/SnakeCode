@@ -2,17 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="41bbd172-f60c-4bbd-9c0a-3b52fc0fb66b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Snake.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/_gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/js/bootstrap.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/game/Game.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/Game.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/game/input/command.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/input/command.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/game/logic/Logic.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/logic/Logic.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/game/struct/Snake.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/struct/Snake.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/modules/db/db.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/modules/db/db.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/router/Router.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/router/Router.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/main.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -90,14 +88,50 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-2013881363">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.open.time.3" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="html" value="82" />
+          <entry key="js" value="183" />
+          <entry key="php" value="2090" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="HTML" value="82" />
+          <entry key="JavaScript" value="183" />
+          <entry key="PHP" value="2090" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="html" value="1" />
+          <entry key="js" value="2" />
+          <entry key="php" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="HTML" value="1" />
+          <entry key="JavaScript" value="2" />
+          <entry key="PHP" value="2" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/modules/db/db.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3570">
-              <caret line="210" column="31" selection-start-line="210" selection-start-column="31" selection-end-line="210" selection-end-column="31" />
+            <state relative-caret-position="350">
+              <caret line="171" column="24" lean-forward="true" selection-start-line="171" selection-start-column="24" selection-end-line="171" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -105,26 +139,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/game/Game.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="30" column="26" selection-start-line="30" selection-start-column="26" selection-end-line="30" selection-end-column="26" />
+            <state relative-caret-position="1021">
+              <caret line="68" column="62" selection-start-line="68" selection-start-column="62" selection-end-line="68" selection-end-column="62" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/game/input/Input.php">
+        <entry file="file://$PROJECT_DIR$/application/router/Router.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
+            <state relative-caret-position="634">
+              <caret line="64" column="76" selection-start-line="64" selection-start-column="76" selection-end-line="64" selection-end-column="76" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/application/router/Router.php">
+        <entry file="file://$PROJECT_DIR$/public/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="256">
-              <caret line="54" column="87" selection-start-line="54" selection-start-column="87" selection-end-line="54" selection-end-column="87" />
+            <state relative-caret-position="170">
+              <caret line="78" selection-start-line="78" selection-end-line="78" />
             </state>
           </provider>
         </entry>
@@ -132,8 +166,24 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/game/logic/Logic.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="867">
-              <caret line="51" column="20" selection-start-line="51" selection-start-column="20" selection-end-line="51" selection-end-column="20" />
+            <state relative-caret-position="435">
+              <caret line="413" column="20" lean-forward="true" selection-start-line="413" selection-start-column="20" selection-end-line="413" selection-end-column="37" />
+              <folding>
+                <element signature="n#changeDirection#0;n#Logic#0;n#!!top" />
+                <element signature="n#isCanMove#0;n#Logic#0;n#!!top" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="539">
+              <caret line="108" column="43" selection-start-line="108" selection-start-column="43" selection-end-line="108" selection-end-column="43" />
+              <folding>
+                <element signature="e#3649#3656#1" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -150,9 +200,14 @@
       <find>getFoo</find>
       <find>last_update</find>
       <find>move</find>
-      <find>getSnakeByUserId</find>
       <find>$this-&gt;struct</find>
       <find>updateSnakesBody</find>
+      <find>checkUser</find>
+      <find>getFood</find>
+      <find>moveSnake</find>
+      <find>getSnake</find>
+      <find>getSnakeById</find>
+      <find>getSnakeByUserId</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -161,12 +216,15 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/application/game/input/command.php" />
         <option value="$PROJECT_DIR$/application/game/struct/Snake.php" />
-        <option value="$PROJECT_DIR$/application/modules/db/db.php" />
-        <option value="$PROJECT_DIR$/application/game/Game.php" />
-        <option value="$PROJECT_DIR$/application/game/logic/Logic.php" />
         <option value="$PROJECT_DIR$/application/router/Router.php" />
+        <option value="$PROJECT_DIR$/application/game/input/command.php" />
+        <option value="$PROJECT_DIR$/application/game/Game.php" />
+        <option value="$PROJECT_DIR$/application/modules/db/db.php" />
+        <option value="$PROJECT_DIR$/application/game/logic/Logic.php" />
+        <option value="$PROJECT_DIR$/public/js/bootstrap.min.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/public/js/main.js" />
       </list>
     </option>
   </component>
@@ -197,6 +255,35 @@
             <path>
               <item name="snake" type="b2602c69:ProjectViewProjectNode" />
               <item name="snake" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="snake" type="b2602c69:ProjectViewProjectNode" />
+              <item name="snake" type="462c0819:PsiDirectoryNode" />
+              <item name="application" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="snake" type="b2602c69:ProjectViewProjectNode" />
+              <item name="snake" type="462c0819:PsiDirectoryNode" />
+              <item name="application" type="462c0819:PsiDirectoryNode" />
+              <item name="game" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="snake" type="b2602c69:ProjectViewProjectNode" />
+              <item name="snake" type="462c0819:PsiDirectoryNode" />
+              <item name="application" type="462c0819:PsiDirectoryNode" />
+              <item name="game" type="462c0819:PsiDirectoryNode" />
+              <item name="input" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="snake" type="b2602c69:ProjectViewProjectNode" />
+              <item name="snake" type="462c0819:PsiDirectoryNode" />
+              <item name="public" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="snake" type="b2602c69:ProjectViewProjectNode" />
+              <item name="snake" type="462c0819:PsiDirectoryNode" />
+              <item name="public" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -237,17 +324,18 @@
       <workItem from="1542905264805" duration="2061000" />
       <workItem from="1543035401509" duration="4620000" />
       <workItem from="1543073599442" duration="37000" />
+      <workItem from="1543127447790" duration="6446000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14007000" />
+    <option name="totallyTimeSpent" value="20453000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15355521" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15511727" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -275,31 +363,9 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/application/game/input/command.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="7" column="15" selection-start-line="7" selection-start-column="5" selection-end-line="7" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/js/graph.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/js/ui.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-119">
-          <caret line="11" column="46" lean-forward="true" selection-start-line="11" selection-start-column="46" selection-end-line="11" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/js/user.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-204" />
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/public/js/graph.js" />
+    <entry file="file://$PROJECT_DIR$/public/js/ui.js" />
+    <entry file="file://$PROJECT_DIR$/public/js/user.js" />
     <entry file="file://$PROJECT_DIR$/application/game/struct/Snake.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="400">
@@ -307,45 +373,77 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/application/game/struct/Struct.php">
+    <entry file="file://$PROJECT_DIR$/application/game/struct/Struct.php" />
+    <entry file="file://$PROJECT_DIR$/application/game/input/command.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="36" column="13" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/modules/db/db.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3570">
-          <caret line="210" column="31" selection-start-line="210" selection-start-column="31" selection-end-line="210" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/game/Game.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="30" column="26" selection-start-line="30" selection-start-column="26" selection-end-line="30" selection-end-column="26" />
+        <state relative-caret-position="136">
+          <caret line="8" column="47" selection-start-line="8" selection-start-column="47" selection-end-line="8" selection-end-column="47" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/game/input/Input.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/game/logic/Logic.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="867">
-          <caret line="51" column="20" selection-start-line="51" selection-start-column="20" selection-end-line="51" selection-end-column="20" />
+        <state relative-caret-position="238">
+          <caret line="14" column="20" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/router/Router.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="54" column="87" selection-start-line="54" selection-start-column="87" selection-end-line="54" selection-end-column="87" />
+        <state relative-caret-position="634">
+          <caret line="64" column="76" selection-start-line="64" selection-start-column="76" selection-end-line="64" selection-end-column="76" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/modules/db/db.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="350">
+          <caret line="171" column="24" lean-forward="true" selection-start-line="171" selection-start-column="24" selection-end-line="171" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/game/Game.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1021">
+          <caret line="68" column="62" selection-start-line="68" selection-start-column="62" selection-end-line="68" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/js/bootstrap.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="4890" selection-start-line="6" selection-start-column="4890" selection-end-line="6" selection-end-column="4890" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/game/logic/Logic.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="413" column="20" lean-forward="true" selection-start-line="413" selection-start-column="20" selection-end-line="413" selection-end-column="37" />
+          <folding>
+            <element signature="n#changeDirection#0;n#Logic#0;n#!!top" />
+            <element signature="n#isCanMove#0;n#Logic#0;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="539">
+          <caret line="108" column="43" selection-start-line="108" selection-start-column="43" selection-end-line="108" selection-end-column="43" />
+          <folding>
+            <element signature="e#3649#3656#1" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="78" selection-start-line="78" selection-end-line="78" />
         </state>
       </provider>
     </entry>
