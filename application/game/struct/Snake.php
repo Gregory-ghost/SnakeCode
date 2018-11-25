@@ -8,6 +8,7 @@ class Snake {
     public $map_id;
     public $user_id;
     public $body;
+    public $score;
     public $deleted_at;
 
     public function __construct($options = null)
@@ -30,6 +31,9 @@ class Snake {
             }
             if(isset($options->user_id)) {
                 $this->user_id = $options->user_id;
+            }
+            if(isset($options->score)) {
+                $this->score = $options->score;
             }
             if(isset($options->body)) {
                 $this->body = $options->body;

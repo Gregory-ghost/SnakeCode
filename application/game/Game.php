@@ -34,9 +34,14 @@ class Game {
             $this->getData($map_id);
             // проверка на существование змейки
             if($this->logic->isDieUserSnake($map_id, $user_id)) {
+                $user = $this->db->getUserScore($user_id);
+                $score = 0;
+                if($user) {
+                    $score = $user->score;
+                }
                 return (object) array(
                     'finish' => true,
-                    'score' => 0,
+                    'score' => $score,
                 );
             }
         }

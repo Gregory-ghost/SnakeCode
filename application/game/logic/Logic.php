@@ -133,6 +133,7 @@ class Logic {
             array_unshift($snake->body, (object) array('snake_id' => $snake->id, 'x' => $x, 'y' => $y));
 
 
+            // В данный момент ест
             if ( $snake->eating > 0 ) {
                 // змея кушает, хвост на месте
                 $snake->eating--;
@@ -147,7 +148,7 @@ class Logic {
             }
 
 
-
+            // Столкновение с едой
             $food = $this->triggerFood($snake->id);
             if ( $food ) {
                 // Увеличиваем счетчик eating
@@ -156,11 +157,14 @@ class Logic {
                 $this->newFood($snake->map_id);
             }
 
-
+            if(!isset($snake->score)) { // нету очков пользователя
+                $snake->score = 0;
+            }
 
             if(!isset($snake->body[0])) {
                 // змея погибла
                 $snake->deleted_at = true;
+                $snake->score = 0; // очки пользователя
             } else {
                 $this->isEatOtherSnake($snake->id); // поедание другой змейки
 
@@ -168,12 +172,14 @@ class Logic {
                 if ($this->isCrashedInSnake($snake->id)) {
                     // Столкнулись, поэтому уничтожаем питона
                     $snake->deleted_at = true;
+                    $snake->score = count($snake->body) - 2; // очки пользователя
                 }
 
                 // Проверяем позицию змеи на столкновение
                 if(!$this->isCanMove($snake->id)) {
                     // Столкнулись, поэтому уничтожаем питона
                     $snake->deleted_at = true;
+                    $snake->score = count($snake->body) - 2; // очки пользователя
                 }
             }
 
@@ -377,25 +383,6 @@ class Logic {
                 // если id карты еды = options
                 if ( $food->map_id == $options ) {
                     return $food;
-                }
-            }
-        }
-        return false;
-    }
-    // Съесть еду
-    public function destroyFood( $options = null ) {
-        // Если есть переменная options,  то выдает еду из структуры
-        if ( $options ) {
-            $foods = $this->struct->foods;
-            if(!$foods) return false;
-            // Перебирает массив foods на каждой итерации
-            // присвоит ключ текущего элемента переменной $key
-            foreach ($foods as $key => $food) {
-                // если id еды = options,
-                // то удаляет еду
-                if ( $food->id == $options ) {
-                    $this->struct->foods[$key]->deleted_at = true;
-                    return true;
                 }
             }
         }

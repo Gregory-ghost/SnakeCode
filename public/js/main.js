@@ -68,14 +68,17 @@ $(document).ready(async () => {
             }
         },
     };
+    // обновление сцены
     updateScene = async () => {
         const answer = await server.getScene();
-        let isFinish = false;
+        let isFinish = false; // игра закончена
 
         if(answer.result) {
+            // положительный результат сервера
             if(answer.data.finish) {
                 isFinish = true;
-                c.modal.finish.modal();
+                c.text.user_score.text(answer.data.score);
+                c.modal.finish.modal(); // выдаем окно с завершением игры
             } else {
                 // Отрисовываем игру
                 graph.draw(answer.data);
@@ -84,7 +87,7 @@ $(document).ready(async () => {
             error(answer.error);
         }
         if(!isFinish) {
-            setTimeout(() => updateScene(), 100);
+            setTimeout(() => updateScene(), 200);
         }
     };
 
@@ -110,6 +113,9 @@ function Const() {
         },
         modal: {
             finish: $('#modalFinishGame'),
+        },
+        text: {
+            user_score: $('.user_score'),
         },
         btn: {
             startGame: $('.startGameBtn'),

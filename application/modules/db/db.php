@@ -78,7 +78,7 @@ class DB {
         return $res;
     }
     // Создать еду
-   /* public function createFood($options) {
+    public function createFood($options) {
         $ftype = $options->type;
         $fvalue = $options->value;
         $x = $options->x;
@@ -93,7 +93,7 @@ class DB {
         $stmt->bindParam(':map_id', $map_id, PDO::PARAM_INT);
         $res = $stmt->execute();
         return $res;
-    }*/
+    }
 
     // Создать карту
     public function createMap($options) {
@@ -118,7 +118,7 @@ class DB {
     }
     //Получить пользователя по логину
     public function getUserByLogin($login) {
-        $sql = 'SELECT name, login, token FROM user WHERE login = :login ORDER BY id DESC LIMIT 1';
+        $sql = 'SELECT name, login, token FROM user WHERE login = :login';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':login', $login, PDO::PARAM_STR);
         $stm->execute();
@@ -129,6 +129,14 @@ class DB {
         $sql = 'SELECT * FROM user WHERE token = :token';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':token', $token, PDO::PARAM_STR);
+        $stm->execute();
+        return $stm->fetchObject('stdClass');
+    }
+    //Получить очки пользователя по id
+    public function getUserScore($id) {
+        $sql = 'SELECT score FROM user WHERE id = :id';
+        $stm = $this->conn->prepare($sql);
+        $stm->bindValue(':id', $id, PDO::PARAM_INT);
         $stm->execute();
         return $stm->fetchObject('stdClass');
     }
@@ -152,7 +160,8 @@ class DB {
     /*Snake*/
     // Получение питона
     public function getSnakes($map_id) {
-        $sql = 'SELECT * FROM snake WHERE map_id = :map_id ORDER BY id DESC';
+        $sql = 'SELECT snake.id as id, snake.user_id as user_id, snake.direction as direction, snake.eating as eating, snake.map_id as map_id, user.login as name, user.score as score 
+FROM snake LEFT JOIN user ON snake.user_id=user.id WHERE snake.map_id = :map_id ORDER BY snake.id DESC';
         $stm = $this->conn->prepare($sql);
         $stm->bindValue(':map_id', $map_id, PDO::PARAM_INT);
         $stm->execute();
@@ -180,14 +189,6 @@ class DB {
         $stm->execute();
         return $stm->fetchObject('stdClass');
     }
-
-    /*public function getSnakesBodyCountBySnake($id) {
-        $sql = 'SELECT count(*) FROM snake_body WHERE snake_id = :id ORDER BY id DESC';
-        $stm = $this->conn->prepare($sql);
-        $stm->bindValue(':id', $id, PDO::PARAM_INT);
-        $stm->execute();
-        return $stm->fetchColumn();
-    }*/
 
     // Получить тело питона
     public function getSnakeBody($id)
@@ -296,6 +297,9 @@ class DB {
     public function updateSnakes($map_id, $snakes) {
         foreach ($snakes as $snake) {
             if (isset($snake->id)) {
+                if(isset($snake->score)) {
+                    $this->updateUserScore($snake->user_id, $snake->score); // обновление очков пользователя
+                }
                 if (isset($snake->deleted_at)) {
                     $this->deleteSnake($snake->id);
                     $this->deleteSnakeBodyFromSnake($snake->id);
@@ -304,6 +308,9 @@ class DB {
                     $this->updateSnakesBody($snake);
                 }
             } else {
+                if(isset($snake->score)) {
+                    $this->updateUserScore($snake->user_id, $snake->score); // обновление очков пользователя
+                }
                 $snake->map_id = $map_id;
                 $this->createSnake($snake);
             }

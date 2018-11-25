@@ -5,12 +5,29 @@ function Graph(c = {}) {
         SIZE = c.size, // размеры
         sprites = c.sprites; // Координаты в спрайте
 
+    // Timing and frames per second
+    var lastframe = 0;
+    var fpstime = 0;
+    var framecount = 0;
+    var fps = 0;
+
+    var initialized = false;
+
+    // Images
+    var images = [];
+    var tileimage;
+
+    // Image loading global variables
+    var loadcount = 0;
+    var loadtotal = 0;
+    var preloaded = false;
 
 
     // Отрисовываем карту
     this.draw = (data = {}) => {
         c.game.block.attr({width: (SIZE.width * SIZE.sizeSnake) + 'px', height: (SIZE.height * SIZE.sizeSnake) + 'px'});
 
+        ctx.fillStyle = "#577ddb";
         this.clear();
 
         this.drawMap();
@@ -46,96 +63,84 @@ function Graph(c = {}) {
         if(!body) return;
         countItems = body.length;
 
-        for(let i = 0; i < countItems; i++) {
-            let snakePositionSprite = {}, // Позиция спрайта
-                item = body[i];
+        // Loop over every snake segment
+        for (var i=0; i<snake.body.length; i++) {
+            var segment = snake.body[i];
+            var segx = segment.x;
+            var segy = segment.y;
+            var tilex = segx*SIZE.sizeSnake;
+            var tiley = segy*SIZE.sizeSnake;
 
+            // Sprite column and row that gets calculated
+            var tx = 0;
+            var ty = 0;
 
-            // Здесь проверка на позицию
-            // и отталкиваясь от этого определяется какая это часть змейки
-
-            if(lastPosition.x) {
-                if(i > countItems-2) {
-                    // Хвост
-                    if(lastPosition.x == item.x && lastPosition.y > item.y) {
-                        // ползет вниз
-                        snakePositionSprite = sprites.footer['down'];
-                    } else if(lastPosition.x == item.x && lastPosition.y < item.y) {
-                        // ползет вверх
-                        snakePositionSprite = sprites.footer['up'];
-                    } else if(lastPosition.x > item.x && lastPosition.y == item.y) {
-                        // ползет вправо
-                        snakePositionSprite = sprites.footer['right'];
-                    } else {
-                        // ползет влево
-                        snakePositionSprite = sprites.footer['left'];
-                    }
-                } else {
-                    // Тело
-                    let predPosition = body[i+1];
-                    if(predPosition.x < lastPosition.x) {
-                        // движется вправо
-                        if(predPosition.y < lastPosition.y) {
-                            // заворачивает вправо сверху
-                            snakePositionSprite = sprites.body['leftDown'];
-                        } else if(predPosition.y > lastPosition.y) {
-                            // заворачивает вправо снизу
-                            snakePositionSprite = sprites.body['rightDown'];
-                        } else {
-                            // движется горизонтально
-                            snakePositionSprite = sprites.body['lineHoriz'];
-                        }
-                    } else if(predPosition.x > lastPosition.x) {
-                        // движется влево
-                        if(predPosition.y < lastPosition.y) {
-                            // заворачивает влево сверху
-                            snakePositionSprite = sprites.body['leftUp'];
-                        } else if(predPosition.y > lastPosition.y) {
-                            // заворачивает влево снизу
-                            snakePositionSprite = sprites.body['rightUp'];
-                        } else {
-                            // движется горизонтально
-                            snakePositionSprite = sprites.body['lineHoriz'];
-                        }
-                    } else {
-                        // движется вертикально
-                        snakePositionSprite = sprites.body['lineVert'];
-                    }
+            if (i == 0) {
+                // Head; Determine the correct image
+                var nseg = snake.body[i+1]; // Next segment
+                if (segy < nseg.y) {
+                    // Up
+                    tx = 3; ty = 0;
+                } else if (segx > nseg.x) {
+                    // Right
+                    tx = 4; ty = 0;
+                } else if (segy > nseg.y) {
+                    // Down
+                    tx = 4; ty = 1;
+                } else if (segx < nseg.x) {
+                    // Left
+                    tx = 3; ty = 1;
+                }
+            } else if (i == snake.body.length-1) {
+                // Tail; Determine the correct image
+                var pseg = snake.body[i-1]; // Prev segment
+                if (pseg.y < segy) {
+                    // Up
+                    tx = 3; ty = 2;
+                } else if (pseg.x > segx) {
+                    // Right
+                    tx = 4; ty = 2;
+                } else if (pseg.y > segy) {
+                    // Down
+                    tx = 4; ty = 3;
+                } else if (pseg.x < segx) {
+                    // Left
+                    tx = 3; ty = 3;
                 }
             } else {
-                // Голова
-                if(!direction) {
-                    direction = 'left';
-                }
-                let predPosition = body[i+1];
-                if(predPosition) {
-                    if(predPosition.x < item.x) {
-                        // движется вправо
-                        snakePositionSprite = sprites.head['right'];
-                    } else if(predPosition.x > item.x) {
-                        // движется влево
-                        snakePositionSprite = sprites.head['left'];
-                    } else {
-                        if(predPosition.y < item.y) {
-                            // движется вниз
-                            snakePositionSprite = sprites.head['down'];
-                        } else {
-                            // движется вверх
-                            snakePositionSprite = sprites.head['up'];
-                        }
-                    }
-                } else {
-                    // нету тела, только голова
-                    snakePositionSprite = sprites.head[direction];
+                // Body; Determine the correct image
+                var pseg = snake.body[i-1]; // Previous segment
+                var nseg = snake.body[i+1]; // Next segment
+                if (pseg.x < segx && nseg.x > segx || nseg.x < segx && pseg.x > segx) {
+                    // Horizontal Left-Right
+                    tx = 1; ty = 0;
+                } else if (pseg.x < segx && nseg.y > segy || nseg.x < segx && pseg.y > segy) {
+                    // Angle Left-Down
+                    tx = 2; ty = 0;
+                } else if (pseg.y < segy && nseg.y > segy || nseg.y < segy && pseg.y > segy) {
+                    // Vertical Up-Down
+                    tx = 2; ty = 1;
+                } else if (pseg.y < segy && nseg.x < segx || nseg.y < segy && pseg.x < segx) {
+                    // Angle Top-Left
+                    tx = 2; ty = 2;
+                } else if (pseg.x > segx && nseg.y < segy || nseg.x > segx && pseg.y < segy) {
+                    // Angle Right-Up
+                    tx = 0; ty = 1;
+                } else if (pseg.y > segy && nseg.x > segx || nseg.y > segy && pseg.x > segx) {
+                    // Angle Down-Right
+                    tx = 0; ty = 0;
                 }
             }
+
+            // Draw the image of the snake part
+            /*ctx.drawImage(tileimage, tx*64, ty*64, 64, 64, tilex, tiley,
+                32, 32);*/
             let options = {
-                xsprite: snakePositionSprite[0],
-                ysprite: snakePositionSprite[1],
-                x: item.x*SIZE.sizeSnake,
-                y: item.y*SIZE.sizeSnake,
+                xsprite: tx*64,
+                ysprite: ty*64,
+                x: tilex,
+                y: tiley,
             };
-            lastPosition = body[i];
             this.drawSprite(options);
         }
     };
@@ -159,6 +164,7 @@ function Graph(c = {}) {
     };
 
 
+
     // Рисование спрайта
     this.drawSprite = (options = {}) => {
         if(options) {
@@ -171,14 +177,15 @@ function Graph(c = {}) {
         }
     };
 
+
     // Подготовка сцены
     this.init = () => {
         // путь до спрайтов
         let link = location.href;
         link = link.split('?')[0];
         link = link.split('/').slice(0, -1).join('/');
-        c.pathSprites = link + c.pathSprites;
-        c.pathImages = link + c.pathImages;
+        c.path.sprites = link + c.path.sprites;
+        c.path.images = link + c.path.images;
     };
     // Очистка сцены
     this.clear = () => {
