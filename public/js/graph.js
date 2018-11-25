@@ -5,23 +5,6 @@ function Graph(c = {}) {
         SIZE = c.size, // размеры
         sprites = c.sprites; // Координаты в спрайте
 
-    // Timing and frames per second
-    var lastframe = 0;
-    var fpstime = 0;
-    var framecount = 0;
-    var fps = 0;
-
-    var initialized = false;
-
-    // Images
-    var images = [];
-    var tileimage;
-
-    // Image loading global variables
-    var loadcount = 0;
-    var loadtotal = 0;
-    var preloaded = false;
-
 
     // Отрисовываем карту
     this.draw = (data = {}) => {
