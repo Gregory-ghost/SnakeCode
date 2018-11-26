@@ -1,4 +1,6 @@
-function User(server, c = {}, switchPage) {
+function User(server, switchPage) {
+
+    var c;
 
     // Инициализация модуля
     this.init = () => {
@@ -148,6 +150,39 @@ function User(server, c = {}, switchPage) {
 
     error = (err = "") => {
         console.log("Ошибка :: %s", err)
-    }
+    };
+
+    c = {
+        pages: {
+            login: $('.loginPage'),
+            register: $('.registerPage'),
+            game: $('.gamePage'),
+            profile: $('.profilePage'),
+            maps: $('.mapsPage'),
+        },
+        modal: {
+            finish: $('#modalFinishGame'),
+        },
+        text: {
+            user_score: $('.user_score'),
+        },
+        btn: {
+            startGame: $('.startGameBtn'),
+            stopGame: $('.stopGameBtn'),
+            logout: $('.logoutBtn'),
+        },
+        form: {
+            login: $('#loginForm'),
+            register: $('#registerForm'),
+        },
+        game: {
+            canvas: document.getElementById('game'),
+            block: $('#game'),
+            wrapper: $('#game_wrapper'),
+        },
+        blocks: {
+            maps: $('.mapsBlock'),
+        },
+    };
 
 }

@@ -71,7 +71,7 @@ class Game {
 
     // записать измененные данные в БД
     public function updateData($map_id) {
-        if ($map_id && $this->db->isTimeToUpdate($map_id, 1000)) {
+        if ($map_id && $this->db->isTimeToUpdate($map_id, 50)) {
             $this->logic->moveSnakes();
             $this->db->updateSnakes($map_id, $this->struct->snakes);
             $this->db->updateFoods($map_id, $this->struct->foods);

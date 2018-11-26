@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 19, 2018 at 12:05 AM
+-- Generation Time: Nov 26, 2018 at 10:43 PM
 -- Server version: 5.6.38-log
 -- PHP Version: 5.6.32
 
@@ -37,6 +37,13 @@ CREATE TABLE `food` (
   `map_id` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `food`
+--
+
+INSERT INTO `food` (`id`, `x`, `y`, `value`, `type`, `map_id`) VALUES
+(113, 23, 9, 1, 0, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -45,18 +52,19 @@ CREATE TABLE `food` (
 
 CREATE TABLE `map` (
   `id` int(11) NOT NULL,
-  `width` int(11) NOT NULL,
-  `height` int(11) NOT NULL,
   `last_updated` int(32) DEFAULT NULL,
-  `snake_size` int(12) NOT NULL DEFAULT '64'
+  `name` varchar(64) DEFAULT '0',
+  `width` int(11) NOT NULL DEFAULT '14',
+  `height` int(11) NOT NULL DEFAULT '7',
+  `snake_size` int(11) NOT NULL DEFAULT '64'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `map`
 --
 
-INSERT INTO `map` (`id`, `width`, `height`, `last_updated`, `snake_size`) VALUES
-(1, 14, 7, 1542574970, 64);
+INSERT INTO `map` (`id`, `last_updated`, `name`, `width`, `height`, `snake_size`) VALUES
+(1, 2147483647, '0', 28, 14, 32);
 
 -- --------------------------------------------------------
 
@@ -72,13 +80,6 @@ CREATE TABLE `snake` (
   `eating` int(16) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `snake`
---
-
-INSERT INTO `snake` (`id`, `user_id`, `direction`, `map_id`, `eating`) VALUES
-(1, 2, '', 1, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -91,14 +92,6 @@ CREATE TABLE `snake_body` (
   `x` int(11) NOT NULL DEFAULT '0',
   `y` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `snake_body`
---
-
-INSERT INTO `snake_body` (`id`, `snake_id`, `x`, `y`) VALUES
-(6, 1, 1, 0),
-(7, 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -120,35 +113,8 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `name`, `token`, `login`, `password`, `score`) VALUES
-(2, 'Вася', '7ea1c2b54484bdc0c7a8ab30b66d194a', 'vasya', 123, 1),
+(2, 'Вася', '69cb37c9c6b12b3aa12df7626d7b7528', 'vasya', 123, 0),
 (3, 'Петя', NULL, 'petya', 111, 0);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `user_access_token`
---
-
-CREATE TABLE `user_access_token` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `token` varchar(64) NOT NULL,
-  `expiredAt` int(32) NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `user_access_token`
---
-
-INSERT INTO `user_access_token` (`id`, `user_id`, `token`, `expiredAt`, `createdAt`) VALUES
-(6, 2, 'RHwRQ69u7vyU3nQltGBvITVCEYppBoa5p8LnrEiuwUn8Zn5yH31s0mg3Jjq5elBK', 1541751857, '2018-11-02 08:24:17'),
-(7, 2, 'lrmLp3PmhbzfjgHEjiOhFIYnbwODeaphDCl1LlJ6qk9eZ1HCjpYZHW4y1Bz3BRAG', 1541751922, '2018-11-02 08:25:22'),
-(8, 2, 'qHrqTxxM0Qv9BAXf2eYjaK92iBAEiMRSwJ5UMqRvrlfRlsSHPcOfKAEcq3vNJAYL', 1541751950, '2018-11-02 08:25:50'),
-(9, 2, 'ZE7i3cy7gJnssba2Z313HixfVnPPwgrwPrwxHQDBrZRVWOPewMBK1SNaOzvJHOia', 1541752055, '2018-11-02 08:27:35'),
-(10, 2, 'jFHatv0JWl654E4sFowz62xCdyIlmq9XmBqbzxEeQfqPvaObpgq1T1nyNodwuR47', 1541752089, '2018-11-02 08:28:09'),
-(11, 2, 'ZtwwhFIAFp1vwbwvGYNitdX7MTAETtN9HV9jwJMmdQf17JFv4mCxqdck0g0BbX8A', 1541752337, '2018-11-02 08:32:17'),
-(12, 2, 'VdlTHBNsyQI3C9VEsgNHbn9cnelA82dR4w6tfSQohRO5gEPxMZedV6T3iG7zYYNH', 1542483159, '2018-11-10 19:32:39');
 
 --
 -- Indexes for dumped tables
@@ -185,12 +151,6 @@ ALTER TABLE `user`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `user_access_token`
---
-ALTER TABLE `user_access_token`
-  ADD PRIMARY KEY (`id`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -198,7 +158,7 @@ ALTER TABLE `user_access_token`
 -- AUTO_INCREMENT for table `food`
 --
 ALTER TABLE `food`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
 
 --
 -- AUTO_INCREMENT for table `map`
@@ -210,25 +170,19 @@ ALTER TABLE `map`
 -- AUTO_INCREMENT for table `snake`
 --
 ALTER TABLE `snake`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `snake_body`
 --
 ALTER TABLE `snake_body`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1356;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `user_access_token`
---
-ALTER TABLE `user_access_token`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

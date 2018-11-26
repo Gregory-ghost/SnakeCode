@@ -33,6 +33,22 @@
 </nav>
 	<div id="game_wrapper">
 		<section class="gamePage hidden page">
+			<div class="usersGameScore">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h5 class="panel-title">Турнирная таблица</h5>
+					</div>
+					<div class="panel-body">
+						<table class="table">
+							<thead><tr><th>#</th>
+							<th>Имя</th>
+							<th>Очки</th>
+						</tr></thead><tbody class="usersListScore">
+
+						</tbody></table>
+					</div>
+				</div>
+			</div>
 			<canvas class="game_canvas" id="game">Javascript не поддерживается</canvas>
 		</section>
 
@@ -110,14 +126,11 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<button type="button" class="close" id="closeFinishGame" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title">Игра закончена</h4>
 			</div>
 			<div class="modal-body">
 				<p>Набрано очков: <span class="user_score">0</span></p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
 			</div>
 		</div><!-- /.модал-контент -->
 	</div><!-- /.модальное окно -->
