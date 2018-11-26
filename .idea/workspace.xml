@@ -3,30 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="41bbd172-f60c-4bbd-9c0a-3b52fc0fb66b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/_gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/api/index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/game/Game.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/Game.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/game/logic/Logic.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/logic/Logic.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/game/struct/Food.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/struct/Food.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/game/struct/Map.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/struct/Map.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/game/struct/Snake.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/struct/Snake.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/game/struct/SnakeBody.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/struct/SnakeBody.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/game/struct/Struct.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/game/struct/Struct.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/modules/db/db.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/modules/db/db.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/modules/db/snake_of_pi.sql" beforeDir="false" afterPath="$PROJECT_DIR$/application/modules/db/snake_of_pi.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/modules/user/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/modules/user/User.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/app.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/css/bootstrap.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/bootstrap.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/img/bg.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/bg.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/img/bg2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/bootstrap.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/bootstrap.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/graph.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/graph.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/ui.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/ui.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/user.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -399,7 +375,7 @@
       <workItem from="1543035401509" duration="4620000" />
       <workItem from="1543073599442" duration="37000" />
       <workItem from="1543127447790" duration="11996000" />
-      <workItem from="1543254512312" duration="6608000" />
+      <workItem from="1543254512312" duration="6870000" />
     </task>
     <task id="LOCAL-00001" summary="finish game">
       <created>1543133993366</created>
@@ -429,11 +405,18 @@
       <option name="project" value="LOCAL" />
       <updated>1543152398013</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="draw">
+      <created>1543261431552</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1543261431552</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="32611000" />
+    <option name="totallyTimeSpent" value="32873000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
