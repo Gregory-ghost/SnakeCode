@@ -140,6 +140,14 @@ class DB {
         $stm->execute();
         return $stm->fetchObject('stdClass');
     }
+
+    // Получить пользователей и их очки
+    public function getLeaderboard() {
+        $sql = 'SELECT login,score FROM user ORDER BY score DESC';
+        $stm = $this->conn->prepare($sql);
+        $stm->execute();
+        return $stm->fetchAll(PDO::FETCH_CLASS);
+    }
     /*//Получить пользователя по id
     public function getUserById($id) {
         $sql = 'SELECT id, login, name FROM user WHERE id = :id ORDER BY id DESC LIMIT 1';
