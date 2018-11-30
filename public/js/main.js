@@ -72,7 +72,6 @@ function Const() {
             game: $('.gamePage'),
             profile: $('.profilePage'),
             maps: $('.mapsPage'),
-            score: $('.scorePage'),
         },
         modal: {
             finish: $('#modalFinishGame'),

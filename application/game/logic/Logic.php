@@ -153,7 +153,6 @@ class Logic {
             if ( $food ) {
                 // Увеличиваем счетчик eating
                 $snake->eating += $food->value;
-                $snake->score += $food->value;
                 $food->deleted_at = true;
                 $this->newFood($snake->map_id);
             }
@@ -165,6 +164,7 @@ class Logic {
             if(!isset($snake->body[0])) {
                 // змея погибла
                 $snake->deleted_at = true;
+                $snake->score = 0; // очки пользователя
             } else {
                 $this->isEatOtherSnake($snake->id); // поедание другой змейки
 
@@ -172,12 +172,14 @@ class Logic {
                 if ($this->isCrashedInSnake($snake->id)) {
                     // Столкнулись, поэтому уничтожаем питона
                     $snake->deleted_at = true;
+                    $snake->score = count($snake->body) - 2; // очки пользователя
                 }
 
                 // Проверяем позицию змеи на столкновение
                 if(!$this->isCanMove($snake->id)) {
                     // Столкнулись, поэтому уничтожаем питона
                     $snake->deleted_at = true;
+                    $snake->score = count($snake->body) - 2; // очки пользователя
                 }
             }
 
@@ -262,49 +264,21 @@ class Logic {
             $snake = $this->getSnake($snake_id);
             if($snake) {
                 $bodys = $snake->body;
-
-
-                // столкновения в себя
-                foreach($bodys as $key => $body) {
-                    foreach($bodys as $key2 => $body2) {
-                        if(isset($body->deleted_at) or isset($body2->deleted_at)) {
-
-                        } else if($key != $key2) {
-                            if(isset($body2->x) && isset($body2->y) && isset($body->x) && isset($body->y)) {
-                                if($body2->x == $body->x and $body2->y == $body->y) {
-                                    // Врезались в удава
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-
                 $snakes = $this->struct->snakes;
                 // перебирает массив snakes на каждой итерации значение текущего
                 // элемента присваивается переменной enemySnake
                 foreach ($snakes as $enemySnake) {
                     // Если id враждебного удава не равен id удава, то перебирает массив enemySnake
                     // на каждой итерации значение текущего элемента присваивается переменной bodyEnemy
-                    if($enemySnake->id == $snake->id) {
-                        // наша змейка
-
-                    } else {
-                        // вражеская змейка
-
-                        $bodys2 = $enemySnake->body;
-                        foreach($bodys as $key => $body) {
-                            foreach($bodys2 as $key2 => $body2) {
-                                if(isset($body->deleted_at) or isset($body2->deleted_at)) {
-
-                                } else {
-                                    if(isset($body2->x) && isset($body2->y) && isset($body->x) && isset($body->y)) {
-                                        if($body2->x == $body->x and $body2->y == $body->y) {
-                                            // Врезались в удава
-                                            return true;
-                                        }
-                                    }
+                    if($enemySnake->id != $snake->id) {
+                        $bodysEnemy = $enemySnake->body;
+                        foreach($bodysEnemy as $bodyEnemy) {
+                            $body = $bodys[0]; // голова
+                            // если сущесвуют координаты тела врага и координаты тела, то врезались в удава
+                            if(isset($bodyEnemy->x) && isset($bodyEnemy->y) && isset($body->x) && isset($body->y)) {
+                                if($bodyEnemy->x == $body->x and $bodyEnemy->y == $body->y) {
+                                    // Врезались в удава
+                                    return true;
                                 }
                             }
                         }
